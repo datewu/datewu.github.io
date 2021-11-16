@@ -1,134 +1,39 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>人到三十</title><link>https://tab.wutuofu.com/</link><description>Recent content on 人到三十</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 15 Nov 2021 19:32:58 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>脚本注入</title><link>https://tab.wutuofu.com/posts/opkg/inject/</link><pubDate>Mon, 15 Nov 2021 19:32:58 +0800</pubDate><guid>https://tab.wutuofu.com/posts/opkg/inject/</guid><description>&lt;p>使用opkg安装软件时，常常需要对候软件包进行初始化或者自定义化操作，这种开发需求一般写给shell脚本就可以对付了。
-现在的问题是当这些脚本多了之后，原作者也不愿意修改安装包，我们怎么分发这些自定义的脚本，能不能把自定义的这些脚本编译到opkg包里？&lt;/p>
-&lt;h2 id="位置">位置&lt;/h2>
-&lt;p>把本地的shell脚本放在openwert 仓库的这个目录，编译openwrt的时候就会被打包到对应opkg二进制文件中：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">/barrier_breaker/package/package-abc &lt;span class="c1"># package makefile文件所在&lt;/span>
-package-abc/files &lt;span class="c1"># shell脚本放置目录&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="步骤">步骤&lt;/h2>
-&lt;ol>
-&lt;li>修改Makefile&lt;/li>
-&lt;/ol>
-&lt;p>在&lt;code>package&lt;/code>目录下任意找一个package目录，比如&lt;code>chinadns&lt;/code>,
-然后修改Makefile文件。
-在install语句后添加 :&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="k">$(&lt;/span>INSTALL_BIN&lt;span class="k">)&lt;/span> ./files/your_script.sh &lt;span class="k">$(&lt;/span>1&lt;span class="k">)&lt;/span>/etc/config/your_script.sh
-&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="2">
-&lt;li>
-&lt;p>放置脚本
-将脚本your_script.sh放置在files目录下；&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>选择opkg
-在make menuconfig 图像界面中选择修改过的包（chinadns）&lt;/p>
-&lt;/li>
-&lt;/ol>
-&lt;h2 id="附">附&lt;/h2>
-&lt;p>package 和注入文件相关的部分&lt;code>makefile&lt;/code>代码:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-makefile" data-lang="makefile">&lt;span class="c">##
-&lt;/span>&lt;span class="c">&lt;/span> include &lt;span class="k">$(&lt;/span>TOPDIR&lt;span class="k">)&lt;/span>/rules.mk
-PKG_NAME:&lt;span class="o">=&lt;/span>xxx
-PKG_RELEASE:&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span>
-PKG_SOURCE:&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>PKG_NAME&lt;span class="k">)&lt;/span>-&lt;span class="k">$(&lt;/span>PKG_VERSION&lt;span class="k">)&lt;/span>.tar.gz
-PKG_SOURCE_URL:&lt;span class="o">=&lt;/span>https://github.com/xxx/releases/download/v&lt;span class="k">$(&lt;/span>PKG_VERSION&lt;span class="k">)&lt;/span>
-PKG_MD5SUM:&lt;span class="o">=&lt;/span>f772a750580243cfxcsfd2xc39d7b9171b1
-PKG_BUILD_DIR:&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>BUILD_DIR&lt;span class="k">)&lt;/span>/&lt;span class="k">$(&lt;/span>PKG_NAME&lt;span class="k">)&lt;/span>
-include &lt;span class="k">$(&lt;/span>INCLUDE_DIR&lt;span class="k">)&lt;/span>/package.mk
-&lt;span class="c">##
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>人到三十</title><link>https://tab.wutuofu.com/</link><description>Recent content on 人到三十</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 16 Nov 2021 16:13:57 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>清理git submodule</title><link>https://tab.wutuofu.com/posts/git-submodule/</link><pubDate>Tue, 16 Nov 2021 16:13:57 +0800</pubDate><guid>https://tab.wutuofu.com/posts/git-submodule/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/git-submodule/git-submodule.png" alt="Featured image of post 清理git submodule" />&lt;p>当我们本地对git的submodule目录下的文件做了改动时，会发现不论是用&lt;code>git checkout .&lt;/code>
+还是 &lt;code>git clean -df&lt;/code>都无法丢弃修改。使用&lt;code>git status&lt;/code>命令查看工作树的状态时会有如下
+报错信息&lt;code>git submodule modified content&lt;/code>&lt;/p>
+&lt;h2 id="错误">错误&lt;/h2>
+&lt;p>以hugo为例，当使用&lt;code>hugo server&lt;/code>本地预览博客文章时， hugo会修改主题目录的内容。从而出现 git submodule modified content的问题。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">❯ git status
+位于分支 main
+您的分支领先 &lt;span class="s1">&amp;#39;origin/main&amp;#39;&lt;/span> 共 &lt;span class="m">1&lt;/span> 个提交。
+（使用 &lt;span class="s2">&amp;#34;git push&amp;#34;&lt;/span> 来发布您的本地提交）
+尚未暂存以备提交的变更：
+（使用 &lt;span class="s2">&amp;#34;git add &amp;lt;文件&amp;gt;...&amp;#34;&lt;/span> 更新要提交的内容）
+（使用 &lt;span class="s2">&amp;#34;git restore &amp;lt;文件&amp;gt;...&amp;#34;&lt;/span> 丢弃工作区的改动）
+（提交或丢弃子模组中未跟踪或修改的内容）
+修改： themes/stack &lt;span class="o">(&lt;/span>修改的内容&lt;span class="o">)&lt;/span>
+修改尚未加入提交（使用 &lt;span class="s2">&amp;#34;git add&amp;#34;&lt;/span> 和/或 &lt;span class="s2">&amp;#34;git commit -a&amp;#34;&lt;/span>）
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>这个问题挺常见的，Google后使用下面两条命令即可清理submodule：&lt;/p>
+&lt;h2 id="meat">meat&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">git submodule foreach --recursive git reset --hard
+git submodule update --recursive --init
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;a class="link" href="https://stackoverflow.com/a/44669463" target="_blank" rel="noopener"
+>How do I revert my changes to a git submodule?&lt;/a>&lt;/p>
+&lt;h3 id="make">make&lt;/h3>
+&lt;p>建议在根目录下编写内容如下的&lt;code>Makefile&lt;/code>， 以节省输入命令的时间和加强记忆。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-makefile" data-lang="makefile">&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">clean&lt;/span>
+&lt;span class="nf">clean&lt;/span>&lt;span class="o">:&lt;/span>
+-@git submodule deinit -f .
+-@git submodule update --init --recursive
+&lt;span class="c">#git submodule deinit -f .
+&lt;/span>&lt;span class="c">#git submodule update --init
 &lt;/span>&lt;span class="c">&lt;/span>
-define Package/xxx
-SECTION:&lt;span class="o">=&lt;/span>net
-CATEGORY:&lt;span class="o">=&lt;/span>Network
-TITLE:&lt;span class="o">=&lt;/span>xxx
-endef
-&lt;span class="c">###
-&lt;/span>&lt;span class="c">&lt;/span>
-define Package/xxx/description
-button haha upgrade.
-endef
-&lt;span class="c">###
-&lt;/span>&lt;span class="c">&lt;/span>
-&lt;span class="c1">#define Package/xxx/conffiles&lt;/span>
-&lt;span class="c1">#/etc/config/system&lt;/span>
-&lt;span class="c1">#/etc/hotplug.d/button/00-button&lt;/span>
-&lt;span class="c1">#endef&lt;/span>
-&lt;span class="c">###
-&lt;/span>&lt;span class="c">&lt;/span>
-define Package/wps_button/install
-&lt;span class="c1">#$(INSTALL_DIR) $(1)/etc/init.d&lt;/span>
-&lt;span class="k">$(&lt;/span>INSTALL_BIN&lt;span class="k">)&lt;/span> ./files/xxx &lt;span class="k">$(&lt;/span>1&lt;span class="k">)&lt;/span>/etc/config/xxx
-&lt;span class="c1">#$(INSTALL_DATA) ./files/system.conf $(1)/etc/config/system&lt;/span>
-endef
-&lt;span class="c">###
-&lt;/span>&lt;span class="c">&lt;/span>
-&lt;span class="k">$(&lt;/span>&lt;span class="nb">eval&lt;/span> &lt;span class="k">$(&lt;/span>call BuildPackage,xxx&lt;span class="k">))&lt;/span>
-&lt;span class="c">##
-&lt;/span>&lt;span class="c">&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>再见scripttogr👋</title><link>https://tab.wutuofu.com/posts/blog/bye/</link><pubDate>Mon, 15 Nov 2021 19:29:06 +0800</pubDate><guid>https://tab.wutuofu.com/posts/blog/bye/</guid><description>&lt;p>很久以前有幸遇到一款很干净简洁 blog saas产品，可以通过email和dropbox写/备份文章。&lt;/p>
-&lt;p>今天发现&lt;a class="link" href="https://scriptogr.am/" target="_blank" rel="noopener"
->scripttogr&lt;/a> 已经关闭不运营了。&lt;/p>
-&lt;p>可惜了。&lt;/p>
-&lt;p>好的产品不一定能活下去，可惜了。&lt;/p></description></item><item><title>刷机HG255d</title><link>https://tab.wutuofu.com/posts/router/hg255/</link><pubDate>Mon, 15 Nov 2021 19:09:58 +0800</pubDate><guid>https://tab.wutuofu.com/posts/router/hg255/</guid><description>&lt;h2 id="交叉编译">交叉编译&lt;/h2>
-&lt;ol>
-&lt;li>在ubuntu下安装编译工具（gcc,xmllib,cmake, git 等)；&lt;/li>
-&lt;li>git克隆openwrt仓库：&lt;code>git clone git://git.openwrt.org/14.07/openwrt.git&lt;/code>；&lt;/li>
-&lt;li>自定义kernel target：&lt;/li>
-&lt;/ol>
-&lt;p>源代码做&lt;a class="link" href="http://my.oschina.net/osbin/blog/278782" target="_blank" rel="noopener"
->两处修改&lt;/a> :&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">target/linux/ramips/image/Makefile
-/base-files/lib/ramips.sh
-target/linux/ramips/base-files/lib/preinit/06_set_iface_mac
-&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="4">
-&lt;li>在弹出的make menuconfig 图像界面中选择cpu型号；&lt;/li>
-&lt;li>打开vpn开始编译固件。&lt;/li>
-&lt;/ol>
-&lt;h2 id="结果">结果&lt;/h2>
-&lt;p>交叉编译完成后，根据上一步选择的安装包的多少，bin目录下会生成对应的opkg包，和固件：&lt;/p>
-&lt;ol>
-&lt;li>factory文件，可以称作底包；&lt;/li>
-&lt;li>sysupgrade文件，可以称作升级包；&lt;/li>
-&lt;/ol>
-&lt;h3 id="webuboot烧录刷机">web/uboot烧录刷机&lt;/h3>
-&lt;ol>
-&lt;li>接通路由器电源，按住WPS按钮不放，然后按电源键开机， power LED快闪即松开WPS键，此时路由器已加入升级模式；&lt;/li>
-&lt;li>访问路由器web地址（如：http://192.168.1.1), 按照web界面提示选取factory文件完成固件烧录刷机；&lt;/li>
-&lt;/ol>
-&lt;h3 id="sshftp-烧录">ssh/ftp 烧录&lt;/h3>
-&lt;p>可以直接执行&lt;code>sysupgrade&lt;/code>命令烧录估计：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">ssh-keygen -f &lt;span class="s2">&amp;#34;/home/openwrt-qqm/.ssh/known_hosts&amp;#34;&lt;/span> -R 192.168.1.1 &lt;span class="c1">#可以省略此条命令 &lt;/span>
-scp xxxxxx-squashfs-sysupgrade.bin root@192.168.1.1:/tmp/
-ssh root@192.168.1.1
-&lt;span class="nb">cd&lt;/span> /tmp/
-sysupgrade -n xxxxxxxxxxx-sysupgrade.bin
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="opkg">opkg&lt;/h3>
-&lt;p>烧录完系统固件后，可以使用&lt;code>opkg&lt;/code>安装软件包，比如&lt;code>china-dns&lt;/code>, &lt;code>shadowsocks&lt;/code>, &lt;code>openvpn&lt;/code>，等等。&lt;/p></description></item><item><title>ingress/nginx主机性能调优</title><link>https://tab.wutuofu.com/posts/nignx/tune/</link><pubDate>Mon, 15 Nov 2021 18:58:52 +0800</pubDate><guid>https://tab.wutuofu.com/posts/nignx/tune/</guid><description>&lt;h3 id="sysctl">sysctl&lt;/h3>
-&lt;p>加载Linux 内核配置&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">sysctl -p /etc/sysctl.d/xxx-xxx.conf
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="meat">meat&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1"># /etc/sysctl.d/00-network.conf&lt;/span>
-&lt;span class="c1"># Receive Queue Size per CPU Core, number of packets&lt;/span>
-&lt;span class="c1"># Example server: 8 cores&lt;/span>
-net.core.netdev_max_backlog &lt;span class="o">=&lt;/span> &lt;span class="m">4096&lt;/span>
-&lt;span class="c1"># SYN Backlog Queue, number of half-open connections&lt;/span>
-net.ipv4.tcp_max_syn_backlog &lt;span class="o">=&lt;/span> &lt;span class="m">32768&lt;/span>
-&lt;span class="c1"># Accept Queue Limit, maximum number of established&lt;/span>
-&lt;span class="c1"># connections waiting for accept() per listener.&lt;/span>
-net.core.somaxconn &lt;span class="o">=&lt;/span> &lt;span class="m">65535&lt;/span>
-&lt;span class="c1"># Maximum number of SYN and SYN+ACK retries before&lt;/span>
-&lt;span class="c1"># packet expires.&lt;/span>
-net.ipv4.tcp_syn_retries &lt;span class="o">=&lt;/span> &lt;span class="m">1&lt;/span>
-net.ipv4.tcp_synack_retries &lt;span class="o">=&lt;/span> &lt;span class="m">1&lt;/span>
-&lt;span class="c1"># Timeout in seconds to close client connections in&lt;/span>
-&lt;span class="c1"># TIME_WAIT after receiving FIN packet.&lt;/span>
-net.ipv4.tcp_fin_timeout &lt;span class="o">=&lt;/span> &lt;span class="m">5&lt;/span>
-&lt;span class="c1"># Disable SYN cookie flood protection&lt;/span>
-net.ipv4.tcp_syncookies &lt;span class="o">=&lt;/span> &lt;span class="m">0&lt;/span>
-&lt;span class="c1"># Maximum number of threads system can have, total.&lt;/span>
-&lt;span class="c1"># Commented, may not be needed. See user limits.&lt;/span>
-&lt;span class="c1">#kernel.threads-max = 3261780&lt;/span>
-&lt;span class="c1"># Maximum number of file descriptors system can have, total.&lt;/span>
-&lt;span class="c1"># Commented, may not be needed. See user limits.&lt;/span>
-&lt;span class="c1">#fs.file-max = 3261780&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>执行&lt;code>make&lt;/code>命令即可清除本地对git submodule的改动。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">❯ make
+已清除目录 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>
+子模组 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>（https://github.com/datewu/hugo-theme-stack.git）未对路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span> 注册
+子模组 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>（https://github.com/datewu/hugo-theme-stack.git）已对路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span> 注册
+子模组路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>：检出 &lt;span class="s1">&amp;#39;aeb077874a7de9ce71304c990ad5cfdc72664f38&amp;#39;&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Markdown Syntax Guide</title><link>https://tab.wutuofu.com/posts/markdown-syntax/</link><pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate><guid>https://tab.wutuofu.com/posts/markdown-syntax/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/markdown-syntax/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg" alt="Featured image of post Markdown Syntax Guide" />&lt;p>This article offers a sample of basic Markdown syntax that can be used in Hugo content files, also it shows whether basic HTML elements are decorated with CSS in a Hugo theme.&lt;/p>
 &lt;h2 id="headings">Headings&lt;/h2>
 &lt;p>The following HTML &lt;code>&amp;lt;h1&amp;gt;&lt;/code>—&lt;code>&amp;lt;h6&amp;gt;&lt;/code> elements represent six levels of section headings. &lt;code>&amp;lt;h1&amp;gt;&lt;/code> is the highest section level while &lt;code>&amp;lt;h6&amp;gt;&lt;/code> is the lowest.&lt;/p>
@@ -268,7 +173,7 @@ net.ipv4.tcp_syncookies &lt;span class="o">=&lt;/span> &lt;span class="m">0&lt;/
 >talk&lt;/a> during Gopherfest, November 18, 2015.&amp;#160;&lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
 &lt;/li>
 &lt;/ol>
-&lt;/section></description></item><item><title>Math Typesetting</title><link>https://tab.wutuofu.com/posts/math-typesetting/</link><pubDate>Fri, 08 Mar 2019 00:00:00 +0000</pubDate><guid>https://tab.wutuofu.com/posts/math-typesetting/</guid><description>&lt;p>Mathematical notation in a Hugo project can be enabled by using third party JavaScript libraries.&lt;/p>
+&lt;/section></description></item><item><title>Math Typesetting</title><link>https://tab.wutuofu.com/posts/math-typesetting/</link><pubDate>Fri, 08 Mar 2019 00:00:00 +0000</pubDate><guid>https://tab.wutuofu.com/posts/math-typesetting/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/math-typesetting/katex.png" alt="Featured image of post Math Typesetting" />&lt;p>Mathematical notation in a Hugo project can be enabled by using third party JavaScript libraries.&lt;/p>
 &lt;p>In this example we will be using &lt;a class="link" href="https://katex.org/" target="_blank" rel="noopener"
 >KaTeX&lt;/a>&lt;/p>
 &lt;ul>
@@ -290,4 +195,152 @@ net.ipv4.tcp_syncookies &lt;span class="o">=&lt;/span> &lt;span class="m">0&lt;/
 &lt;p>Block math:
 $$
 \varphi = 1+\frac{1} {1+\frac{1} {1+\frac{1} {1+\cdots} } }
-$$&lt;/p></description></item></channel></rss>
+$$&lt;/p></description></item><item><title>tcp性能调优</title><link>https://tab.wutuofu.com/posts/tcp-tune/</link><pubDate>Tue, 05 Apr 2016 18:58:52 +0800</pubDate><guid>https://tab.wutuofu.com/posts/tcp-tune/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/tcp-tune/sysctl.jpeg" alt="Featured image of post tcp性能调优" />&lt;p>我们一般会调整内核tcp参数以提高web服务器(比如ngin)的性能。&lt;/p>
+&lt;h2 id="sysctl">sysctl&lt;/h2>
+&lt;p>加载Linux 内核配置&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">sysctl -p /etc/sysctl.d/xxx-xxx.conf
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="meat">meat&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1"># /etc/sysctl.d/00-network.conf&lt;/span>
+&lt;span class="c1"># Receive Queue Size per CPU Core, number of packets&lt;/span>
+&lt;span class="c1"># Example server: 8 cores&lt;/span>
+net.core.netdev_max_backlog &lt;span class="o">=&lt;/span> &lt;span class="m">4096&lt;/span>
+&lt;span class="c1"># SYN Backlog Queue, number of half-open connections&lt;/span>
+net.ipv4.tcp_max_syn_backlog &lt;span class="o">=&lt;/span> &lt;span class="m">32768&lt;/span>
+&lt;span class="c1"># Accept Queue Limit, maximum number of established&lt;/span>
+&lt;span class="c1"># connections waiting for accept() per listener.&lt;/span>
+net.core.somaxconn &lt;span class="o">=&lt;/span> &lt;span class="m">65535&lt;/span>
+&lt;span class="c1"># Maximum number of SYN and SYN+ACK retries before&lt;/span>
+&lt;span class="c1"># packet expires.&lt;/span>
+net.ipv4.tcp_syn_retries &lt;span class="o">=&lt;/span> &lt;span class="m">1&lt;/span>
+net.ipv4.tcp_synack_retries &lt;span class="o">=&lt;/span> &lt;span class="m">1&lt;/span>
+&lt;span class="c1"># Timeout in seconds to close client connections in&lt;/span>
+&lt;span class="c1"># TIME_WAIT after receiving FIN packet.&lt;/span>
+net.ipv4.tcp_fin_timeout &lt;span class="o">=&lt;/span> &lt;span class="m">5&lt;/span>
+&lt;span class="c1"># Disable SYN cookie flood protection&lt;/span>
+net.ipv4.tcp_syncookies &lt;span class="o">=&lt;/span> &lt;span class="m">0&lt;/span>
+&lt;span class="c1"># Maximum number of threads system can have, total.&lt;/span>
+&lt;span class="c1"># Commented, may not be needed. See user limits.&lt;/span>
+&lt;span class="c1">#kernel.threads-max = 3261780&lt;/span>
+&lt;span class="c1"># Maximum number of file descriptors system can have, total.&lt;/span>
+&lt;span class="c1"># Commented, may not be needed. See user limits.&lt;/span>
+&lt;span class="c1">#fs.file-max = 3261780&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>再见scripttogr👋</title><link>https://tab.wutuofu.com/posts/blog-scripttogr/</link><pubDate>Mon, 13 Jul 2015 19:29:06 +0800</pubDate><guid>https://tab.wutuofu.com/posts/blog-scripttogr/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/blog-scripttogr/scriptogr.png" alt="Featured image of post 再见scripttogr👋" />&lt;p>很久以前有幸遇到一款很干净简洁 blog saas产品，可以通过email和dropbox写/备份文章。&lt;/p>
+&lt;p>今天发现&lt;a class="link" href="https://scriptogr.am/" target="_blank" rel="noopener"
+>scripttogr&lt;/a> 已经关闭不运营了。&lt;/p>
+&lt;p>可惜了。&lt;/p>
+&lt;p>好的产品不一定能活下去，可惜了。&lt;/p></description></item><item><title>脚本注入</title><link>https://tab.wutuofu.com/posts/opkg-inject/</link><pubDate>Thu, 18 Jun 2015 13:32:58 +0800</pubDate><guid>https://tab.wutuofu.com/posts/opkg-inject/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/opkg-inject/opkg.png" alt="Featured image of post 脚本注入" />&lt;p>使用opkg安装软件时，常常需要对候软件包进行初始化或者自定义化操作，这种开发需求一般写给shell脚本就可以对付了。
+现在的问题是当这些脚本多了之后，原作者也不愿意修改安装包，我们怎么分发这些自定义的脚本，能不能把自定义的这些脚本编译到opkg包里？&lt;/p>
+&lt;h2 id="位置">位置&lt;/h2>
+&lt;p>把本地的shell脚本放在openwert 仓库的这个目录，编译openwrt的时候就会被打包到对应opkg二进制文件中：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">/barrier_breaker/package/package-abc &lt;span class="c1"># package makefile文件所在&lt;/span>
+package-abc/files &lt;span class="c1"># shell脚本放置目录&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="步骤">步骤&lt;/h2>
+&lt;ol>
+&lt;li>修改Makefile&lt;/li>
+&lt;/ol>
+&lt;p>在&lt;code>package&lt;/code>目录下任意找一个package目录，比如&lt;code>chinadns&lt;/code>,
+然后修改Makefile文件。
+在install语句后添加 :&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="k">$(&lt;/span>INSTALL_BIN&lt;span class="k">)&lt;/span> ./files/your_script.sh &lt;span class="k">$(&lt;/span>1&lt;span class="k">)&lt;/span>/etc/config/your_script.sh
+&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="2">
+&lt;li>
+&lt;p>放置脚本
+将脚本your_script.sh放置在files目录下；&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>选择opkg
+在make menuconfig 图像界面中选择修改过的包（chinadns）&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="附">附&lt;/h2>
+&lt;p>package 和注入文件相关的部分&lt;code>makefile&lt;/code>代码:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-makefile" data-lang="makefile">&lt;span class="c">##
+&lt;/span>&lt;span class="c">&lt;/span> include &lt;span class="k">$(&lt;/span>TOPDIR&lt;span class="k">)&lt;/span>/rules.mk
+PKG_NAME:&lt;span class="o">=&lt;/span>xxx
+PKG_RELEASE:&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span>
+PKG_SOURCE:&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>PKG_NAME&lt;span class="k">)&lt;/span>-&lt;span class="k">$(&lt;/span>PKG_VERSION&lt;span class="k">)&lt;/span>.tar.gz
+PKG_SOURCE_URL:&lt;span class="o">=&lt;/span>https://github.com/xxx/releases/download/v&lt;span class="k">$(&lt;/span>PKG_VERSION&lt;span class="k">)&lt;/span>
+PKG_MD5SUM:&lt;span class="o">=&lt;/span>f772a750580243cfxcsfd2xc39d7b9171b1
+PKG_BUILD_DIR:&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>BUILD_DIR&lt;span class="k">)&lt;/span>/&lt;span class="k">$(&lt;/span>PKG_NAME&lt;span class="k">)&lt;/span>
+include &lt;span class="k">$(&lt;/span>INCLUDE_DIR&lt;span class="k">)&lt;/span>/package.mk
+&lt;span class="c">##
+&lt;/span>&lt;span class="c">&lt;/span>
+define Package/xxx
+SECTION:&lt;span class="o">=&lt;/span>net
+CATEGORY:&lt;span class="o">=&lt;/span>Network
+TITLE:&lt;span class="o">=&lt;/span>xxx
+endef
+&lt;span class="c">###
+&lt;/span>&lt;span class="c">&lt;/span>
+define Package/xxx/description
+button haha upgrade.
+endef
+&lt;span class="c">###
+&lt;/span>&lt;span class="c">&lt;/span>
+&lt;span class="c1">#define Package/xxx/conffiles&lt;/span>
+&lt;span class="c1">#/etc/config/system&lt;/span>
+&lt;span class="c1">#/etc/hotplug.d/button/00-button&lt;/span>
+&lt;span class="c1">#endef&lt;/span>
+&lt;span class="c">###
+&lt;/span>&lt;span class="c">&lt;/span>
+define Package/wps_button/install
+&lt;span class="c1">#$(INSTALL_DIR) $(1)/etc/init.d&lt;/span>
+&lt;span class="k">$(&lt;/span>INSTALL_BIN&lt;span class="k">)&lt;/span> ./files/xxx &lt;span class="k">$(&lt;/span>1&lt;span class="k">)&lt;/span>/etc/config/xxx
+&lt;span class="c1">#$(INSTALL_DATA) ./files/system.conf $(1)/etc/config/system&lt;/span>
+endef
+&lt;span class="c">###
+&lt;/span>&lt;span class="c">&lt;/span>
+&lt;span class="k">$(&lt;/span>&lt;span class="nb">eval&lt;/span> &lt;span class="k">$(&lt;/span>call BuildPackage,xxx&lt;span class="k">))&lt;/span>
+&lt;span class="c">##
+&lt;/span>&lt;span class="c">&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>刷机HG255d</title><link>https://tab.wutuofu.com/posts/router-hg255d/</link><pubDate>Tue, 17 Mar 2015 09:09:58 +0800</pubDate><guid>https://tab.wutuofu.com/posts/router-hg255d/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/router-hg255d/hg255d.jpg" alt="Featured image of post 刷机HG255d" />&lt;h2 id="交叉编译">交叉编译&lt;/h2>
+&lt;ol>
+&lt;li>在ubuntu下安装编译工具（gcc,xmllib,cmake, git 等)；&lt;/li>
+&lt;li>git克隆openwrt仓库：&lt;code>git clone git://git.openwrt.org/14.07/openwrt.git&lt;/code>；&lt;/li>
+&lt;li>自定义kernel target：&lt;/li>
+&lt;/ol>
+&lt;p>源代码做&lt;a class="link" href="http://my.oschina.net/osbin/blog/278782" target="_blank" rel="noopener"
+>两处修改&lt;/a> :&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">target/linux/ramips/image/Makefile
+/base-files/lib/ramips.sh
+target/linux/ramips/base-files/lib/preinit/06_set_iface_mac
+&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="4">
+&lt;li>在弹出的make menuconfig 图像界面中选择cpu型号；&lt;/li>
+&lt;li>打开vpn开始编译固件。&lt;/li>
+&lt;/ol>
+&lt;h2 id="结果">结果&lt;/h2>
+&lt;p>交叉编译完成后，根据上一步选择的安装包的多少，bin目录下会生成对应的opkg包，和固件：&lt;/p>
+&lt;ol>
+&lt;li>factory文件，可以称作底包；&lt;/li>
+&lt;li>sysupgrade文件，可以称作升级包；&lt;/li>
+&lt;/ol>
+&lt;h3 id="webuboot烧录刷机">web/uboot烧录刷机&lt;/h3>
+&lt;ol>
+&lt;li>接通路由器电源，按住WPS按钮不放，然后按电源键开机， power LED快闪即松开WPS键，此时路由器已加入升级模式；&lt;/li>
+&lt;li>访问路由器web地址（如：http://192.168.1.1), 按照web界面提示选取factory文件完成固件烧录刷机；&lt;/li>
+&lt;/ol>
+&lt;h3 id="sshftp-烧录">ssh/ftp 烧录&lt;/h3>
+&lt;p>可以直接执行&lt;code>sysupgrade&lt;/code>命令烧录估计：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">ssh-keygen -f &lt;span class="s2">&amp;#34;/home/openwrt-qqm/.ssh/known_hosts&amp;#34;&lt;/span> -R 192.168.1.1 &lt;span class="c1">#可以省略此条命令 &lt;/span>
+scp xxxxxx-squashfs-sysupgrade.bin root@192.168.1.1:/tmp/
+ssh root@192.168.1.1
+&lt;span class="nb">cd&lt;/span> /tmp/
+sysupgrade -n xxxxxxxxxxx-sysupgrade.bin
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="opkg">opkg&lt;/h3>
+&lt;p>烧录完系统固件后，可以使用&lt;code>opkg&lt;/code>安装软件包，比如&lt;code>china-dns&lt;/code>, &lt;code>shadowsocks&lt;/code>, &lt;code>openvpn&lt;/code>，等等。&lt;/p>
+&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 100;
+flex-basis: 240px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/router-hg255d/hg255d.jpg" data-size="310x310">
+&lt;img src="https://tab.wutuofu.com/posts/router-hg255d/hg255d.jpg"
+width="310"
+height="310"
+srcset="https://tab.wutuofu.com/posts/router-hg255d/hg255d_hu95abe093e5988d14ccd200bc31cd3495_35267_480x0_resize_q75_box.jpg 480w, https://tab.wutuofu.com/posts/router-hg255d/hg255d_hu95abe093e5988d14ccd200bc31cd3495_35267_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="hg255d router">
+&lt;/a>
+&lt;figcaption>hg255d router&lt;/figcaption>
+&lt;/figure>&lt;/p></description></item></channel></rss>

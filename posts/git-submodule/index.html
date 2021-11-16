@@ -1,0 +1,205 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="丢弃本地git submodule的修改"><title>清理git submodule</title>
+<link rel=canonical href=https://tab.wutuofu.com/posts/git-submodule/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="清理git submodule">
+<meta property="og:description" content="丢弃本地git submodule的修改">
+<meta property="og:url" content="https://tab.wutuofu.com/posts/git-submodule/">
+<meta property="og:site_name" content="人到三十">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="git"><meta property="article:tag" content="makefile"><meta property="article:published_time" content="2021-11-16T16:13:57+08:00"><meta property="article:modified_time" content="2021-11-16T16:13:57+08:00"><meta property="og:image" content="https://tab.wutuofu.com/posts/git-submodule/git-submodule.png">
+<meta name=twitter:site content="@sinalph">
+<meta name=twitter:creator content="@sinalph"><meta name=twitter:title content="清理git submodule">
+<meta name=twitter:description content="丢弃本地git submodule的修改"><meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://tab.wutuofu.com/posts/git-submodule/git-submodule.png">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class="has-image main-article">
+<header class=article-header>
+<div class=article-image>
+<a href=/posts/git-submodule/>
+<img src=/posts/git-submodule/git-submodule_hubf47deaeadbbffe799a99e90ac214cb8_24021_800x0_resize_box_3.png srcset="/posts/git-submodule/git-submodule_hubf47deaeadbbffe799a99e90ac214cb8_24021_800x0_resize_box_3.png 800w, /posts/git-submodule/git-submodule_hubf47deaeadbbffe799a99e90ac214cb8_24021_1600x0_resize_box_3.png 1600w" width=800 height=292 loading=lazy alt="Featured image of post 清理git submodule">
+</a>
+</div>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E5%BC%80%E5%8F%91/>
+开发
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/git-submodule/>清理git submodule</a>
+</h2>
+<h3 class=article-subtitle>
+丢弃本地git submodule的修改
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Nov 16, 2021</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 2 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>当我们本地对git的submodule目录下的文件做了改动时，会发现不论是用<code>git checkout .</code>
+还是 <code>git clean -df</code>都无法丢弃修改。使用<code>git status</code>命令查看工作树的状态时会有如下
+报错信息<code>git submodule modified content</code></p>
+<h2 id=错误>错误</h2>
+<p>以hugo为例，当使用<code>hugo server</code>本地预览博客文章时， hugo会修改主题目录的内容。从而出现 git submodule modified content的问题。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>❯ git status
+位于分支 main
+您的分支领先 <span class=s1>&#39;origin/main&#39;</span> 共 <span class=m>1</span> 个提交。
+  （使用 <span class=s2>&#34;git push&#34;</span> 来发布您的本地提交）
+
+尚未暂存以备提交的变更：
+  （使用 <span class=s2>&#34;git add &lt;文件&gt;...&#34;</span> 更新要提交的内容）
+  （使用 <span class=s2>&#34;git restore &lt;文件&gt;...&#34;</span> 丢弃工作区的改动）
+  （提交或丢弃子模组中未跟踪或修改的内容）
+        修改：     themes/stack <span class=o>(</span>修改的内容<span class=o>)</span>
+
+修改尚未加入提交（使用 <span class=s2>&#34;git add&#34;</span> 和/或 <span class=s2>&#34;git commit -a&#34;</span>）
+
+</code></pre></div><p>这个问题挺常见的，Google后使用下面两条命令即可清理submodule：</p>
+<h2 id=meat>meat</h2>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>git submodule foreach --recursive git reset --hard
+git submodule update --recursive --init
+</code></pre></div><p><a class=link href=https://stackoverflow.com/a/44669463 target=_blank rel=noopener>How do I revert my changes to a git submodule?</a></p>
+<h3 id=make>make</h3>
+<p>建议在根目录下编写内容如下的<code>Makefile</code>， 以节省输入命令的时间和加强记忆。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=nf>.PHONY</span><span class=o>:</span> <span class=n>clean</span>
+<span class=nf>clean</span><span class=o>:</span>
+	-@git submodule deinit -f .
+	-@git submodule update --init --recursive
+<span class=c>#git submodule deinit -f .
+</span><span class=c>#git submodule update --init
+</span><span class=c></span>
+</code></pre></div><p>执行<code>make</code>命令即可清除本地对git submodule的改动。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>❯ make
+已清除目录 <span class=s1>&#39;themes/stack&#39;</span>
+子模组 <span class=s1>&#39;themes/stack&#39;</span>（https://github.com/datewu/hugo-theme-stack.git）未对路径 <span class=s1>&#39;themes/stack&#39;</span> 注册
+子模组 <span class=s1>&#39;themes/stack&#39;</span>（https://github.com/datewu/hugo-theme-stack.git）已对路径 <span class=s1>&#39;themes/stack&#39;</span> 注册
+子模组路径 <span class=s1>&#39;themes/stack&#39;</span>：检出 <span class=s1>&#39;aeb077874a7de9ce71304c990ad5cfdc72664f38&#39;</span>
+
+</code></pre></div>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/git/>git</a>
+<a href=/tags/makefile/>makefile</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article class=has-image>
+<a href=/posts/opkg-inject/>
+<div class=article-image>
+<img src=/posts/opkg-inject/opkg.6b55e33839c01e37e0db871744e1cab1_hudcc7dbad3673a4c7158406c58241e484_47683_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy data-key data-hash="md5-a1XjODnAHjfg24cXROHKsQ==">
+</div>
+<div class=article-details>
+<h2 class=article-title>脚本注入</h2>
+</div>
+</a>
+</article>
+<article class=has-image>
+<a href=/posts/router-hg255d/>
+<div class=article-image>
+<img src=/posts/router-hg255d/hg255d.539f4f3b99e52edbba167f3579080bee_hu95abe093e5988d14ccd200bc31cd3495_35267_250x150_fill_q75_box_smart1.jpg width=250 height=150 loading=lazy data-key data-hash="md5-U59PO5nlLtu6Fn81eQgL7g==">
+</div>
+<div class=article-details>
+<h2 class=article-title>刷机HG255d</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2021 人到三十
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.5.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg>
+</div>
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#错误>错误</a></li>
+<li><a href=#meat>meat</a>
+<ol>
+<li><a href=#make>make</a></li>
+</ol>
+</li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>
