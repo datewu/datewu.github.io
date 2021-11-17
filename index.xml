@@ -1,4 +1,38 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>人到三十</title><link>https://tab.wutuofu.com/</link><description>Recent content on 人到三十</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 17 Nov 2021 10:06:54 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>bash简介</title><link>https://tab.wutuofu.com/posts/bash-command/</link><pubDate>Wed, 17 Nov 2021 10:06:54 +0800</pubDate><guid>https://tab.wutuofu.com/posts/bash-command/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/bash-command/terminal.jpeg" alt="Featured image of post bash简介" />&lt;p>本文会不定期更新 :)&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>人到三十</title><link>https://tab.wutuofu.com/</link><description>Recent content on 人到三十</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 17 Nov 2021 14:58:30 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>换行符</title><link>https://tab.wutuofu.com/posts/carrier-return/</link><pubDate>Wed, 17 Nov 2021 14:58:30 +0800</pubDate><guid>https://tab.wutuofu.com/posts/carrier-return/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/carrier-return/line-feed.jpeg" alt="Featured image of post 换行符" />&lt;p>换行符&lt;code>\r\n&lt;/code>和&lt;code>\n&lt;/code>的关系和区别可以追溯到60年前，打字机广泛被使用的时代。&lt;/p>
+&lt;p>在打字机还刚刚被发明的时候，人们输入完一行字之后，需要两个动作才能开始输入下一行的内容。&lt;/p>
+&lt;p>滚动滚轮，让纸张往上移动一行， 即是 &lt;code>\n&lt;/code> 操作；
+移动 打字的指针到 行首， 即是&lt;code>\r&lt;/code> 。
+上面两个操作没有顺序的要求， 1-&amp;gt;2 ; 2-&amp;gt;1 都可以。&lt;/p>
+&lt;h3 id="windows">windows&lt;/h3>
+&lt;p>Windows 操作系统 的文本对 new line的 编码 使用的是 2-&amp;gt;1 的 组合操作;&lt;/p>
+&lt;h3 id="unix">unix&lt;/h3>
+&lt;p>Linux/Unix 操作系统 则只使用操作 1 。&lt;/p>
+&lt;blockquote>
+&lt;p>A line feed means moving one line forward. The code is &lt;code>\n&lt;/code>.
+A carriage return means moving the cursor to the beginning of the line. The code is &lt;code>\r&lt;/code>.
+Windows editors often still use the combination of both as &lt;code>\r\n&lt;/code> in text files. Unix uses mostly only the &lt;code>\n&lt;/code>.&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>The separation comes from typewriter times, when you turned the wheel to move the paper to change the line and moved the carriage to restart typing on the beginning of a line. This was two steps&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;a class="link" href="https://stackoverflow.com/questions/12747722/what-is-the-difference-between-a-line-feed-and-a-carriage-return" target="_blank" rel="noopener"
+>参考：What is the difference between a “line feed” and a “carriage return”&lt;/a>
+&lt;figure
+class="gallery-image"
+style="
+flex-grow: 125;
+flex-basis: 300px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/carrier-return/left-side.png" data-size="1000x800">
+&lt;img src="https://tab.wutuofu.com/posts/carrier-return/left-side.png"
+width="1000"
+height="800"
+srcset="https://tab.wutuofu.com/posts/carrier-return/left-side_hud4506dd4606452c9e6d5d0a0120cf9da_1237959_480x0_resize_box_3.png 480w, https://tab.wutuofu.com/posts/carrier-return/left-side_hud4506dd4606452c9e6d5d0a0120cf9da_1237959_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="left side of typewriter">
+&lt;/a>
+&lt;figcaption>left side of typewriter&lt;/figcaption>
+&lt;/figure>&lt;/p></description></item><item><title>bash简介</title><link>https://tab.wutuofu.com/posts/bash-command/</link><pubDate>Wed, 17 Nov 2021 10:06:54 +0800</pubDate><guid>https://tab.wutuofu.com/posts/bash-command/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/bash-command/terminal.jpeg" alt="Featured image of post bash简介" />&lt;p>本文会不定期更新 :)&lt;/p>
 &lt;h2 id="set">set&lt;/h2>
 &lt;p>可以使用set命令改变shell脚本默认的执行流程。
 比如 &lt;code>set -e&lt;/code> 可以使得shell脚本遇到某一条命令出错（ &lt;code>echo $?&lt;/code> 不为0）时立即退出执行。&lt;/p>
@@ -498,6 +532,103 @@ endef
 &lt;span class="k">$(&lt;/span>&lt;span class="nb">eval&lt;/span> &lt;span class="k">$(&lt;/span>call BuildPackage,xxx&lt;span class="k">))&lt;/span>
 &lt;span class="c">##
 &lt;/span>&lt;span class="c">&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>字符串</title><link>https://tab.wutuofu.com/posts/shell-string/</link><pubDate>Sun, 17 May 2015 15:11:27 +0800</pubDate><guid>https://tab.wutuofu.com/posts/shell-string/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/shell-string/comma-seperator.png" alt="Featured image of post 字符串" />&lt;p>运维人员/系统管理员每天要在终端敲入大量命令，也要修改查看大量文本配置文件，日志信息。
+甚至可以夸张一点说Linux/Unix system admin的全部工作就是和字符串打交道。&lt;/p>
+&lt;h2 id="binary">binary&lt;/h2>
+&lt;p>大家都知道文本文件是字符串组成的，其实二进制文件里面其实也包含了很多字符串：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">➜ infra-api git:&lt;span class="o">(&lt;/span>dev&lt;span class="o">)&lt;/span> file infra-api
+infra-api: Mach-O 64-bit executable x86_64
+➜ infra-api git:&lt;span class="o">(&lt;/span>dev&lt;span class="o">)&lt;/span> strings infra-api &lt;span class="p">|&lt;/span> head
+flag
+&lt;span class="nb">hash&lt;/span>
+mime
+path
+sort
+sync
+&lt;span class="nb">time&lt;/span>
+*int
+AAAA
+Addr
+➜ infra-api git:&lt;span class="o">(&lt;/span>dev&lt;span class="o">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="命令">命令&lt;/h2>
+&lt;p>收集一些常用的shell 字符串操作命令&lt;/p>
+&lt;h3 id="cut">cut&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">❯ tldr cut
+Cut out fields from stdin or files.
+More information: https://www.gnu.org/software/coreutils/cut.
+- Cut out the first sixteen characters of each line of stdin:
+cut -c 1-16
+- Cut out the first sixteen characters of each line of the given files:
+cut -c 1-16 file
+- Cut out everything from the 3rd character to the end of each line:
+cut -c 3-
+- Cut out the fifth field of each line, using a colon as a field delimiter &lt;span class="o">(&lt;/span>default delimiter is tab&lt;span class="o">)&lt;/span>:
+cut -d&lt;span class="s1">&amp;#39;:&amp;#39;&lt;/span> -f5
+- Cut out the 2nd and 10th fields of each line, using a semicolon as a delimiter:
+cut -d&lt;span class="s1">&amp;#39;;&amp;#39;&lt;/span> -f2,10
+- Cut out the fields &lt;span class="m">3&lt;/span> through to the end of each line, using a space as a delimiter:
+cut -d&lt;span class="s1">&amp;#39; &amp;#39;&lt;/span> -f3-
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="catless">cat/less&lt;/h3>
+&lt;p>cat，主要有三大使用场景：&lt;/p>
+&lt;p>一次显示整个文件 &lt;code>cat filename&lt;/code>;
+从标准输入流（键盘）新建一个文件。&lt;code>cat &amp;gt; filename&lt;/code>;
+将几个文件合并为一个文件： &lt;code>cat file1 file2 &amp;gt; file&lt;/code>。
+参数：
+-n 或 &amp;ndash;number 由 1 开始对所有输出的行数编号
+-b 或 &amp;ndash;number-nonblank 和 -n 相似，只不过对于空白行不编号
+-s 或 &amp;ndash;squeeze-blank 当遇到有连续两行以上的空白行，就代换为一行的空白行
+-v 或 &amp;ndash;show-nonprinting
+例：&lt;/p>
+&lt;ol>
+&lt;li>把 textfile1 的档案内容加上行号后输入 textfile2 这个档案里&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">cat -n textfile1 &amp;gt; textfile2
+&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="2">
+&lt;li>把 textfile1 和 textfile2 的档案内容加上行号（空白行不加）之后将内容附加到 textfile3 里。&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">cat -b textfile1 textfile2 &amp;gt;&amp;gt; textfile3
+&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="3">
+&lt;li>清空test.txt&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">cat /dev/null &amp;gt; /etc/test.txt
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>另外，本文读取文件的操作可用less命令替代，less命令速度会更快些&lt;/strong>&lt;/p>
+&lt;h3 id="awk">awk&lt;/h3>
+&lt;p>awk可以算独立的一门编程语言，简单举个例子：截取路由器MAC地址后四位&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="k">$(&lt;/span>cat /sys/class/ieee80211/&lt;span class="si">${&lt;/span>&lt;span class="nv">dev&lt;/span>&lt;span class="si">}&lt;/span>/macaddress&lt;span class="k">)&lt;/span> &lt;span class="p">|&lt;/span> awk -F &lt;span class="s2">&amp;#34;:&amp;#34;&lt;/span> &lt;span class="s1">&amp;#39;{ print $5&amp;#34;&amp;#34;$6 }&amp;#39;&lt;/span> &lt;span class="p">|&lt;/span> tr a-z A-Z
+&lt;span class="nb">echo&lt;/span> sd:3s:xf:0h:w4:n8 &lt;span class="p">|&lt;/span> awk -F &lt;span class="s2">&amp;#34;:&amp;#34;&lt;/span> &lt;span class="s1">&amp;#39;{ print $5&amp;#34;&amp;#34;$6 }&amp;#39;&lt;/span> &lt;span class="p">|&lt;/span> tr a-z A-Z
+W4N8
+&lt;/code>&lt;/pre>&lt;/div>&lt;ol>
+&lt;li>命令行方式&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">awk &lt;span class="o">[&lt;/span>-F field-separator&lt;span class="o">]&lt;/span> &lt;span class="s1">&amp;#39;commands&amp;#39;&lt;/span> input-file&lt;span class="o">(&lt;/span>s&lt;span class="o">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>其中，commands 是awk命令，[-F域分隔符]是可选的。 input-file(s) 是待处理的文件。
+在awk中，文件的每一行中，由域分隔符分开的每一项称为一个域。通常，在不指名-F域分隔符的情况下，默认的域分隔符是空格。&lt;/p>
+&lt;ol start="2">
+&lt;li>
+&lt;p>脚本方式
+将所有的awk指令写入一个文件，并使awk程序可执行，然后把awk解释器作为脚本的首行，即可运行awk脚本。
+把脚本首行（magic bang）：&lt;code>#!/bin/sh&lt;/code> 换成： &lt;code>#!/bin/awk&lt;/code> 即可，以 &lt;code>which awk&lt;/code> 的输出为准。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>将所有的awk命令插入一个单独文件，然后调用：&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">awk -f awk-script-file input-file&lt;span class="o">(&lt;/span>s&lt;span class="o">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>其中，-f选项加载awk-script-file中的awk脚本，input-file(s)跟上面的是一样的。&lt;/p>
+&lt;h3 id="tr">tr&lt;/h3>
+&lt;p>tr 命令从标准输入删除或替换字符，并将结果写入标准输出。根据由 String1 和 String2 变量指定的字符串以及指定的标志，tr 命令可执行三种操作。&lt;/p>
+&lt;p>本文使用了简单的&lt;strong>替换&lt;/strong>操作。&lt;em>小写字母转为大写字母。&lt;/em>&lt;/p></description></item><item><title>增加固件大小</title><link>https://tab.wutuofu.com/posts/firmware-size/</link><pubDate>Thu, 07 May 2015 11:45:48 +0800</pubDate><guid>https://tab.wutuofu.com/posts/firmware-size/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/firmware-size/wr703n.jpeg" alt="Featured image of post 增加固件大小" />&lt;p>很多路由器的flash容量只有4m大，所以绝大多数openwrt固件也是4m大小。
+当我们手动改造路由器加大flash容量后，可以调整openwrt默认设置使得编译出来的factory可以有8m的大小，
+从而安装更多的内置软件。&lt;/p>
+&lt;p>本文以wr703n路由器 为例子，简单介绍一下如何加大固件的容量，让我们预安装更多内置软件。&lt;/p>
+&lt;h3 id="查看">查看&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1"># ./tools/firmware-utils/src/mktplinkfw.c&lt;/span>
+fw_max_len为0xfc0000，16M flash
+fw_max_len为0x7c0000，8M flash
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="修改">修改&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-makefile" data-lang="makefile">&lt;span class="c"># ./target/linux/ar71xx/image/Makefile
+&lt;/span>&lt;span class="c"># 将703n的4Mlzma改为8Mlzma或16Mlzma
+&lt;/span>&lt;span class="c">&lt;/span> &lt;span class="k">$(&lt;/span>&lt;span class="nb">eval&lt;/span> &lt;span class="k">$(&lt;/span>call SingleProfile,TPLINK-LZMA,&lt;span class="k">$(&lt;/span>fs_64kraw&lt;span class="k">)&lt;/span>,TLWR703,tl-wr703n-v1,TL-WR703N,ttyATH0,115200,0x07030101,1,8Mlzma&lt;span class="k">))&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div></description></item><item><title>刷机HG255d</title><link>https://tab.wutuofu.com/posts/router-hg255d/</link><pubDate>Tue, 17 Mar 2015 09:09:58 +0800</pubDate><guid>https://tab.wutuofu.com/posts/router-hg255d/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/router-hg255d/hg255d.jpg" alt="Featured image of post 刷机HG255d" />&lt;h2 id="交叉编译">交叉编译&lt;/h2>
 &lt;ol>
 &lt;li>在ubuntu下安装编译工具（gcc,xmllib,cmake, git 等)；&lt;/li>
@@ -548,4 +679,183 @@ loading="lazy"
 alt="hg255d router">
 &lt;/a>
 &lt;figcaption>hg255d router&lt;/figcaption>
-&lt;/figure>&lt;/p></description></item></channel></rss>
+&lt;/figure>&lt;/p></description></item><item><title>Google Domain</title><link>https://tab.wutuofu.com/posts/google-domain/</link><pubDate>Tue, 17 Jun 2014 14:22:06 +0800</pubDate><guid>https://tab.wutuofu.com/posts/google-domain/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/google-domain/google-domain.png" alt="Featured image of post Google Domain" />&lt;p>刚刚在google+上看到google 推出了自己的域名注册服务，截两张图，纪念下。&lt;/p>
+&lt;p>google推广自己的 &lt;strong>&lt;a class="link" href="https://com.google/" target="_blank" rel="noopener"
+>com.google 域名注册托管服务&lt;/a>&lt;/strong>，把首页变成了镜像模式
+&lt;figure
+class="gallery-image"
+style="
+flex-grow: 195;
+flex-basis: 469px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/google-domain/google-domain.png" data-size="1100x562">
+&lt;img src="https://tab.wutuofu.com/posts/google-domain/google-domain.png"
+width="1100"
+height="562"
+srcset="https://tab.wutuofu.com/posts/google-domain/google-domain_hu8addcdeb3c155fbae74eb60aed2e0ca1_53610_480x0_resize_box_3.png 480w, https://tab.wutuofu.com/posts/google-domain/google-domain_hu8addcdeb3c155fbae74eb60aed2e0ca1_53610_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="google domain">
+&lt;/a>
+&lt;figcaption>google domain&lt;/figcaption>
+&lt;/figure>&lt;/p>
+&lt;p>搜索正常，不过搜索结果也使用了镜像效果：
+&lt;figure
+>
+&lt;a href="https://tab.wutuofu.com/non.png" >
+&lt;img src="https://tab.wutuofu.com/non.png"
+loading="lazy"
+alt="serach page">
+&lt;/a>
+&lt;figcaption>serach page&lt;/figcaption>
+&lt;/figure>&lt;/p></description></item><item><title>想写个cms</title><link>https://tab.wutuofu.com/posts/rails-cms/</link><pubDate>Mon, 23 Dec 2013 13:28:34 +0800</pubDate><guid>https://tab.wutuofu.com/posts/rails-cms/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/rails-cms/ror.jpeg" alt="Featured image of post 想写个cms" />&lt;p>&lt;code>updated at 2014/2/16 坑太大，挑战太多，挑战失败，放弃啦 :)&lt;/code>&lt;/p>
+&lt;p>看完Ruby On Rails tutorial，感觉热血沸腾。
+来吧，少年，来写个CMS吧。&lt;/p>
+&lt;h2 id="model">model&lt;/h2>
+&lt;p>数据库设计&lt;/p>
+&lt;h3 id="generate">generate&lt;/h3>
+&lt;p>生成model schema数据模型：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">rails g model App &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span>title:string icon:binary descript:text &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span>get_url:string hits:integer downloaded:integer score:decimal &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span>version:string require_os_version:string author:references
+rails g model Author name:string descript:text website:string
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="populate">populate&lt;/h3>
+&lt;p>填充假数据，便于测试。
+&lt;a class="link" href="https://github.com/stympy/faker" target="_blank" rel="noopener"
+>faker gem&lt;/a>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-ruby" data-lang="ruby">&lt;span class="c1">#db/seed.rb&lt;/span>
+&lt;span class="mi">30&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">times&lt;/span> &lt;span class="k">do&lt;/span> &lt;span class="o">|&lt;/span>&lt;span class="n">n&lt;/span>&lt;span class="o">|&lt;/span>
+&lt;span class="n">ne&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="no">Faker&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="no">App&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">author&lt;/span>
+&lt;span class="n">dt&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="no">Faker&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="no">Lorem&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">paragraph&lt;/span>
+&lt;span class="n">we&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="no">Faker&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="no">Internet&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">url&lt;/span>
+&lt;span class="no">Author&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">create!&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nb">name&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">ne&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;span class="ss">descript&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">dt&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;span class="ss">website&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">we&lt;/span> &lt;span class="p">)&lt;/span>
+&lt;span class="k">end&lt;/span>
+&lt;span class="n">users&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="no">Author&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">order&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="ss">:created_at&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">take&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">17&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;span class="mi">50&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">times&lt;/span> &lt;span class="k">do&lt;/span>
+&lt;span class="n">users&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">each&lt;/span> &lt;span class="k">do&lt;/span> &lt;span class="o">|&lt;/span>&lt;span class="n">u&lt;/span>&lt;span class="o">|&lt;/span>
+&lt;span class="n">te&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="no">Faker&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="no">App&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">name&lt;/span>
+&lt;span class="n">dt&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="no">Faker&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="no">Hacker&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">say_something_smart&lt;/span>
+&lt;span class="n">gu&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="no">Faker&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="no">Internet&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">url&lt;/span>
+&lt;span class="n">hs&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="no">Faker&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="no">Number&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">number&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">5&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;span class="n">dd&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="no">Faker&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="no">Number&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">number&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">4&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;span class="n">se&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="no">Faker&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="no">Commerce&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">price&lt;/span>
+&lt;span class="n">vn&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="no">Faker&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="no">App&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">version&lt;/span>
+&lt;span class="n">rn&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;android 1.6+ | ios 6.0+&amp;#34;&lt;/span>
+&lt;span class="n">u&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">apps&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">create!&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="ss">icon&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kp">nil&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="ss">title&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">te&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;span class="ss">descript&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">dt&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="ss">get_url&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">gu&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;span class="ss">hits&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">hs&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="ss">downloaded&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">dd&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;span class="ss">score&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">se&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="ss">version&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">vn&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;span class="ss">require_os_version&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">rn&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;span class="k">end&lt;/span>
+&lt;span class="k">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="数据录入">数据录入&lt;/h3>
+&lt;ol>
+&lt;li>手动/人工录入
+form表单&lt;/li>
+&lt;li>机器抓取
+&lt;a class="link" href="https://github.com/sparklemotion/nokogiri" target="_blank" rel="noopener"
+>nokogiri gem&lt;/a>&lt;/li>
+&lt;/ol>
+&lt;h2 id="uistatic_pages_controller">UI/static_pages_controller&lt;/h2>
+&lt;h3 id="controller">controller&lt;/h3>
+&lt;p>新建controller&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">rails g controller StaticPages index
+rails g controller Apps update destroy
+&lt;span class="c1">#destroy widget&lt;/span>
+rails d controller widgets
+rails d model Widget
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="scss">scss&lt;/h3>
+&lt;p>调整scss&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-gemfile" data-lang="gemfile"># 修改gemfile
+gem 'bootstrap-will_paginate'
+gem 'will_paginate'
+gem 'bootstrap-sass'
+&lt;/code>&lt;/pre>&lt;p>rename scss文件&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">mv path/to/application.css path/to/application.scss
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-scss" data-lang="scss">&lt;span class="k">@import&lt;/span> &lt;span class="s2">&amp;#34;bootstrap-sprockets&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="k">@import&lt;/span> &lt;span class="s2">&amp;#34;bootstrap&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="cm">/* mixins, variables, etc. */&lt;/span>
+&lt;span class="nv">$gray-medium-light&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="mh">#eaeaea&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="k">@mixin&lt;/span>&lt;span class="nf"> box_sizing&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="na">-moz-box-sizing&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="ni">border-box&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="na">-webkit-box-sizing&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="ni">border-box&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="na">box-sizing&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="ni">border-box&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="cm">/* universal */&lt;/span>
+&lt;span class="nt">html&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="na">overflow-y&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="ni">scroll&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="nt">body&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="na">padding-top&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="mi">60&lt;/span>&lt;span class="kt">px&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="cm">/* ....... */&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="erb">erb&lt;/h3>
+&lt;p>添加title自定义支持&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-ruby" data-lang="ruby">&lt;span class="c1"># application.html.erb添加&lt;/span>
+&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">title&lt;/span>&lt;span class="o">&amp;gt;&amp;lt;&lt;/span>&lt;span class="s">%= full_title(yield(:title)) %&amp;gt;&amp;lt;/title&amp;gt;
+&lt;/span>&lt;span class="s">
+&lt;/span>&lt;span class="s"># static_pages_helper.rb添加
+&lt;/span>&lt;span class="s">def full_title(page_title =&lt;/span> &lt;span class="s1">&amp;#39;&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;span class="n">base_title&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;LOL&amp;#34;&lt;/span>
+&lt;span class="k">if&lt;/span> &lt;span class="n">page_title&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">empty?&lt;/span>
+&lt;span class="n">base_title&lt;/span>
+&lt;span class="k">else&lt;/span>
+&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">#{&lt;/span>&lt;span class="n">page_title&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2"> | &lt;/span>&lt;span class="si">#{&lt;/span>&lt;span class="n">base_title&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;span class="k">end&lt;/span>
+&lt;span class="k">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="action">action&lt;/h3>
+&lt;p>编辑index action&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-ruby" data-lang="ruby">&lt;span class="c1"># static_pages_controller.rb&lt;/span>
+&lt;span class="k">def&lt;/span> &lt;span class="nf">index&lt;/span>
+&lt;span class="no">App&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">per_page&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">8&lt;/span>
+&lt;span class="vi">@apps&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="no">App&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">paginate&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="ss">page&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">params&lt;/span>&lt;span class="o">[&lt;/span>&lt;span class="ss">:page&lt;/span>&lt;span class="o">]&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;span class="k">end&lt;/span>
+&lt;span class="c1"># views/static_pages/insex.html.erb&lt;/span>
+&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="sx">% provide(:title, &lt;/span> &lt;span class="s2">&amp;#34;All apps&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="s">%&amp;gt; # 页面标题
+&lt;/span>&lt;span class="s">&amp;lt;%= render @apps %&amp;gt;&lt;/span>
+&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="s">%= will_paginate @apps %&amp;gt;
+&lt;/span>&lt;span class="s">
+&lt;/span>&lt;span class="s"># views/apps/_app.html.erb
+&lt;/span>&lt;span class="s">&amp;lt;span&amp;gt; &amp;lt;%=&lt;/span> &lt;span class="n">app&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">title&lt;/span> &lt;span class="s">%&amp;gt; * * &amp;lt;/span&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>连接数据库</title><link>https://tab.wutuofu.com/posts/rails-pg/</link><pubDate>Thu, 07 Nov 2013 10:06:54 +0800</pubDate><guid>https://tab.wutuofu.com/posts/rails-pg/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/rails-pg/rails-pg.png" alt="Featured image of post 连接数据库" />&lt;p>跟着rails tutorial 学习rails框架时，遇到了db链接的问题&lt;/p>
+&lt;h3 id="问题">问题&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">rake db:create failed
+PG::ConnectionBad: could not connect to server: No such file or directory
+Is the server running locally and accepting
+connections on Unix domain socket &lt;span class="s2">&amp;#34;/var/pgsql_socket/.s.PGSQL.5432&amp;#34;&lt;/span>?
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Google之后发现是database.yml配置文件没有加上&lt;code>host：localhost&lt;/code>配置项。&lt;/p>
+&lt;p>过一会，发现PATH没有包含psql命令。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">vi ~/.bash_profile
+&lt;span class="c1">#添加下面一行内容&lt;/span>
+&lt;span class="nb">export&lt;/span> &lt;span class="nv">PATH&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/Applications/Postgres.app/Contents/Versions/9.4/bin:&lt;/span>&lt;span class="nv">$PATH&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;span class="nb">exit&lt;/span>
+&lt;span class="c1">## or&lt;/span>
+&lt;span class="nb">echo&lt;/span> &lt;span class="nb">export&lt;/span> &lt;span class="nv">PATH&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/Applications/Postgres.app/Contents/Versions/9.4/bin:&lt;/span>&lt;span class="nv">$PATH&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &amp;gt;&amp;gt; ~/.zshrc
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>终于&lt;code>rake db:migrate&lt;/code> 成功。&lt;/p>
+&lt;h3 id="附录">附录&lt;/h3>
+&lt;p>附上database.yml（production环境使用heroku环境变量)&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-yaml" data-lang="yaml">&lt;span class="nt">default&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="cp">&amp;amp;default&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">adapter&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">postgresql&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">encoding&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">unicode&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c"># For details on connection pooling, see rails configuration guide&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c"># http://guides.rubyonrails.org/configuring.html#database-pooling&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">pool&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="m">5&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w">&lt;/span>&lt;span class="nt">development&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">&amp;lt;&amp;lt;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="cp">*default&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">host&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">localhost&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">database&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">xxx_development&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w">&lt;/span>&lt;span class="nt">test&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">&amp;lt;&amp;lt;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="cp">*default&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">host&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">localhost&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">database&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">xxx_test&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w">&lt;/span>&lt;span class="nt">production&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">&amp;lt;&amp;lt;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="cp">*default&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">database&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">xxx&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">username&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">xxx&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">password&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">&amp;lt;%= ENV[&amp;#39;xxx_xxx_PASSWORD&amp;#39;] %&amp;gt;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>
