@@ -1,4 +1,209 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>人到三十</title><link>https://tab.wutuofu.com/</link><description>Recent content on 人到三十</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 16 Nov 2021 16:13:57 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>清理git submodule</title><link>https://tab.wutuofu.com/posts/git-submodule/</link><pubDate>Tue, 16 Nov 2021 16:13:57 +0800</pubDate><guid>https://tab.wutuofu.com/posts/git-submodule/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/git-submodule/git-submodule.png" alt="Featured image of post 清理git submodule" />&lt;p>当我们本地对git的submodule目录下的文件做了改动时，会发现不论是用&lt;code>git checkout .&lt;/code>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>人到三十</title><link>https://tab.wutuofu.com/</link><description>Recent content on 人到三十</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 17 Nov 2021 10:06:54 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>bash简介</title><link>https://tab.wutuofu.com/posts/bash-command/</link><pubDate>Wed, 17 Nov 2021 10:06:54 +0800</pubDate><guid>https://tab.wutuofu.com/posts/bash-command/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/bash-command/terminal.jpeg" alt="Featured image of post bash简介" />&lt;p>本文会不定期更新 :)&lt;/p>
+&lt;h2 id="set">set&lt;/h2>
+&lt;p>可以使用set命令改变shell脚本默认的执行流程。
+比如 &lt;code>set -e&lt;/code> 可以使得shell脚本遇到某一条命令出错（ &lt;code>echo $?&lt;/code> 不为0）时立即退出执行。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1">#/bin/bash&lt;/span>
+&lt;span class="nb">set&lt;/span> -e
+&lt;span class="nb">false&lt;/span>
+&lt;span class="nb">echo&lt;/span> you cannot see me, unless you comment out the &lt;span class="s1">&amp;#39;set -e&amp;#39;&lt;/span> flag, haha
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;a class="link" href="https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html" target="_blank" rel="noopener"
+>set详细文档&lt;/a>&lt;/p>
+&lt;h2 id="du">du&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">❯ du -sh Downloads
+4.1G Downloads
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;a class="link" href="http://zh.wikipedia.org/wiki/Du_%28Unix%29" target="_blank" rel="noopener"
+>wiki&lt;/a>&lt;/p>
+&lt;h2 id="rm">rm&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">rm &lt;span class="nv">$0&lt;/span> &lt;span class="c1"># 删除当前文件 for cleanup&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="job">job&lt;/h2>
+&lt;h3 id="nohup">nohup&lt;/h3>
+&lt;p>在后台执行当前命令：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">nohup /usr/sbin/script.sh &lt;span class="p">&amp;amp;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>默认情况下，进程是前台进程，这时就把Shell给占据了，我们无法进行其他操作，对于那些没有交互的进程，
+我们希望将其在后台启动，可以在启动参数的时候加一个'&amp;amp;&amp;lsquo;实现这个目的。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">❯ sleep &lt;span class="m">5&lt;/span> &lt;span class="p">&amp;amp;&lt;/span>
+&lt;span class="o">[&lt;/span>1&lt;span class="o">]&lt;/span> &lt;span class="m">34769&lt;/span>
+✦ ❯
+&lt;span class="o">[&lt;/span>1&lt;span class="o">]&lt;/span> + &lt;span class="m">34769&lt;/span> &lt;span class="k">done&lt;/span> sleep &lt;span class="m">5&lt;/span>
+✦ ❯
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>进程切换到后台的时候，我们把它称为job。切换到后台时会输出相关job信息，上面&amp;amp;的输出 [1] 34769 ：
+[1]表示job ID 是1,11319表示进程ID是34769。切换到后台的进程，仍然可以用ps命令查看。&lt;/p>
+&lt;h3 id="fgbg-suspended">fg/bg suspended&lt;/h3>
+&lt;p>可以通过bg &lt;!-- raw HTML omitted -->（background）和fg&lt;!-- raw HTML omitted -->（foreground）命令将其在前后台间状态切换。
+可以使用&lt;!-- raw HTML omitted -->+z 组合键把当前fg的进程挂起:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">Source changed &lt;span class="s2">&amp;#34;/Users/r/datewu.github.io/content/posts/bash-command/index.md&amp;#34;&lt;/span>: WRITE
+Total in &lt;span class="m">15&lt;/span> ms
+^Z
+&lt;span class="o">[&lt;/span>1&lt;span class="o">]&lt;/span> + &lt;span class="m">3595&lt;/span> suspended hugo server
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意，挂起的进程会暂停运行。需要再执行bg/fg命令才能继续运行：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">datewu.github.io on  main &lt;span class="o">[&lt;/span>!?&lt;span class="o">]&lt;/span> took 7m41s
+✦ ❯ &lt;span class="nb">bg&lt;/span>
+&lt;span class="o">[&lt;/span>1&lt;span class="o">]&lt;/span> + &lt;span class="m">3595&lt;/span> continued hugo server
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>同样的，bg之后执行fg命令就可以把job重新分配到当前的shell了。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">datewu.github.io on  main &lt;span class="o">[&lt;/span>!?&lt;span class="o">]&lt;/span>
+✦ ❯ ls
+Makefile Readme.md archetypes config.yaml content data layouts resources static themes
+datewu.github.io on  main &lt;span class="o">[&lt;/span>!?&lt;span class="o">]&lt;/span>
+✦ ❯ &lt;span class="nb">fg&lt;/span>
+&lt;span class="o">[&lt;/span>1&lt;span class="o">]&lt;/span> + &lt;span class="m">3595&lt;/span> running hugo server
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="守护进程">守护进程&lt;/h2>
+&lt;p>如果一个进程永远都是以后台方式启动，并且不能受到Shell退出影响而退出，一个正统的做法是将其创建为守护进程。
+守护进程值得是系统长期运行的后台进程，类似Windows服务。守护进程信息通过ps –a无法查看到，需要用到–x参数。
+当查看守护进程时，往往还附上-j参数以查看作业控制信息，其中TPGID一栏为-1就是守护进程。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">root ~ ps xj
+PPID PID PGID SID TTY TPGID STAT UID TIME COMMAND
+&lt;span class="m">953&lt;/span> &lt;span class="m">1190&lt;/span> &lt;span class="m">1190&lt;/span> &lt;span class="m">1190&lt;/span> ? -1 Ss &lt;span class="m">1000&lt;/span> 0:00 /bin/sh /usr/bin/startkde
+&lt;span class="m">1&lt;/span> &lt;span class="m">1490&lt;/span> &lt;span class="m">1482&lt;/span> &lt;span class="m">1482&lt;/span> ? -1 Sl &lt;span class="m">1000&lt;/span> 0:00 /usr/bin/VBoxClient –seamless
+&lt;span class="m">1&lt;/span> &lt;span class="m">1491&lt;/span> &lt;span class="m">1477&lt;/span> &lt;span class="m">1477&lt;/span> ? -1 Sl &lt;span class="m">1000&lt;/span> 0:00 /usr/bin/VBoxClient –display
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>创建守护进程最关键的一步是调用setsid函数创建一个新的Session，并成为Session Leader。
+成功创建守护进程的流程为：&lt;/p>
+&lt;ol>
+&lt;li>创建一个新的Session，当前进程成为Seesion Leader， 当前进程的id就是Session id；&lt;/li>
+&lt;li>创建一个新的进程组，当前进程成为进程组的Leader， 当前进程的id就是进程组的id；&lt;/li>
+&lt;li>如果当前进程原本有一个控制终端，则它会失去这个shell，成为一个没有shell的进程（即守护进程）。&lt;/li>
+&lt;/ol>
+&lt;p>可以使用的命令有 &lt;code>disown setsid nohup&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">❯ tldr &lt;span class="nb">disown&lt;/span>
+Command &lt;span class="nb">disown&lt;/span> does not exist &lt;span class="k">for&lt;/span> the host platform. Displaying the page from linux platform
+&lt;span class="nb">disown&lt;/span>
+Allow sub-processes to live beyond the shell that they are attached to.
+See also the &lt;span class="nb">jobs&lt;/span> command.
+More information: https://www.gnu.org/software/bash/manual/bash.html#index-disown.
+- Disown the current job:
+&lt;span class="nb">disown&lt;/span>
+- Disown a specific job:
+&lt;span class="nb">disown&lt;/span> %job_number
+- Disown all jobs:
+&lt;span class="nb">disown&lt;/span> -a
+- Keep job &lt;span class="o">(&lt;/span>&lt;span class="k">do&lt;/span> not &lt;span class="nb">disown&lt;/span> it&lt;span class="o">)&lt;/span>, but mark it so that no future SIGHUP is received on shell exit:
+&lt;span class="nb">disown&lt;/span> -h %job_number
+See also: &lt;span class="nb">jobs&lt;/span>
+~
+❯ man setsid &lt;span class="p">|&lt;/span> head
+SETSID&lt;span class="o">(&lt;/span>2&lt;span class="o">)&lt;/span> System Calls Manual SETSID&lt;span class="o">(&lt;/span>2&lt;span class="o">)&lt;/span>
+NAME
+setsid – create session and &lt;span class="nb">set&lt;/span> process group ID
+SYNOPSIS
+&lt;span class="c1">#include &amp;lt;unistd.h&amp;gt;&lt;/span>
+pid_t
+setsid&lt;span class="o">(&lt;/span>void&lt;span class="o">)&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="exit">exit&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1">#/bin/bash&lt;/span>
+exit&lt;span class="o">(&lt;/span>0&lt;span class="o">)&lt;/span> &lt;span class="c1">#脚本/命令正常退出&lt;/span>
+exit&lt;span class="o">(&lt;/span>1&lt;span class="o">)&lt;/span> &lt;span class="c1"># 脚本/命令异常退出&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="--">$? &amp;amp;&amp;amp; ||&lt;/h2>
+&lt;p>shell 在执行某个命令的时候，会返回一个返回值，该返回值保存在 shell 变量 $? 中。
+当 $? == 0 时，表示执行成功；当 $? == 1 时（非0返回值，一般在0-255间），表示执行失败。
+shell 提供了 &amp;amp;&amp;amp; 和 || 来实现命令执行flow控制的功能，shell 将根据 &amp;amp;&amp;amp; 或 || 前面命令的返回值来选择执行后续命令。&lt;/p>
+&lt;h3 id="heading">&amp;amp;&amp;amp;&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">command1 &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> command2 &lt;span class="o">[&amp;amp;&amp;amp;&lt;/span> command3 ...&lt;span class="o">]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;ol>
+&lt;li>命令之间使用&lt;code>&amp;amp;&amp;amp;&lt;/code>连接，实现逻辑与的功能；&lt;/li>
+&lt;li>只有在 &lt;code>&amp;amp;&amp;amp;&lt;/code> 左边的命令返回真（命令返回值 &lt;code>$? == 0&lt;/code>），&amp;amp;&amp;amp; 右边的命令才会被执行；&lt;/li>
+&lt;li>只要有一个命令返回假（命令返回值 &lt;code>$? == 1&lt;/code>），后面的命令就不会被执行。 即是短路的功能。&lt;/li>
+&lt;/ol>
+&lt;h3 id="heading-1">||&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">command1 &lt;span class="o">||&lt;/span> command2 &lt;span class="o">[||&lt;/span> command3 ...&lt;span class="o">]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;ol>
+&lt;li>命令之间使用 &lt;code>||&lt;/code> 连接，实现 逻辑或的功能；&lt;/li>
+&lt;li>只有在&lt;code>||&lt;/code>左边的命令返回假（命令返回值 &lt;code>$? == 1&lt;/code>），&lt;code>||&lt;/code> 右边的命令才会被执行。这和 c 语言中的逻辑或语法功能相同，即实现defult赋值操作；&lt;/li>
+&lt;li>只要有一个命令返回真（命令返回值 &lt;code>$? == 0&lt;/code>），后面的命令就不会被执行。&lt;/li>
+&lt;/ol>
+&lt;h2 id="heading-2">$&lt;/h2>
+&lt;p>shell语句变量无需声明，需要引用变量指时， 在变量名前添加$符号即可（有时需要配合括号消除歧义）:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="nv">var&lt;/span>&lt;span class="o">=&lt;/span>hellhttp://sdf.com?uid&lt;span class="o">=&lt;/span>233&lt;span class="p">&amp;amp;&lt;/span>&lt;span class="nv">pwd&lt;/span>&lt;span class="o">=&lt;/span>ls
+&lt;span class="nb">echo&lt;/span> var &lt;span class="c1"># var&lt;/span>
+&lt;span class="nb">echo&lt;/span> &lt;span class="nv">$var&lt;/span> &lt;span class="c1"># hellhttp://sdf.com?uid=233&amp;amp;pwd=ls&lt;/span>
+&lt;span class="nv">va&lt;/span>&lt;span class="o">=&lt;/span>he
+&lt;span class="nb">echo&lt;/span> &lt;span class="nv">$valloworld&lt;/span> &lt;span class="c1"># 无输出，因为没有valloworld变量&lt;/span>
+&lt;span class="nb">echo&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">va&lt;/span>&lt;span class="si">}&lt;/span>lloworld &lt;span class="c1"># hellworld&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="heading-3">$()&lt;/h3>
+&lt;p>先执行括号里面的shell命令，然后把括号里面shell命令的输出做为新的命令去执行。
+也可以使用泛引号``。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">❯ &lt;span class="nb">echo&lt;/span> ls &amp;gt; abc
+~/codebase
+❯ &lt;span class="k">$(&lt;/span>less abc&lt;span class="k">)&lt;/span> &lt;span class="c1"># same as `less abc`&lt;/span>
+abc gobookIread jsbook lol playaround
+~/codebase
+❯ &lt;span class="k">$(&lt;/span>cat abc&lt;span class="k">)&lt;/span>
+abc gobookIread jsbook lol playaround
+~/codebase
+❯ &lt;span class="k">$(&lt;/span>ls&lt;span class="k">)&lt;/span> &lt;span class="c1"># same as `ls`&lt;/span>
+zsh: &lt;span class="nb">command&lt;/span> not found: abc
+❯ &lt;span class="nb">echo&lt;/span> &lt;span class="sb">`&lt;/span>date&lt;span class="sb">`&lt;/span>
+2021年11月17日 星期三 11时58分02秒 CST
+~
+❯ &lt;span class="nb">echo&lt;/span> &lt;span class="k">$(&lt;/span>date&lt;span class="k">)&lt;/span>
+2021年11月17日 星期三 11时58分10秒 CST
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="wget">wget&lt;/h2>
+&lt;p>http basic auth&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">wget --no-check-certificate --user user --password pass https://server_address/
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="curl">curl&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">curl -I google.com
+curl -i google.com
+&lt;span class="c1"># Post json file&lt;/span>
+curl -vX POST http://localhost:9095/post -d @t.json -H &lt;span class="s2">&amp;#34;Content-Type: application/json&amp;#34;&lt;/span> -H &lt;span class="s1">&amp;#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNTUxNDEyODY2LCJleHAiOjE1NTIwMTc2NjZ9.V6ZT8L_r_arIlxtRHul-FxKt4exErTkvNdYy7O_cR5A&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="argument">argument&lt;/h2>
+&lt;h3 id="default-argument">default argument&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/usr/local/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>
+&lt;span class="nb">echo&lt;/span> &lt;span class="s1">&amp;#39;begin&amp;#39;&lt;/span>
+date
+&lt;span class="nv">duration&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="s2">&amp;#34;3&amp;#34;&lt;/span>&lt;span class="si">}&lt;/span> &lt;span class="c1"># default 3&lt;/span>
+sleep &lt;span class="nv">$duration&lt;/span>
+&lt;span class="nb">echo&lt;/span> &lt;span class="s1">&amp;#39;finish&amp;#39;&lt;/span>
+date
+&lt;span class="c1">#begin&lt;/span>
+&lt;span class="c1">#2021年11月17日 星期三 12时05分52秒 CST&lt;/span>
+&lt;span class="c1">#finish&lt;/span>
+&lt;span class="c1">#2021年11月17日 星期三 12时05分55秒 CST&lt;/span>
+&lt;span class="c1">#~ took 3s &lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="loop">loop&lt;/h2>
+&lt;p>bash 提供 for和while两种循环控制&lt;/p>
+&lt;h3 id="for">for&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1"># for in &lt;/span>
+&lt;span class="k">for&lt;/span> i in abc.s&lt;span class="o">{&lt;/span>1..1000&lt;span class="o">}&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span>
+&lt;span class="nb">echo&lt;/span> &lt;span class="nv">$i&lt;/span>
+&lt;span class="k">done&lt;/span>
+&lt;span class="c1"># for arguments&lt;/span>
+./for.sh x y z sdf&lt;span class="o">{&lt;/span>1..4&lt;span class="o">}&lt;/span> &lt;span class="m">1&lt;/span> &lt;span class="m">9&lt;/span>
+&lt;span class="c1">#for a; do&lt;/span>
+&lt;span class="c1"># echo $a&lt;/span>
+&lt;span class="c1">#done&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="while-read">while (read)&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="k">while&lt;/span> &lt;span class="nb">read&lt;/span> -r h&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span>
+&lt;span class="nb">echo&lt;/span> -n &lt;span class="nv">$h&lt;/span>
+&lt;span class="k">done&lt;/span>
+&lt;span class="c1">#❯ bash read-pwds.sh &lt;/span>
+&lt;span class="c1">#abcde&lt;/span>
+&lt;span class="c1">#abcdexyz&lt;/span>
+&lt;span class="c1">#xyz% &lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="macos">macos&lt;/h2>
+&lt;h3 id="osascript">osascript&lt;/h3>
+&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 312;
+flex-basis: 749px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/bash-command/mac.png" data-size="868x278">
+&lt;img src="https://tab.wutuofu.com/posts/bash-command/mac.png"
+width="868"
+height="278"
+srcset="https://tab.wutuofu.com/posts/bash-command/mac_hu5339105ebcd044e0ab56fca4fb90c867_103215_480x0_resize_box_3.png 480w, https://tab.wutuofu.com/posts/bash-command/mac_hu5339105ebcd044e0ab56fca4fb90c867_103215_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="macos osascript notification">
+&lt;/a>
+&lt;figcaption>macos osascript notification&lt;/figcaption>
+&lt;/figure>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/sh
+&lt;/span>&lt;span class="cp">&lt;/span>&lt;span class="c1">#&lt;/span>
+&lt;span class="c1"># must use sh for `at` command&lt;/span>
+&lt;span class="c1">#!/usr/bin/osascript&lt;/span>
+&lt;span class="c1">#display notification &amp;#34;Lorem ipsum dolor sit amet&amp;#34; with title &amp;#34;Title&amp;#34;&lt;/span>
+&lt;span class="c1"># https://apple.stackexchange.com/questions/57412/how-can-i-trigger-a-notification-center-notification-from-an-applescript-or-shel/115373#115373&lt;/span>
+osascript -e &lt;span class="s1">&amp;#39;display notification &amp;#34;吃武汉热干面啦&amp;#34; with title &amp;#34;米西米西&amp;#34; &amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>清理git submodule</title><link>https://tab.wutuofu.com/posts/git-submodule/</link><pubDate>Tue, 16 Nov 2021 16:13:57 +0800</pubDate><guid>https://tab.wutuofu.com/posts/git-submodule/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/git-submodule/git-submodule.png" alt="Featured image of post 清理git submodule" />&lt;p>当我们本地对git的submodule目录下的文件做了改动时，会发现不论是用&lt;code>git checkout .&lt;/code>
 还是 &lt;code>git clean -df&lt;/code>都无法丢弃修改。使用&lt;code>git status&lt;/code>命令查看工作树的状态时会有如下
 报错信息&lt;code>git submodule modified content&lt;/code>&lt;/p>
 &lt;h2 id="错误">错误&lt;/h2>
