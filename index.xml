@@ -1,4 +1,45 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>人到三十</title><link>https://tab.wutuofu.com/</link><description>Recent content on 人到三十</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 17 Nov 2021 14:58:30 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>换行符</title><link>https://tab.wutuofu.com/posts/carrier-return/</link><pubDate>Wed, 17 Nov 2021 14:58:30 +0800</pubDate><guid>https://tab.wutuofu.com/posts/carrier-return/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/carrier-return/line-feed.jpeg" alt="Featured image of post 换行符" />&lt;p>换行符&lt;code>\r\n&lt;/code>和&lt;code>\n&lt;/code>的关系和区别可以追溯到60年前，打字机广泛被使用的时代。&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>人到三十</title><link>https://tab.wutuofu.com/</link><description>Recent content on 人到三十</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 18 Nov 2021 17:23:48 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>循环播放gif图片</title><link>https://tab.wutuofu.com/posts/gif-loop/</link><pubDate>Thu, 18 Nov 2021 17:23:48 +0800</pubDate><guid>https://tab.wutuofu.com/posts/gif-loop/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/gif-loop/deja-vu-brain-injury.jpeg" alt="Featured image of post 循环播放gif图片" />&lt;h2 id="install">install&lt;/h2>
+&lt;p>首先使用&lt;code>macport&lt;/code>安装 &lt;code>imagemagick&lt;/code>软件包，因为macport是编译安装软件包，所以安装过程会比较久（~9min）。
+更加习惯homebrew的可以参考 &lt;a class="link" href="https://imagemagick.org/script/download.php#macosx" target="_blank" rel="noopener"
+>官网imagemagick download&lt;/a> 安装。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">❯ sudo port install imagemagick
+Password:
+---&amp;gt; Computing dependencies &lt;span class="k">for&lt;/span> ImageMagickWarning: cltversion: The Command Line Tools are installed, but MacPorts cannot determine the version.
+Warning: cltversion: For a possible fix, please see: https://trac.macports.org/wiki/ProblemHotlist#reinstall-clt
+The following dependencies will be installed:
+aom
+brotli
+....
+....
+.
+.
+---&amp;gt; Activating webp @1.2.1_0
+---&amp;gt; Cleaning webp
+---&amp;gt; Fetching archive &lt;span class="k">for&lt;/span> ImageMagick
+---&amp;gt; Attempting to fetch ImageMagick-6.9.11-60_1+x11.darwin_21.x86_64.tbz2 from https://packages.macports.org/ImageMagick
+---&amp;gt; Attempting to fetch ImageMagick-6.9.11-60_1+x11.darwin_21.x86_64.tbz2 from https://pek.cn.packages.macports.org/macports/packages/ImageMagick
+---&amp;gt; Attempting to fetch ImageMagick-6.9.11-60_1+x11.darwin_21.x86_64.tbz2 from https://kmq.jp.packages.macports.org/ImageMagick
+---&amp;gt; Fetching distfiles &lt;span class="k">for&lt;/span> ImageMagick
+---&amp;gt; Attempting to fetch ImageMagick-6.9.11-60.tar.xz from https://distfiles.macports.org/ImageMagick
+---&amp;gt; Verifying checksums &lt;span class="k">for&lt;/span> ImageMagick
+---&amp;gt; Extracting ImageMagick
+---&amp;gt; Configuring ImageMagick
+---&amp;gt; Building ImageMagick
+---&amp;gt; Staging ImageMagick into destroot
+---&amp;gt; Installing ImageMagick @6.9.11-60_1+x11
+---&amp;gt; Activating ImageMagick @6.9.11-60_1+x11
+---&amp;gt; Cleaning ImageMagick
+---&amp;gt; Updating database of binaries
+---&amp;gt; Scanning binaries &lt;span class="k">for&lt;/span> linking errors
+---&amp;gt; No broken files found.
+---&amp;gt; No broken ports found.
+~ took 8m49s
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="convert">convert&lt;/h2>
+&lt;p>修改gif循环次数，当&lt;code>loop为0&lt;/code>时则关闭了gif的循环播放。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1"># convert -h | grep loop&lt;/span>
+&lt;span class="c1"># -loop iterations add Netscape loop extension to your GIF animation&lt;/span>
+convert -loop &lt;span class="m">1000&lt;/span> dog.gif bad_dog.gif
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>换行符</title><link>https://tab.wutuofu.com/posts/carrier-return/</link><pubDate>Wed, 17 Nov 2021 14:58:30 +0800</pubDate><guid>https://tab.wutuofu.com/posts/carrier-return/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/carrier-return/line-feed.jpeg" alt="Featured image of post 换行符" />&lt;p>换行符&lt;code>\r\n&lt;/code>和&lt;code>\n&lt;/code>的关系和区别可以追溯到60年前，打字机广泛被使用的时代。&lt;/p>
 &lt;p>在打字机还刚刚被发明的时候，人们输入完一行字之后，需要两个动作才能开始输入下一行的内容。&lt;/p>
 &lt;p>滚动滚轮，让纸张往上移动一行， 即是 &lt;code>\n&lt;/code> 操作；
 移动 打字的指针到 行首， 即是&lt;code>\r&lt;/code> 。
