@@ -273,6 +273,95 @@ git submodule update --recursive --init
 子模组 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>（https://github.com/datewu/hugo-theme-stack.git）未对路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span> 注册
 子模组 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>（https://github.com/datewu/hugo-theme-stack.git）已对路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span> 注册
 子模组路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>：检出 &lt;span class="s1">&amp;#39;aeb077874a7de9ce71304c990ad5cfdc72664f38&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>挂载硬盘</title><link>https://tab.wutuofu.com/posts/load-disk/</link><pubDate>Fri, 18 Oct 2019 10:03:07 +0800</pubDate><guid>https://tab.wutuofu.com/posts/load-disk/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/load-disk/disk.jpeg" alt="Featured image of post 挂载硬盘" />&lt;h2 id="lsblk">lsblk&lt;/h2>
+&lt;p>首先使用&lt;code>lsblk&lt;/code>查看当前系统硬盘挂载的情况&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="o">[&lt;/span>root@dev-7 ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># lsblk&lt;/span>
+NAME MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+sr0 11:0 &lt;span class="m">1&lt;/span> 1024M &lt;span class="m">0&lt;/span> rom
+vda 253:0 &lt;span class="m">0&lt;/span> 40G &lt;span class="m">0&lt;/span> disk
+└─vda1 253:1 &lt;span class="m">0&lt;/span> 40G &lt;span class="m">0&lt;/span> part /
+vdb 253:16 &lt;span class="m">0&lt;/span> 200G &lt;span class="m">0&lt;/span> disk
+└─vdb1 253:17 &lt;span class="m">0&lt;/span> 200G &lt;span class="m">0&lt;/span> part
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="format-and-mount">format and mount&lt;/h2>
+&lt;p>格式化硬盘然后挂载到&lt;code> /media/newdrive&lt;/code> 目录&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1">### disk_add_new.sh&lt;/span>
+&lt;span class="k">function&lt;/span> set_vars&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;span class="nv">fs_ty&lt;/span>&lt;span class="o">=&lt;/span>ext4
+&lt;span class="nv">mount_point&lt;/span>&lt;span class="o">=&lt;/span>/media/newdrive
+&lt;span class="c1">#check=`fdisk -l | grep GB | cut -d &amp;#39;:&amp;#39; -f1 | cut -c 6-`&lt;/span>
+&lt;span class="c1">#new_disk=`echo $check | cut -d &amp;#39; &amp;#39; -f 2`&lt;/span>
+&lt;span class="nv">new_disk&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">$1&lt;/span>
+&lt;span class="c1"># new_disk=${check##*\ }&lt;/span>
+&lt;span class="o">}&lt;/span>
+&lt;span class="k">function&lt;/span> make_file_system&lt;span class="o">(){&lt;/span>
+mkfs -t &lt;span class="nv">$fs_ty&lt;/span> &lt;span class="nv">$new_disk&lt;/span>
+&lt;span class="o">}&lt;/span>
+&lt;span class="k">function&lt;/span> get_uuid&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;span class="nv">uuid_info&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="sb">`&lt;/span>blkid &lt;span class="nv">$new_disk&lt;/span>&lt;span class="sb">`&lt;/span>
+&lt;span class="nv">uuid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">uuid_info&lt;/span>&lt;span class="p">#*UUID&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;span class="nv">id&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="sb">`&lt;/span>&lt;span class="nb">echo&lt;/span> &lt;span class="nv">$uuid&lt;/span> &lt;span class="p">|&lt;/span> cut -d &lt;span class="s1">&amp;#39;&amp;#34;&amp;#39;&lt;/span> -f 2&lt;span class="sb">`&lt;/span>
+&lt;span class="o">}&lt;/span>
+&lt;span class="k">function&lt;/span> mount_and_auto_mount&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+mkdir -p &lt;span class="nv">$mount_point&lt;/span>
+mount -t &lt;span class="nv">$fs_ty&lt;/span> &lt;span class="nv">$new_disk&lt;/span> &lt;span class="nv">$mount_point&lt;/span>
+grep &lt;span class="nv">$id&lt;/span> /etc/fstab &lt;span class="o">||&lt;/span> &lt;span class="nb">echo&lt;/span> &lt;span class="nv">UUID&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">$id&lt;/span> &lt;span class="nv">$mount_point&lt;/span> &lt;span class="nv">$fs_ty&lt;/span> defaults &lt;span class="m">0&lt;/span> &lt;span class="m">0&lt;/span> &amp;gt;&amp;gt; /etc/fstab
+&lt;span class="o">}&lt;/span>
+&lt;span class="k">function&lt;/span> run&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+set_vars &lt;span class="nv">$1&lt;/span>
+make_file_system
+get_uuid
+&lt;span class="o">[&lt;/span> &lt;span class="si">${#&lt;/span>&lt;span class="nv">id&lt;/span>&lt;span class="si">}&lt;/span> -gt &lt;span class="m">30&lt;/span> &lt;span class="o">]&lt;/span> &lt;span class="o">||&lt;/span> &lt;span class="nb">exit&lt;/span> &lt;span class="m">1&lt;/span>
+mount_and_auto_mount
+&lt;span class="o">}&lt;/span>
+run &lt;span class="nv">$1&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="扩容">扩容&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="nv">mount_point&lt;/span>&lt;span class="o">=&lt;/span>/media/newdrive
+&lt;span class="c1"># check=`fdisk -l | grep GB | cut -d &amp;#39;:&amp;#39; -f1 | cut -c 6-`&lt;/span>
+&lt;span class="c1"># disk=`echo $check | cut -d &amp;#39; &amp;#39; -f 2`&lt;/span>
+&lt;span class="nv">disk&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">$1&lt;/span> &lt;span class="c1"># /dev/sdb sdc&lt;/span>
+&lt;span class="nv">fs_ty&lt;/span>&lt;span class="o">=&lt;/span>ext4
+e2fsck -f &lt;span class="nv">$disk&lt;/span>
+resize2fs &lt;span class="nv">$disk&lt;/span>
+mount -t &lt;span class="nv">$fs_ty&lt;/span> &lt;span class="nv">$disk&lt;/span> &lt;span class="nv">$mount_point&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="逻辑卷">逻辑卷&lt;/h2>
+&lt;h3 id="创建逻辑卷">创建逻辑卷&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">pvcreate /dev/vdb
+vgcreate vg02 /dev/vdb
+lvcreate -l 90%free -n kubelet vg02
+mkfs.xfs -n &lt;span class="nv">ftype&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> /dev/vg02/kubelet
+mount /dev/vg02/kubelet /var/lib/kubelet
+&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;/dev/mapper/vg02-kubelet /var/lib/kubelet xfs defaults 0 0 &amp;#34;&lt;/span> &amp;gt;&amp;gt; /etc/fstab
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="扩容逻辑卷">扩容逻辑卷&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1"># 1. 删除未挂载的逻辑卷&lt;/span>
+lvremove vg02/kubelet &lt;span class="c1"># lvremove vg02&lt;/span>
+&lt;span class="c1"># 2. 删除kubelet的磁盘&lt;/span>
+vgreduce vg02 /dev/vdb &lt;span class="c1"># vgremove vg02&lt;/span>
+&lt;span class="c1"># 3. 将原来的磁盘加到别的vg&lt;/span>
+vgextend vg01 /dev/vdb
+&lt;span class="c1"># 4. 扩容逻辑卷&lt;/span>
+lvextend -L +200G /dev/vg01/var
+&lt;span class="c1"># 5. 生效&lt;/span>
+xfs_groups /dev/vg01/var
+&lt;span class="c1"># 6. 删除/etc/fstab 中kubelet的挂载点&lt;/span>
+&lt;span class="c1">## vim /etc/fstab +5dd&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="troubleshoot">troubleshoot&lt;/h3>
+&lt;p>有时候删除逻辑卷会遇到报错&lt;code>Logical volume vg01/LVgdb contains a filesystem in use&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="o">[&lt;/span>root@cnsz92vl14311 ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># umount /dev/vg01/LVgdb &lt;/span>
+&lt;span class="o">[&lt;/span>root@cnsz92vl14311 ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># lvremove /dev/vg01&lt;/span>
+Do you really want to remove active logical volume LVgdb? &lt;span class="o">[&lt;/span>y/n&lt;span class="o">]&lt;/span>: y
+Logical volume &lt;span class="s2">&amp;#34;LVgdb&amp;#34;&lt;/span> successfully removed
+&lt;span class="o">[&lt;/span>root@cnsz92vl14311 ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># lsblk&lt;/span>
+NAME MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+vda 252:0 &lt;span class="m">0&lt;/span> 60G &lt;span class="m">0&lt;/span> disk
+├─vda1 252:1 &lt;span class="m">0&lt;/span> 476M &lt;span class="m">0&lt;/span> part /boot
+└─vda2 252:2 &lt;span class="m">0&lt;/span> 59.5G &lt;span class="m">0&lt;/span> part
+├─vg00-root 253:0 &lt;span class="m">0&lt;/span> 10G &lt;span class="m">0&lt;/span> lvm /
+├─vg00-home 253:1 &lt;span class="m">0&lt;/span> 500M &lt;span class="m">0&lt;/span> lvm /home
+├─vg00-var 253:2 &lt;span class="m">0&lt;/span> 10G &lt;span class="m">0&lt;/span> lvm /var
+├─vg00-tmp 253:3 &lt;span class="m">0&lt;/span> 10G &lt;span class="m">0&lt;/span> lvm /tmp
+└─vg00-app 253:4 &lt;span class="m">0&lt;/span> 29G &lt;span class="m">0&lt;/span> lvm /app
+vdb 252:16 &lt;span class="m">0&lt;/span> 300G &lt;span class="m">0&lt;/span> disk
+&lt;span class="o">[&lt;/span>root@cnsz92vl14311 ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># &lt;/span>
 &lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Markdown Syntax Guide</title><link>https://tab.wutuofu.com/posts/markdown-syntax/</link><pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate><guid>https://tab.wutuofu.com/posts/markdown-syntax/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/markdown-syntax/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg" alt="Featured image of post Markdown Syntax Guide" />&lt;p>This article offers a sample of basic Markdown syntax that can be used in Hugo content files, also it shows whether basic HTML elements are decorated with CSS in a Hugo theme.&lt;/p>
 &lt;h2 id="headings">Headings&lt;/h2>
 &lt;p>The following HTML &lt;code>&amp;lt;h1&amp;gt;&lt;/code>—&lt;code>&amp;lt;h6&amp;gt;&lt;/code> elements represent six levels of section headings. &lt;code>&amp;lt;h1&amp;gt;&lt;/code> is the highest section level while &lt;code>&amp;lt;h6&amp;gt;&lt;/code> is the lowest.&lt;/p>
@@ -434,7 +523,215 @@ git submodule update --recursive --init
 &lt;p>Block math:
 $$
 \varphi = 1+\frac{1} {1+\frac{1} {1+\frac{1} {1+\cdots} } }
-$$&lt;/p></description></item><item><title>tcp性能调优</title><link>https://tab.wutuofu.com/posts/tcp-tune/</link><pubDate>Tue, 05 Apr 2016 18:58:52 +0800</pubDate><guid>https://tab.wutuofu.com/posts/tcp-tune/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/tcp-tune/sysctl.jpeg" alt="Featured image of post tcp性能调优" />&lt;p>我们一般会调整内核tcp参数以提高web服务器(比如ngin)的性能。&lt;/p>
+$$&lt;/p></description></item><item><title>事件驱动</title><link>https://tab.wutuofu.com/posts/shell-fifo/</link><pubDate>Fri, 27 Apr 2018 12:20:29 +0800</pubDate><guid>https://tab.wutuofu.com/posts/shell-fifo/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/shell-fifo/pm.png" alt="Featured image of post 事件驱动" />&lt;p>在shell脚本里使用&lt;code>mkfifo&lt;/code>命令创建&lt;code>named pipes&lt;/code>可以实现简单的事件驱动，
+避免poll（轮询）带来的时延（not real-time）和资源消耗的问题。&lt;/p>
+&lt;h2 id="mkfifo">mkfifo&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">❯ man mkfifo &lt;span class="p">|&lt;/span> head -n &lt;span class="m">12&lt;/span>
+MKFIFO&lt;span class="o">(&lt;/span>1&lt;span class="o">)&lt;/span> General Commands Manual MKFIFO&lt;span class="o">(&lt;/span>1&lt;span class="o">)&lt;/span>
+NAME
+mkfifo – make fifos
+SYNOPSIS
+mkfifo &lt;span class="o">[&lt;/span>-m mode&lt;span class="o">]&lt;/span> fifo_name ...
+DESCRIPTION
+mkfifo creates the fifos requested, in the order specified. By default,
+the resulting fifos have mode &lt;span class="m">0666&lt;/span> &lt;span class="o">(&lt;/span>rw-rw-rw-&lt;span class="o">)&lt;/span>, limited by the current
+umask&lt;span class="o">(&lt;/span>2&lt;span class="o">)&lt;/span>.
+~
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="consumer">consumer&lt;/h3>
+&lt;p>消费者以blocked的状态监听&lt;code>事件的发生&lt;/code>，然后&lt;code>handle&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>
+&lt;span class="nv">pipe&lt;/span>&lt;span class="o">=&lt;/span>/tmp/testpipe
+&lt;span class="nb">trap&lt;/span> &lt;span class="s2">&amp;#34;rm -f &lt;/span>&lt;span class="nv">$pipe&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> EXIT
+&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> ! -p &lt;span class="nv">$pipe&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+mkfifo &lt;span class="nv">$pipe&lt;/span>
+&lt;span class="k">fi&lt;/span>
+&lt;span class="k">while&lt;/span> &lt;span class="nb">true&lt;/span>
+&lt;span class="k">do&lt;/span>
+&lt;span class="k">if&lt;/span> &lt;span class="nb">read&lt;/span> line &amp;lt;&lt;span class="nv">$pipe&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$line&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s1">&amp;#39;quit&amp;#39;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;span class="nb">break&lt;/span>
+&lt;span class="k">fi&lt;/span>
+&lt;span class="nb">echo&lt;/span> &lt;span class="nv">$line&lt;/span>
+&lt;span class="k">fi&lt;/span>
+&lt;span class="k">done&lt;/span>
+&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;consumer exiting&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="producer">producer&lt;/h3>
+&lt;p>生产者往&lt;code>pipe&lt;/code>里写入内容，&lt;code>触发事件&lt;/code>：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>
+&lt;span class="nv">pipe&lt;/span>&lt;span class="o">=&lt;/span>/tmp/testpipe
+&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> ! -p &lt;span class="nv">$pipe&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;Reader not running&amp;#34;&lt;/span>
+&lt;span class="nb">exit&lt;/span> &lt;span class="m">1&lt;/span>
+&lt;span class="k">fi&lt;/span>
+&lt;span class="nv">msg&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="s2">&amp;#34;Hello from &lt;/span>&lt;span class="nv">$$&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;span class="nb">echo&lt;/span> &lt;span class="nv">$msg&lt;/span> &amp;gt;&lt;span class="nv">$pipe&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>试用Azure Centos虚拟机</title><link>https://tab.wutuofu.com/posts/azure-centos/</link><pubDate>Wed, 15 Nov 2017 10:48:20 +0800</pubDate><guid>https://tab.wutuofu.com/posts/azure-centos/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/azure-centos/Azure.png" alt="Featured image of post 试用Azure Centos虚拟机" />&lt;p>换了份工作，新公司是做加密币交易所的，服务器都在国外。所以有机会接触到了微软的azure云服务，
+服务器基本都在亚太区新加坡。&lt;/p>
+&lt;p>ps：这是我第一次实操单台配置32c64g的虚拟机，纪念一下。以前工作中最多就8c16g，数量的话两三百台机器。&lt;/p>
+&lt;h2 id="history">history&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">uname -a &lt;span class="c1"># kernel info&lt;/span>
+cat /etc/redhat-release
+df -alh &lt;span class="c1"># query disk info&lt;/span>
+ifconfig
+ping 10.0.0.6
+ssh 10.0.0.6
+ls .ssh/
+mv azagent .ssh/id_rsa
+ls -alh .ssh/id_rsa
+ssh 10.0.0.6
+ping jd.com
+yum install yum-utils
+sudo yum install yum-utils
+yum -y upgrade
+sudo yum -y upgrade
+sudo yum -y update
+sudo yum-config-manager --add-repo https://openresty.org/package/centos/openresty.repo
+sudo yum install openresty &lt;span class="c1"># install web server&lt;/span>
+sudo vi /etc/ssh/sshd_config
+systemctl status sshd
+systemctl restart sshd
+sudo systemctl restart sshd
+yum install ansible
+sudo yum install ansible
+sudo systemctl status openresty
+sudo systemctl &lt;span class="nb">enable&lt;/span> openresty
+sudo systemctl start openresty
+curl -I localhost
+uptime
+date
+sudo install git
+sudo yum install git
+locate openresty
+rpm -qc openresty &lt;span class="c1"># query configuration file&lt;/span>
+wget https://copr.fedorainfracloud.org/coprs/dheche/prometheus/repo/epel-7/dheche-prometheus-epel-7.repo
+ls
+head dheche-prometheus-epel-7.repo
+suod mv dheche-prometheus-epel-7.repo /etc/yum.repos.d/prometheus.repo
+sudo mv dheche-prometheus-epel-7.repo /etc/yum.repos.d/prometheus.repo
+sudo yum install prometheus
+sudo yum install prometheus-node
+sudo vi /etc/yum.repos.d/prometheus.repo
+sudo yum install prometheus
+sudo yum install prometheus2
+sudo yum install node_exporter
+sudo yum install alertmanager
+vi /etc/hosts
+sudo vi /etc/hosts
+ssh ten
+sudo vi /etc/yum.conf
+ls /var/cache/yum/x86_64/7/prometheus/
+ls /var/cache/yum/x86_64/7/prometheus/packages/
+ls -alh /var/cache/yum/x86_64/7/prometheus/packages/
+ls
+sudo yum install yum-utils
+&lt;span class="nb">history&lt;/span>
+sudo yumdownloader prometheus
+ls
+ls -alh
+sudo yumdownloader prometheus2 &lt;span class="c1"># download installed rmp packages&lt;/span>
+sudo yumdownloader node_exporter.x86_64
+sudo yumdownloader alertmanager.x86_64
+ls -alh
+scp node_exporter-0.15.2-1.el7.centos.x86_64.rpm ten:
+ssh ten
+ssh ten &lt;span class="s1">&amp;#39;sudo systemctl enable node_exporter&amp;#39;&lt;/span>
+ssh ten &lt;span class="s1">&amp;#39;sudo systemctl start node_exporter&amp;#39;&lt;/span>
+sudo systemctl start node_exporter
+sudo systemctl &lt;span class="nb">enable&lt;/span> node_exporter
+sudo systemctl &lt;span class="nb">enable&lt;/span> alertmanger
+sudo systemctl &lt;span class="nb">enable&lt;/span> alertmanager
+sudo systemctl start alertmanager
+netstat -nlp
+sudo -i &lt;span class="c1"># su to root&lt;/span>
+&lt;span class="nb">pwd&lt;/span>
+ls
+rm prometheus-1.8.2-1.el7.centos.x86_64.rpm
+ls
+sudo systemctl &lt;span class="nb">enable&lt;/span> prometheus
+sudo systemctl start prometheus
+cat/etc/passwd
+rpm -qc prometheus2
+ls -alh /etc/default/prometheus
+id prometheus
+cat /etc/default/prometheus
+ls -alh /etc/prometheus/
+sudo -i
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>总的说来敲了100来条指令，比较重要的是下面三条指令：&lt;/p>
+&lt;ol>
+&lt;li>&lt;code>sudo -i&lt;/code>切换为root用户；&lt;/li>
+&lt;li>&lt;code>yumdownloader &lt;/code>保存通过yum安装的rpm包 (配合&lt;code>yum -C install &lt;/code>和&lt;code>SCP&lt;/code>可以加快LAN下所有主机的安装速度)；&lt;/li>
+&lt;li>&lt;code>rpm -qc &lt;/code>查询安装包配置信息;&lt;/li>
+&lt;/ol>
+&lt;h2 id="timeout">timeout&lt;/h2>
+&lt;p>默认情况下，Azure 的Linux主机的&lt;code>sshd&lt;/code> 服务会把闲着超过1分钟的客户端踢下线&lt;code>ssh session timeout&lt;/code>。
+修改本地&lt;code>ssh&lt;/code> 客户端连接配置添加&lt;code>ServerAliveInterval&lt;/code>等配置项就可以规避上面说的timeout限制：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1">#### .ssh/config snippet&lt;/span>
+HOST singapore2
+HostName 40.50.60.70
+IdentityFile ~/.ssh/az
+ServerAliveInterval &lt;span class="m">120&lt;/span>
+ServerAliveCountMax &lt;span class="m">30&lt;/span>
+ConnectTimeout &lt;span class="m">30&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Ansible</title><link>https://tab.wutuofu.com/posts/ansible-memo/</link><pubDate>Sat, 16 Apr 2016 11:33:05 +0800</pubDate><guid>https://tab.wutuofu.com/posts/ansible-memo/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/ansible-memo/ansible.png" alt="Featured image of post Ansible" />&lt;p>本文不定期更新 :)&lt;/p>
+&lt;p>&lt;a class="link" href="https://www.redhat.com/en/blog/system-administrators-guide-getting-started-ansible-fast?extIdCarryOver=true&amp;amp;sc_cid=701f2000001OH7YAAW" target="_blank" rel="noopener"
+>A system administrator&amp;rsquo;s guide to getting started with Ansible&lt;/a>&lt;/p>
+&lt;h2 id="ad-hoc">ad-hoc&lt;/h2>
+&lt;p>管理集群的时候，常常来不及写playbooks，只需要执行一些ad-hoc查看某些主机的状态，
+或者批量修改/上传配置文件到某些主机。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">ansible all -m copy -a &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span>&lt;span class="s1">&amp;#39;src=dvd.repo dest=/etc/yum.repos.d owner=root group=root mode=0644&amp;#39;&lt;/span> -b
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="playbook">playbook&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">ansible-playbook -i prod_hosts demo.yml --skip-tag downloaded
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="host-file">host file&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-ini" data-lang="ini">&lt;span class="k">[api]&lt;/span>
+&lt;span class="na">tt ansible_host&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">test&lt;/span>
+&lt;span class="na">tt3 ansible_host&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">test3&lt;/span>
+&lt;span class="na">tt8 ansible_host&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">test8&lt;/span>
+&lt;span class="k">[db]&lt;/span>
+&lt;span class="na">pg1 ansible_host&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">db88&lt;/span>
+&lt;span class="na">pg2 ansible_host&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">db98&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="task">task&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-yaml" data-lang="yaml">&lt;span class="c"># demo.yml&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w">&lt;/span>&lt;span class="nn">---&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w">&lt;/span>- &lt;span class="nt">hosts&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">db&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">vars&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">tar_src&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s2">&amp;#34;tars/postgres_exporter_v0.4.1_linux-amd64.tar.gz&amp;#34;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">tar_dest&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s2">&amp;#34;/usr/bin/&amp;#34;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">service_src&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s2">&amp;#34;services/postgres_exporter.service&amp;#34;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">service_dest&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s2">&amp;#34;/usr/lib/systemd/system/&amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c"># works on centos; ubuntu is &amp;#39;/etc/systemd/system/&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">tasks&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>- &lt;span class="nt">debug&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">var=ansible_default_ipv4.address&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>- &lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">untar to /usr/bin&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">unarchive&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">src&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s2">&amp;#34;{{ tar_src }}&amp;#34;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">dest&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s2">&amp;#34;{{ tar_dest }}&amp;#34;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">become&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kc">true&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>- &lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">download and untar prometheus tarball&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">tags&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">downloaded&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">unarchive&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">src&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s2">&amp;#34;{{ prometheus_tarball_url }}&amp;#34;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">dest&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s2">&amp;#34;{{ prometheus_install_path }}&amp;#34;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">copy&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kc">no&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>- &lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">copy service file&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">copy&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">src&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s2">&amp;#34;{{ service_src }}&amp;#34;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">dest&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s2">&amp;#34;{{ service_dest }}&amp;#34;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">become&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kc">true&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>- &lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">ensure node_export is ebalbe and running&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">systemd&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">postgres_exporter&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">enabled&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kc">yes&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">daemon_reload&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kc">yes&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">state&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">started&lt;/span>&lt;span class="w">
+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">become&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kc">true&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>tcp性能调优</title><link>https://tab.wutuofu.com/posts/tcp-tune/</link><pubDate>Tue, 05 Apr 2016 18:58:52 +0800</pubDate><guid>https://tab.wutuofu.com/posts/tcp-tune/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/tcp-tune/sysctl.jpeg" alt="Featured image of post tcp性能调优" />&lt;p>我们一般会调整内核tcp参数以提高web服务器(比如ngin)的性能。&lt;/p>
 &lt;h2 id="sysctl">sysctl&lt;/h2>
 &lt;p>加载Linux 内核配置&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">sysctl -p /etc/sysctl.d/xxx-xxx.conf
