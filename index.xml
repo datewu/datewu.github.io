@@ -715,7 +715,69 @@ IdentityFile ~/.ssh/az
 ServerAliveInterval &lt;span class="m">120&lt;/span>
 ServerAliveCountMax &lt;span class="m">30&lt;/span>
 ConnectTimeout &lt;span class="m">30&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Ansible</title><link>https://tab.wutuofu.com/posts/ansible-memo/</link><pubDate>Sat, 16 Apr 2016 11:33:05 +0800</pubDate><guid>https://tab.wutuofu.com/posts/ansible-memo/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/ansible-memo/ansible.png" alt="Featured image of post Ansible" />&lt;p>本文不定期更新 :)&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>查找文件</title><link>https://tab.wutuofu.com/posts/find-locate/</link><pubDate>Sat, 16 Sep 2017 08:09:57 +0800</pubDate><guid>https://tab.wutuofu.com/posts/find-locate/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/find-locate/fzf-command.png" alt="Featured image of post 查找文件" />&lt;h2 id="tldr">TLDR;&lt;/h2>
+&lt;ol>
+&lt;li>&lt;code>find&lt;/code>: 有很多过滤规则查找文件/目录/设备，而且可以递归查询某一个目录下的目录或文件，最后除了打印查询结果以外，还可以做其它操作（比如删除该文件）；&lt;/li>
+&lt;li>&lt;code>locate&lt;/code>: 则简单很多，根据关键字 在缓存index中 检索出含有该关键字的文件或者目录；&lt;/li>
+&lt;li>&lt;code>fzf&lt;/code>: 实时模糊查询，可以集成到常用的IDE中（比如&lt;code>fzf.vim&lt;/code>)。&lt;/li>
+&lt;/ol>
+&lt;h2 id="demo">demo&lt;/h2>
+&lt;h3 id="find">find&lt;/h3>
+&lt;p>The syntax of the Find command is:&lt;/p>
+&lt;p>&lt;code>find [-H] [-L] [-P] [-D debugopts] [-Olevel] [starting-point...] [expression]&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>find . -name &lt;span class="s2">&amp;#34;*tar*gz&amp;#34;&lt;/span> -delete
+find . -name &lt;span class="s2">&amp;#34;*tar*xz&amp;#34;&lt;/span> -delete
+find . -name &lt;span class="s2">&amp;#34;*tar.xz&amp;#34;&lt;/span>
+du -sh .
+find . -name &lt;span class="s2">&amp;#34;*zip*&amp;#34;&lt;/span> -delete
+find . -type f &lt;span class="p">|&lt;/span> perl -lne &lt;span class="s1">&amp;#39;print if -B&amp;#39;&lt;/span> &lt;span class="p">|&lt;/span> xargs rm -f &lt;span class="c1"># delete all binary files under . recursivly&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="locate">locate&lt;/h3>
+&lt;p>The syntax of the Locate command is:&lt;/p>
+&lt;p>&lt;code>locate [OPTION]... PATTERN..&lt;/code>&lt;/p>
+&lt;p>查询&lt;code>postgreql db&lt;/code>的配置文件：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>locate *hba_conf*
+&lt;span class="c1"># equal to this&lt;/span>
+su - postgres
+psql
+show config_file&lt;span class="p">;&lt;/span>
+show hba_file&lt;span class="p">;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="fzf">fzf&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">tldr fzf
+fzf
+Command-line fuzzy finder.
+Similar to sk.
+More information: https://github.com/junegunn/fzf.
+- Start fzf on all files in the specified directory:
+find path/to/directory -type f &lt;span class="p">|&lt;/span> fzf
+- Start fzf &lt;span class="k">for&lt;/span> running processes:
+ps aux &lt;span class="p">|&lt;/span> fzf
+- Select multiple files with Shift + Tab and write to a file:
+find path/to/directory -type f &lt;span class="p">|&lt;/span> fzf --multi &amp;gt; filename
+- Start fzf with a specified query:
+fzf --query &lt;span class="s2">&amp;#34;query&amp;#34;&lt;/span>
+- Start fzf on entries that start with core and end with either go, rb, or py:
+fzf --query &lt;span class="s2">&amp;#34;^core go&lt;/span>$&lt;span class="s2"> | rb&lt;/span>$&lt;span class="s2"> | py&lt;/span>$&lt;span class="s2">&amp;#34;&lt;/span>
+- Start fzf on entries that not match pyc and match exactly travis:
+fzf --query &lt;span class="s2">&amp;#34;!pyc &amp;#39;travis&amp;#34;&lt;/span>
+See also: sk
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 159;
+flex-basis: 382px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/find-locate/fzf.png" data-size="1418x890">
+&lt;img src="https://tab.wutuofu.com/posts/find-locate/fzf.png"
+width="1418"
+height="890"
+srcset="https://tab.wutuofu.com/posts/find-locate/fzf_hu582dc8c5511da3cda2a6630bb19f3b70_557722_480x0_resize_box_3.png 480w, https://tab.wutuofu.com/posts/find-locate/fzf_hu582dc8c5511da3cda2a6630bb19f3b70_557722_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="fzf search result">
+&lt;/a>
+&lt;figcaption>fzf search result&lt;/figcaption>
+&lt;/figure>&lt;/p></description></item><item><title>Ansible</title><link>https://tab.wutuofu.com/posts/ansible-memo/</link><pubDate>Sat, 16 Apr 2016 11:33:05 +0800</pubDate><guid>https://tab.wutuofu.com/posts/ansible-memo/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/ansible-memo/ansible.png" alt="Featured image of post Ansible" />&lt;p>本文不定期更新 :)&lt;/p>
 &lt;p>&lt;a class="link" href="https://www.redhat.com/en/blog/system-administrators-guide-getting-started-ansible-fast?extIdCarryOver=true&amp;amp;sc_cid=701f2000001OH7YAAW" target="_blank" rel="noopener"
 >A system administrator&amp;rsquo;s guide to getting started with Ansible&lt;/a>&lt;/p>
 &lt;h2 id="ad-hoc">ad-hoc&lt;/h2>
