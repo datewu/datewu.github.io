@@ -1,4 +1,99 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>人到三十</title><link>https://tab.wutuofu.com/</link><description>Recent content on 人到三十</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 19 Nov 2021 09:53:25 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>纸巾和盆栽</title><link>https://tab.wutuofu.com/posts/tissue-flower/</link><pubDate>Fri, 19 Nov 2021 09:53:25 +0800</pubDate><guid>https://tab.wutuofu.com/posts/tissue-flower/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/tissue-flower/flower.jpeg" alt="Featured image of post 纸巾和盆栽" />&lt;p>月初的时候同事抱怨公司没有纸巾了，有点儿不方便。
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>人到三十</title><link>https://tab.wutuofu.com/</link><description>Recent content on 人到三十</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 19 Nov 2021 14:44:20 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>用户线程调度模型</title><link>https://tab.wutuofu.com/posts/go-scheduler/</link><pubDate>Fri, 19 Nov 2021 14:44:20 +0800</pubDate><guid>https://tab.wutuofu.com/posts/go-scheduler/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/go-scheduler/go-scheduler.png" alt="Featured image of post 用户线程调度模型" />&lt;p>一般来说多线程3种并发模型：&lt;/p>
+&lt;ol>
+&lt;li>N:1， 把n个用户线程（Green threed）映射到一个操作系统的线程（OS Threed）上。&lt;/li>
+&lt;/ol>
+&lt;p>这种模型的优点是 用户线程之间的上下文切换（context switch）会非常快，
+缺点是不能充分的运用多核CPU资源（一个OS Thread只能在一个CPU上）；
+2. 1:1， 每个用户线程映射到一个操作系统线程上。&lt;/p>
+&lt;p>这种和第一种的优缺点正好相反。1:1 可以充分利用多核处理器资源，但是上下文切换很慢。&lt;/p>
+&lt;ol start="3">
+&lt;li>M:N，把M个用户线程映射到N个操作系统线程上。&lt;/li>
+&lt;/ol>
+&lt;p>这种结合了前面两种模型的优点，同时规避了他们的缺点。&lt;/p>
+&lt;h2 id="mgp">M/G/P&lt;/h2>
+&lt;p>golang runtime主要通过抽象出Machine/Processor/Groutine三种对象，和一些算法(steal)实现了M:N模型。&lt;/p>
+&lt;h3 id="machine">Machine&lt;/h3>
+&lt;p>M对应操作系统线程，代表被操作系统管理的线程资源。&lt;/p>
+&lt;h3 id="goroutine">Goroutine&lt;/h3>
+&lt;p>G对应用户线程（Goroutine），包含了stack，&lt;code>指令指针&lt;/code>，还有一些会影响这个Goroutine调度的关键信息，比如有关的channel。&lt;/p>
+&lt;h3 id="processor">Processor&lt;/h3>
+&lt;p>P对应本地逻辑调度器上下文（context），是调度算法具体的执行对象，主要用来处理&lt;code>steal&lt;/code>和&lt;code>hand-off&lt;/code>等算法。&lt;/p>
+&lt;h2 id="demo">demo&lt;/h2>
+&lt;h3 id="normal">normal&lt;/h3>
+&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 102;
+flex-basis: 245px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/go-scheduler/in-motion.jpeg" data-size="400x391">
+&lt;img src="https://tab.wutuofu.com/posts/go-scheduler/in-motion.jpeg"
+width="400"
+height="391"
+srcset="https://tab.wutuofu.com/posts/go-scheduler/in-motion_hu66b0699a4d4006020605c239340bcbd0_15905_480x0_resize_q75_box.jpeg 480w, https://tab.wutuofu.com/posts/go-scheduler/in-motion_hu66b0699a4d4006020605c239340bcbd0_15905_1024x0_resize_q75_box.jpeg 1024w"
+loading="lazy"
+alt="Machine Processor Groutine demo">
+&lt;/a>
+&lt;figcaption>Machine Processor Groutine demo&lt;/figcaption>
+&lt;/figure>
+上图中，我们有2个M(OS Thread)，每个M都有一个本地的context（P），都在运行一个goroutine（G）。&lt;/p>
+&lt;p>有几点需要说明一下：&lt;/p>
+&lt;ol>
+&lt;li>M&lt;strong>必须&lt;/strong>得到一个P&lt;strong>才能&lt;/strong>运行goroutine里面的指令；&lt;/li>
+&lt;li>P的数量等于环境变量&lt;code>GOMAXPROCS&lt;/code>的值， 一般等于宿主机的处理器核心数；&lt;/li>
+&lt;li>灰色的goroutine没有在&lt;code>running&lt;/code>，但是已经准备好被调度了。他们所处的队列叫&lt;code>runqueues&lt;/code>，每当执行的&lt;code>go statement&lt;/code>指令时，新的goroutine就会加到runqueue的尾部；&lt;/li>
+&lt;li>每个P都有自己本地runqueue。&lt;/li>
+&lt;/ol>
+&lt;h3 id="syscall--hand-off">(sys)call / hand-off&lt;/h3>
+&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 137;
+flex-basis: 330px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/go-scheduler/syscall.jpeg" data-size="550x400">
+&lt;img src="https://tab.wutuofu.com/posts/go-scheduler/syscall.jpeg"
+width="550"
+height="400"
+srcset="https://tab.wutuofu.com/posts/go-scheduler/syscall_hu71699ffe4298f5dd3b241a2b684b0eae_17678_480x0_resize_q75_box.jpeg 480w, https://tab.wutuofu.com/posts/go-scheduler/syscall_hu71699ffe4298f5dd3b241a2b684b0eae_17678_1024x0_resize_q75_box.jpeg 1024w"
+loading="lazy"
+alt="syscall demo">
+&lt;/a>
+&lt;figcaption>syscall demo&lt;/figcaption>
+&lt;/figure>&lt;/p>
+&lt;p>&lt;code>M0&lt;/code>把自己的context给了&lt;code>M1&lt;/code>，流程是这样的：&lt;/p>
+&lt;ol>
+&lt;li>M0执行G0上的某条&lt;code>syscall&lt;/code>指令；&lt;/li>
+&lt;li>M0放弃P进入block状态，M1得到并继续执行P调度算法，可能去执行另外某一个goroutine；&lt;/li>
+&lt;li>&lt;code>syscall&lt;/code>返回，M0因为没有P所以不能继续执行G0。现在M0需要去偷一个P执行G0，否则就把G0放到&lt;code>global runqueue&lt;/code>里面然后把自己放回thread cahe去sleep。&lt;/li>
+&lt;/ol>
+&lt;p>也有几点需要单独说明：&lt;/p>
+&lt;ol>
+&lt;li>M1可能是scheduler为了处理syscall特意创建的，也可能是来自&lt;code>thread cache&lt;/code>；&lt;/li>
+&lt;li>当P本地的runqueue为空时，P会从&lt;code>global runqueue&lt;/code>拉取G；即使本地runqueue没有空，P也会定期的检查&lt;code>global runqueue&lt;/code>里的goroutine。&lt;/li>
+&lt;li>正是因为要处理&lt;code>syscal/hand-off&lt;/code>，所以即使GOMAXPROCS等于1，Go还是会启动多个OS线程。&lt;/li>
+&lt;/ol>
+&lt;h3 id="stealing-work">stealing work&lt;/h3>
+&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 137;
+flex-basis: 330px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/go-scheduler/steal.jpeg" data-size="550x400">
+&lt;img src="https://tab.wutuofu.com/posts/go-scheduler/steal.jpeg"
+width="550"
+height="400"
+srcset="https://tab.wutuofu.com/posts/go-scheduler/steal_hu803057213e7fa552581c1059eddb0e8c_17446_480x0_resize_q75_box.jpeg 480w, https://tab.wutuofu.com/posts/go-scheduler/steal_hu803057213e7fa552581c1059eddb0e8c_17446_1024x0_resize_q75_box.jpeg 1024w"
+loading="lazy"
+alt="steal work/goroutine demo">
+&lt;/a>
+&lt;figcaption>steal work/goroutine demo&lt;/figcaption>
+&lt;/figure>&lt;/p>
+&lt;p>当P自己本地的runqueue空了，而且global runqueue也是空的时候，
+P就会去其他P偷掉对方一半的G，从而使得自己和其它P都能高效工作，提高整体性能。&lt;/p>
+&lt;p>&lt;a class="link" href="https://morsmachine.dk/go-scheduler" target="_blank" rel="noopener"
+>参考文档&lt;/a>&lt;/p></description></item><item><title>纸巾和盆栽</title><link>https://tab.wutuofu.com/posts/tissue-flower/</link><pubDate>Fri, 19 Nov 2021 09:53:25 +0800</pubDate><guid>https://tab.wutuofu.com/posts/tissue-flower/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/tissue-flower/flower.jpeg" alt="Featured image of post 纸巾和盆栽" />&lt;p>月初的时候同事抱怨公司没有纸巾了，有点儿不方便。
 八卦一阵后，原来是说上个月团建超预算了，下个月才有经费采购纸巾。估计还要等20多天。&lt;/p>
 &lt;p>慢慢的大家的纸巾都用完了，私下的抱怨也越来越多。&lt;/p>
 &lt;p>到了月中也就不怎么抱怨了，毕竟才几块钱的东西，大家基本上都自己买了。&lt;/p>
@@ -22,7 +117,8 @@ alt="beautiful potted plants">
 &lt;/figure>&lt;/p>
 &lt;p>有一说一，这些盆栽挺漂亮的。&lt;/p>
 &lt;p>不过公司要是能把没有纸巾的问题解决了，赏花的时候心里会更舒服些，不要&lt;strong>辜负&lt;/strong>了绿油油漂亮的盆栽。&lt;/p>
-&lt;p>ps. 我也不敢提纸巾的时候，忍一忍就过去了哈。&lt;/p></description></item><item><title>循环播放gif图片</title><link>https://tab.wutuofu.com/posts/gif-loop/</link><pubDate>Thu, 18 Nov 2021 17:23:48 +0800</pubDate><guid>https://tab.wutuofu.com/posts/gif-loop/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/gif-loop/deja-vu-brain-injury.jpeg" alt="Featured image of post 循环播放gif图片" />&lt;h2 id="install">install&lt;/h2>
+&lt;p>ps. 我也不敢提纸巾的时候，忍一忍就过去了哈。
+pps. 下午接到通知，大老板要从上海过来。公司还请了保洁阿姨搞卫生。可能是特批了一笔经费吧。&lt;/p></description></item><item><title>循环播放gif图片</title><link>https://tab.wutuofu.com/posts/gif-loop/</link><pubDate>Thu, 18 Nov 2021 17:23:48 +0800</pubDate><guid>https://tab.wutuofu.com/posts/gif-loop/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/gif-loop/deja-vu-brain-injury.jpeg" alt="Featured image of post 循环播放gif图片" />&lt;h2 id="install">install&lt;/h2>
 &lt;p>首先使用&lt;code>macport&lt;/code>安装 &lt;code>imagemagick&lt;/code>软件包，因为macport是编译安装软件包，所以安装过程会比较久（~9min）。
 更加习惯homebrew的可以参考 &lt;a class="link" href="https://imagemagick.org/script/download.php#macosx" target="_blank" rel="noopener"
 >官网imagemagick download&lt;/a> 安装。&lt;/p>
@@ -632,7 +728,160 @@ mkfifo &lt;span class="nv">$pipe&lt;/span>
 &lt;span class="k">fi&lt;/span>
 &lt;span class="nv">msg&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="s2">&amp;#34;Hello from &lt;/span>&lt;span class="nv">$$&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">}&lt;/span>
 &lt;span class="nb">echo&lt;/span> &lt;span class="nv">$msg&lt;/span> &amp;gt;&lt;span class="nv">$pipe&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>试用Azure Centos虚拟机</title><link>https://tab.wutuofu.com/posts/azure-centos/</link><pubDate>Wed, 15 Nov 2017 10:48:20 +0800</pubDate><guid>https://tab.wutuofu.com/posts/azure-centos/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/azure-centos/Azure.png" alt="Featured image of post 试用Azure Centos虚拟机" />&lt;p>换了份工作，新公司是做加密币交易所的，服务器都在国外。所以有机会接触到了微软的azure云服务，
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>安装配置openvpn</title><link>https://tab.wutuofu.com/posts/install-openvpn/</link><pubDate>Tue, 20 Feb 2018 13:24:19 +0800</pubDate><guid>https://tab.wutuofu.com/posts/install-openvpn/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/install-openvpn/openvpnflows.jpeg" alt="Featured image of post 安装配置openvpn" />&lt;p>开发需要能调用&lt;code>facebook&lt;/code>的接口，我们运维这边需要配置一台测试服务器能访问&lt;code>facebook&lt;/code>，用shadowsocks
+和squid 代理，性能不够好。所以决定上openvpn。&lt;/p>
+&lt;p>简单记录下openVPN的安装配置过程，服务端和客户端使用的操作系统均是centos 7。&lt;/p>
+&lt;h2 id="服务端">服务端&lt;/h2>
+&lt;h3 id="安装">安装&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>yum install epel-release -y
+yum install openvpn openssl -y
+&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="自签名证书">自签名证书&lt;/h4>
+&lt;p>使用&lt;code>openssl&lt;/code>工具生产自签名的ca，证书，client.key，并把这些证书传给客户端：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>
+&lt;span class="c1">### CA&lt;/span>
+openssl dhparam -out /etc/openvpn/dh.pem &lt;span class="m">2048&lt;/span>
+openssl genrsa -out /etc/openvpn/ca.key &lt;span class="m">2048&lt;/span>
+openssl req -new -key /etc/openvpn/ca.key -out /etc/openvpn/ca.csr -subj /CN&lt;span class="o">=&lt;/span>OpenVPN-CA/
+openssl x509 -req -in /etc/openvpn/ca.csr -out /etc/openvpn/ca.crt -signkey /etc/openvpn/ca.key -days &lt;span class="m">3650&lt;/span>
+&lt;span class="nb">echo&lt;/span> &lt;span class="m">01&lt;/span> &amp;gt; /etc/openvpn/ca.srl
+chmod &lt;span class="m">600&lt;/span> /etc/openvpn/ca.key
+&lt;span class="c1">### Server &lt;/span>
+openssl genrsa -out /etc/openvpn/server.key &lt;span class="m">2048&lt;/span>
+openssl req -new -key /etc/openvpn/server.key -out /etc/openvpn/server.csr -subj /CN&lt;span class="o">=&lt;/span>OpenVPN/
+openssl x509 -req -in /etc/openvpn/server.csr -out /etc/openvpn/server.crt -CA /etc/openvpn/ca.crt -CAkey /etc/openvpn/ca.key -days &lt;span class="m">3650&lt;/span>
+chmod &lt;span class="m">600&lt;/span> /etc/openvpn/server.key
+&lt;span class="c1">### Client&lt;/span>
+openssl genrsa -out /etc/openvpn/client.key &lt;span class="m">2048&lt;/span>
+openssl req -new -key /etc/openvpn/client.key -out /etc/openvpn/client.csr -subj /CN&lt;span class="o">=&lt;/span>OpenVPN-Client/
+openssl x509 -req -in /etc/openvpn/client.csr -out /etc/openvpn/client.crt -CA /etc/openvpn/ca.crt -CAkey /etc/openvpn/ca.key -days &lt;span class="m">3650&lt;/span>
+chmod &lt;span class="m">600&lt;/span> /etc/openvpn/client.key
+&lt;span class="c1">### 把clinet的证书私钥和ca正式传给客户端&lt;/span>
+scp /etc/openvpn/ca.crt /etc/openvpn/client.crt /etc/openvpn/client.key client:
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="配置">配置&lt;/h3>
+&lt;h4 id="服务端配置文件">服务端配置文件:&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1"># /etc/openvpn/server.conf&lt;/span>
+server 10.8.0.0 255.255.255.0
+verb &lt;span class="m">3&lt;/span>
+key /etc/openvpn/server.key
+ca /etc/openvpn/ca.crt
+cert /etc/openvpn/server.crt
+dh /etc/openvpn/dh.pem
+keepalive &lt;span class="m">10&lt;/span> &lt;span class="m">120&lt;/span>
+persist-key
+persist-tun
+comp-lzo
+push &lt;span class="s2">&amp;#34;redirect-gateway def1 bypass-dhcp&amp;#34;&lt;/span>
+push &lt;span class="s2">&amp;#34;dhcp-option DNS 8.8.8.8&amp;#34;&lt;/span>
+push &lt;span class="s2">&amp;#34;dhcp-option DNS 8.8.4.4&amp;#34;&lt;/span>
+user nobody
+group nogroup
+proto udp
+port &lt;span class="m">1194&lt;/span>
+dev tun1194
+status openvpn-status.log
+&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="kernel-iptables">kernel iptables&lt;/h4>
+&lt;p>打开服务器路由配置：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>&lt;span class="nb">echo&lt;/span> &lt;span class="s1">&amp;#39;net.ipv4.ip_forward=1&amp;#39;&lt;/span> &amp;gt;&amp;gt; /etc/sysctl.conf
+sysctl -p
+iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="启动">启动&lt;/h3>
+&lt;p>服务器启动openVPN服务：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>systemctl &lt;span class="nb">enable&lt;/span> openvpn@server
+systemctl start openvpn@server
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="客户端">客户端&lt;/h2>
+&lt;h3 id="安装-1">安装&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>yum install epel-release -y
+yum install openvpn -y
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="配置-1">配置&lt;/h3>
+&lt;h4 id="证书">证书&lt;/h4>
+&lt;p>把前面服务端签名的证书移动到配置目录下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>mv ~/ca.crt /etc/openvpn
+mv ~/client* /etc/openvpn/
+&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="配置文件">配置文件&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1"># /etc/openvpn/client.conf&lt;/span>
+client
+nobind
+dev tun
+redirect-gateway def1 bypass-dhcp
+remote CHANGE_TO_YOUR_SERVER_IP &lt;span class="m">1194&lt;/span> udp
+comp-lzo yes
+&lt;span class="c1">#duplicate-cn&lt;/span>
+key /etc/openvpn/client.key
+cert /etc/openvpn/client.crt
+ca /etc/openvpn/ca.crt
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="启动-1">启动&lt;/h3>
+&lt;p>客户端启动openVPN服务：&lt;/p>
+&lt;pre tabindex="0">&lt;code>#!/bin/bash
+systemctl enable openvpn@client
+systemctl start openvpn@client
+&lt;/code>&lt;/pre>&lt;p>&lt;a class="link" href="https://www.rosehosting.com/blog/how-to-install-openvpn-on-centos-7/" target="_blank" rel="noopener"
+>参考How to Install OpenVPN on CentOS 7&lt;/a>&lt;/p></description></item><item><title>两个奴隶</title><link>https://tab.wutuofu.com/posts/postgre-two-slaves/</link><pubDate>Mon, 05 Feb 2018 21:55:41 +0800</pubDate><guid>https://tab.wutuofu.com/posts/postgre-two-slaves/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/postgre-two-slaves/postgres-replication.jpeg" alt="Featured image of post 两个奴隶" />&lt;p>一般postgres高可用集群是一个master配一个slave，但是开发这边需要做db的读写分离，所以运维这边
+又添加了一台slave专门暴露出来做读操作。原来的slave还是只做备份。&lt;/p>
+&lt;h2 id="ha">HA&lt;/h2>
+&lt;p>一主一从高可用的配置可以参考下面这篇文章
+&lt;a class="link" href="https://altecnotes.wordpress.com/2017/03/24/streaming-replication-with-postgresql/" target="_blank" rel="noopener"
+>postgres streaming replication&lt;/a>，有时间的话我可能会搬运一下 :)&lt;/p>
+&lt;h2 id="安装配置">安装配置&lt;/h2>
+&lt;p>因为pg数据库集群已经配置好了一主一从，所以在master主机上&lt;strong>不需要&lt;/strong>配置&lt;code>pg_hba.conf&lt;/code>,
+或者&lt;code>CREATE ROLE&lt;/code>等等。&lt;/p>
+&lt;p>添加第二个&lt;code>slave&lt;/code>需要注意以下两点：&lt;/p>
+&lt;ol>
+&lt;li>等待pg_basebackup&lt;code>replicas stream&lt;/code>数据同步完成后，再启动 &lt;code>postgresql-9.6 service&lt;/code>;&lt;/li>
+&lt;li>修改&lt;code>PG_DATA_DIR&lt;/code>目录的权限;&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">rm /etc/yum.repos.d/pgdg-96-redhat.repo
+yum install https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm
+yum install -y postgresql96
+yum install -y postgresql96-server
+yum install -y postgresql96-contrib
+vi /usr/lib/systemd/system/postgresql-9.6.service
+mkdir /data/pg9.6
+chown postgres:postgres /data/pg9.6/
+ls -alh /data/pg9.6/
+pg_basebackup --help
+&lt;span class="c1">## you can add option --checkpoint=fast for an instance backup&lt;/span>
+&lt;span class="c1">## qhich is not recommend&lt;/span>
+pg_basebackup -X stream -D /data/pg9.6/ -P -R -h 10.3.3.3 -U replicator
+ls /data/pg9.6/
+cat /data/pg9.6/recovery.conf
+vi /data/pg9.6/postgresql.conf
+&lt;span class="nb">pwd&lt;/span>
+systemctl start postgresql-9.6.service
+ls -alh /data/pg9.6/
+chown -R postgres:postgres /data/pg9.6
+chmod &lt;span class="m">700&lt;/span> /data/pg9.6
+systemctl start postgresql-9.6.service
+netstat -nlp &lt;span class="p">|&lt;/span> grep &lt;span class="m">5432&lt;/span>
+su - postgres
+systemctl &lt;span class="nb">enable&lt;/span> postgresql-9.6.service
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="check">check&lt;/h3>
+&lt;p>在master主机上查看&lt;code>pg_stat_replication&lt;/code>表数据，验证第二个slave是否正常工作：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1"># on MASTER machine&lt;/span>
+&lt;span class="o">[&lt;/span>dba_lol@pg_master ~&lt;span class="o">]&lt;/span>$ sudo su - postgres
+上一次登录：五 2月 &lt;span class="m">23&lt;/span> 17:12:02 HKT 2018pts/1 上
+-bash-4.2$ psql
+psql &lt;span class="o">(&lt;/span>9.6.6&lt;span class="o">)&lt;/span>
+Type &lt;span class="s2">&amp;#34;help&amp;#34;&lt;/span> &lt;span class="k">for&lt;/span> help.
+&lt;span class="nv">postgres&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="c1"># select * from pg_stat_replication;&lt;/span>
+pid &lt;span class="p">|&lt;/span> usesysid &lt;span class="p">|&lt;/span> usename &lt;span class="p">|&lt;/span> application_name &lt;span class="p">|&lt;/span> client_addr &lt;span class="p">|&lt;/span> client_hostname &lt;span class="p">|&lt;/span> client_port &lt;span class="p">|&lt;/span> backend_start &lt;span class="p">|&lt;/span> backend_xmin &lt;span class="p">|&lt;/span> state &lt;span class="p">|&lt;/span> sent_location &lt;span class="p">|&lt;/span> write_location &lt;span class="p">|&lt;/span> flush_location &lt;span class="p">|&lt;/span> replay_location &lt;span class="p">|&lt;/span> sync_priorit
+y &lt;span class="p">|&lt;/span> sync_state
+------+----------+---------+------------------+-------------+-----------------+-------------+-------------------------------+--------------+-----------+---------------+----------------+----------------+-----------------+-------------
+--+------------
+&lt;span class="m">6720&lt;/span> &lt;span class="p">|&lt;/span> &lt;span class="m">19367&lt;/span> &lt;span class="p">|&lt;/span> replicator &lt;span class="p">|&lt;/span> walreceiver &lt;span class="p">|&lt;/span> 10.2.2.2 &lt;span class="p">|&lt;/span> &lt;span class="p">|&lt;/span> &lt;span class="m">49308&lt;/span> &lt;span class="p">|&lt;/span> 2018-01-24 18:20:47.114058+08 &lt;span class="p">|&lt;/span> &lt;span class="p">|&lt;/span> streaming &lt;span class="p">|&lt;/span> 82/6B07DD60 &lt;span class="p">|&lt;/span> 82/6B07DD60 &lt;span class="p">|&lt;/span> 82/6B07DD60 &lt;span class="p">|&lt;/span> 82/6B07DD20 &lt;span class="p">|&lt;/span>
+&lt;span class="m">0&lt;/span> &lt;span class="p">|&lt;/span> async
+&lt;span class="m">446&lt;/span> &lt;span class="p">|&lt;/span> &lt;span class="m">19367&lt;/span> &lt;span class="p">|&lt;/span> replicator &lt;span class="p">|&lt;/span> walreceiver &lt;span class="p">|&lt;/span> 10.2.2.4 &lt;span class="p">|&lt;/span> &lt;span class="p">|&lt;/span> &lt;span class="m">54836&lt;/span> &lt;span class="p">|&lt;/span> 2018-02-21 13:21:39.420745+08 &lt;span class="p">|&lt;/span> &lt;span class="p">|&lt;/span> streaming &lt;span class="p">|&lt;/span> 82/6B07DD60 &lt;span class="p">|&lt;/span> 82/6B07DD60 &lt;span class="p">|&lt;/span> 82/6B07DD60 &lt;span class="p">|&lt;/span> 82/6B07DD20 &lt;span class="p">|&lt;/span>
+&lt;span class="m">0&lt;/span> &lt;span class="p">|&lt;/span> async
+&lt;span class="o">(&lt;/span>&lt;span class="m">2&lt;/span> rows&lt;span class="o">)&lt;/span>
+&lt;span class="nv">postgres&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="c1"># &lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="ps">PS&lt;/h2>
+&lt;h3 id="add-slave-to-slave">add slave to slave&lt;/h3>
+&lt;p>编辑&lt;code>recover.conf&lt;/code> 文件 的 &lt;code>primary_conninfo&lt;/code>地址信息可以实现&lt;code>slave&lt;/code> -&amp;gt; &lt;code>slave&lt;/code>的数据同步。&lt;/p></description></item><item><title>试用Azure Centos虚拟机</title><link>https://tab.wutuofu.com/posts/azure-centos/</link><pubDate>Wed, 15 Nov 2017 10:48:20 +0800</pubDate><guid>https://tab.wutuofu.com/posts/azure-centos/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/azure-centos/Azure.png" alt="Featured image of post 试用Azure Centos虚拟机" />&lt;p>换了份工作，新公司是做加密币交易所的，服务器都在国外。所以有机会接触到了微软的azure云服务，
 服务器基本都在亚太区新加坡。&lt;/p>
 &lt;p>ps：这是我第一次实操单台配置32c64g的虚拟机，纪念一下。以前工作中最多就8c16g，数量的话两三百台机器。&lt;/p>
 &lt;h2 id="history">history&lt;/h2>
@@ -1458,4 +1707,146 @@ connections on Unix domain socket &lt;span class="s2">&amp;#34;/var/pgsql_socket
 &lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">database&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">xxx&lt;/span>&lt;span class="w">
 &lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">username&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">xxx&lt;/span>&lt;span class="w">
 &lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">password&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">&amp;lt;%= ENV[&amp;#39;xxx_xxx_PASSWORD&amp;#39;] %&amp;gt;&lt;/span>&lt;span class="w">
-&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>部署moodle</title><link>https://tab.wutuofu.com/posts/install-moodle/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://tab.wutuofu.com/posts/install-moodle/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/install-moodle/moodle.png" alt="Featured image of post 部署moodle" />&lt;p>客户需要部署一套 &lt;a class="link" href="https://download.moodle.org/releases/latest/" target="_blank" rel="noopener"
+>moodle&lt;/a> 教学系统。&lt;/p>
+&lt;p>去&lt;a class="link" href="https://moodle.org/" target="_blank" rel="noopener"
+>moodle官网&lt;/a>大致看了一圈，发现moodle 是一个典型的PHP web应用。&lt;/p>
+&lt;p>其实这种&lt;code>LAMP (Linux, Apache, MySQL, PHP/Perl/Python)&lt;/code>的应用，&lt;/p>
+&lt;p>我一般会用docker componse快速部署的，比如这个&lt;a class="link" href="https://github.com/bitnami/bitnami-docker-moodle/blob/master/docker-compose.yml" target="_blank" rel="noopener"
+>docker componse&lt;/a>看上去就很不错。&lt;/p>
+&lt;p>但是客户不想用docker，要求直接在vm上部署。&lt;/p>
+&lt;p>初步确认部署环境为： &lt;code>nginx(let's encrypt)&lt;/code> + &lt;code>php 7.2&lt;/code> + &lt;code>pg 10&lt;/code> + &lt;code>Centos 7.4&lt;/code> 。&lt;/p>
+&lt;h2 id="安装软件">安装软件&lt;/h2>
+&lt;h3 id="初始化主机">初始化主机&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">hostnamectl set-hostname wutuofu.com
+&lt;span class="c1"># disable passwd login; use ssh-key only&lt;/span>
+vi /etc/ssh/sshd_config
+yum update -y
+yum upgrade -y
+init &lt;span class="m">6&lt;/span>
+&lt;span class="c1"># add remi repo&lt;/span>
+rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装nginx">安装nginx&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">yum install nginx
+yum -y install yum-utils
+yum-config-manager --enable rhui-REGION-rhel-server-extras rhui-REGION-rhel-server-optional
+&lt;span class="c1">## 安装let&amp;#39;s encrypt certbot&lt;/span>
+yum install certbot-nginx
+systemctl &lt;span class="nb">enable&lt;/span> nginx
+systemctl start nginx
+&lt;span class="c1">## 签发证书&lt;/span>
+certbot --nginx certonly
+ls -alh /etc/nginx/
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装php-dependency">安装php dependency&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php-fpm php-common php-opcache php-pecl-apcu php-cli php-pear php-pdo php-mysqlnd php-pgsql php-pecl-mongodb php-pecl-redis php-pecl-memcache php-pecl-memcached php-gd php-mbstring php-mcrypt php-xml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="配置nginx--php-fpm">配置nginx + php-fpm&lt;/h3>
+&lt;p>详细的配置内容看&lt;a class="link" href="#%e9%85%8d%e7%bd%ae" >这里&lt;/a>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">vi /etc/nginx/nginx.conf
+ls
+mv mood.conf /etc/nginx/conf.d/
+ls -ahl /etc/php-fpm.d/
+mv www.conf /etc/php-fpm.d/
+mv php.ini /etc/
+systemctl start php-fpm.service
+systemctl &lt;span class="nb">enable&lt;/span> php-fpm.service
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装postgresql-10">安装postgresql 10&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">fdisk -l
+bash newDisk.sh /dev/vdb
+mkdir /media/data/mood
+mkdir /media/data/pgdata
+yum install https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm -y
+yum install postgresql10 -y
+yum install postgresql10-server postgresql10-contrib -y
+ls -alh /var/lib/pgsql/10/data/
+chown -R postgres:postgres /media/data/pgdata
+vi /usr/lib/systemd/system/postgresql-10.service
+/usr/pgsql-10/bin/postgresql-10-setup initdb
+systemctl &lt;span class="nb">enable&lt;/span> postgresql-10
+systemctl start postgresql-10
+&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="配置postgresql-hba">配置postgresql hba&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">netstat -nlp
+vi /media/data/pgdata/pg_hba.conf
+systemctl restart postgresql-10
+netstat -nlp
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装moodle-34">安装moodle 34&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">ls
+mv moodle-latest-34.tgz zh_cn.zip /media/data/mood/
+&lt;span class="nb">cd&lt;/span> /media/data/mood/
+ls
+tar xzf moodle-latest-34.tgz
+vi /etc/nginx/conf.d/mood.conf
+chown -R nginx:nginx /media/data/mood
+ls -alh /var/lib/php/session/
+ls -alh /run/php-fpm/
+netstat -nlp &lt;span class="p">|&lt;/span> grep php
+chown -R nginx:nginx /var/lib/php/session/
+systemctl restart php-fpm
+su - postgres
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装moodle依赖包">安装moodle依赖包&lt;/h3>
+&lt;p>安装 &lt;code>zip&lt;/code>,&lt;code>xmlrpc&lt;/code>,&lt;code>soap&lt;/code>等依赖包：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php72-php-zip
+systemctl restart php-fpm.service
+systemctl restart nginx.service
+init &lt;span class="m">6&lt;/span>
+yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php72-php-pecl-zip
+yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php-zip
+systemctl restart php-fpm.service
+systemctl restart nginx
+yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php-intl
+yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install phpxmlrpc
+yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php-xmlrpc
+yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php-soap
+systemctl restart nginx
+systemctl restart php-fpm.service
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="配置">配置&lt;/h2>
+&lt;h3 id="配置nginx-php-fpm">配置nginx php-fpm&lt;/h3>
+&lt;p>moodle使用的nginx 配置，基本适用于所有的php 应用：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-nginx" data-lang="nginx">&lt;span class="c1"># PHP Upstream Handler
+&lt;/span>&lt;span class="c1">&lt;/span>&lt;span class="k">upstream&lt;/span> &lt;span class="s">php-handler&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="kn">server&lt;/span> &lt;span class="s">unix:/run/php-fpm/php-fpm.sock&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="k">server&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="kn">server_name&lt;/span> &lt;span class="s">moodle-demo.wutuofu.com&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="kn">ssl&lt;/span> &lt;span class="no">on&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="kn">listen&lt;/span> &lt;span class="s">[::]:443&lt;/span> &lt;span class="s">ssl&lt;/span> &lt;span class="s">ipv6only=on&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="kn">listen&lt;/span> &lt;span class="mi">443&lt;/span> &lt;span class="s">ssl&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="kn">ssl_certificate&lt;/span> &lt;span class="s">/etc/letsencrypt/live/moodle-demo.wutuofu.com/fullchain.pem&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="kn">ssl_certificate_key&lt;/span> &lt;span class="s">/etc/letsencrypt/live/moodle-demo.wutuofu.com/privkey.pem&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="kn">include&lt;/span> &lt;span class="s">/etc/letsencrypt/options-ssl-nginx.conf&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="kn">ssl_dhparam&lt;/span> &lt;span class="s">/etc/letsencrypt/ssl-dhparams.pem&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
+&lt;/span>&lt;span class="c1">&lt;/span>
+&lt;span class="kn">root&lt;/span> &lt;span class="s">/media/data/mood/moodle&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="kn">rewrite&lt;/span> &lt;span class="s">^/(.*\.php)(/)(.*)&lt;/span>$ &lt;span class="s">/&lt;/span>&lt;span class="nv">$1?file=/$3&lt;/span> &lt;span class="s">last&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="kn">location&lt;/span> &lt;span class="s">^~&lt;/span> &lt;span class="s">/&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="kn">try_files&lt;/span> &lt;span class="nv">$uri&lt;/span> &lt;span class="nv">$uri/&lt;/span> &lt;span class="s">/index.php?q=&lt;/span>&lt;span class="nv">$request_uri&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="kn">index&lt;/span> &lt;span class="s">index.php&lt;/span> &lt;span class="s">index.html&lt;/span> &lt;span class="s">index.htm&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="kn">location&lt;/span> &lt;span class="p">~&lt;/span> &lt;span class="sr">\.php$&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="kn">include&lt;/span> &lt;span class="s">fastcgi.conf&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="kn">fastcgi_pass&lt;/span> &lt;span class="s">php-handler&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="c1"># http -&amp;gt; https
+&lt;/span>&lt;span class="c1">&lt;/span>&lt;span class="k">server&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="kn">if&lt;/span> &lt;span class="s">(&lt;/span>&lt;span class="nv">$host&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s">moodle-demo.wutuofu.com)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="kn">return&lt;/span> &lt;span class="mi">301&lt;/span> &lt;span class="s">https://&lt;/span>&lt;span class="nv">$host$request_uri&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="p">}&lt;/span> &lt;span class="c1"># managed by Certbot
+&lt;/span>&lt;span class="c1">&lt;/span>
+&lt;span class="kn">listen&lt;/span> &lt;span class="mi">80&lt;/span> &lt;span class="p">;&lt;/span>
+&lt;span class="kn">listen&lt;/span> &lt;span class="s">[::]:80&lt;/span> &lt;span class="p">;&lt;/span>
+&lt;span class="kn">server_name&lt;/span> &lt;span class="s">moodle-demo.wutuofu.com&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="kn">return&lt;/span> &lt;span class="mi">404&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
+&lt;/span>&lt;span class="c1">&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="配置https证书">配置https证书&lt;/h3>
+&lt;p>配置let&amp;rsquo;s encrypt自更新&lt;code>crontab&lt;/code> job:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">certbot renew --dry-run
+crontab -e
+crontab -l
+&lt;span class="m">0&lt;/span> 0,12 * * * python -c &lt;span class="s1">&amp;#39;import random; import time; time.sleep(random.random() * 3600)&amp;#39;&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> certbot renew
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="参考">参考&lt;/h2>
+&lt;p>&lt;a class="link" href="https://docs.moodle.org/33/en/PostgreSQL" target="_blank" rel="noopener"
+>moodle: set up postgresql counts and database&lt;/a>&lt;/p>
+&lt;p>&lt;a class="link" href="https://www.howtoforge.com/tutorial/how-to-install-moodle-32-on-centos-7/" target="_blank" rel="noopener"
+>PHP(php-fpm) nginx&lt;/a>&lt;/p></description></item></channel></rss>
