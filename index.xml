@@ -728,7 +728,149 @@ mkfifo &lt;span class="nv">$pipe&lt;/span>
 &lt;span class="k">fi&lt;/span>
 &lt;span class="nv">msg&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="s2">&amp;#34;Hello from &lt;/span>&lt;span class="nv">$$&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">}&lt;/span>
 &lt;span class="nb">echo&lt;/span> &lt;span class="nv">$msg&lt;/span> &amp;gt;&lt;span class="nv">$pipe&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>安装配置openvpn</title><link>https://tab.wutuofu.com/posts/install-openvpn/</link><pubDate>Tue, 20 Feb 2018 13:24:19 +0800</pubDate><guid>https://tab.wutuofu.com/posts/install-openvpn/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/install-openvpn/openvpnflows.jpeg" alt="Featured image of post 安装配置openvpn" />&lt;p>开发需要能调用&lt;code>facebook&lt;/code>的接口，我们运维这边需要配置一台测试服务器能访问&lt;code>facebook&lt;/code>，用shadowsocks
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>部署moodle</title><link>https://tab.wutuofu.com/posts/install-moodle/</link><pubDate>Tue, 20 Mar 2018 13:58:27 +0800</pubDate><guid>https://tab.wutuofu.com/posts/install-moodle/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/install-moodle/moodle.png" alt="Featured image of post 部署moodle" />&lt;p>客户需要部署一套 &lt;a class="link" href="https://download.moodle.org/releases/latest/" target="_blank" rel="noopener"
+>moodle&lt;/a> 教学系统。&lt;/p>
+&lt;p>去&lt;a class="link" href="https://moodle.org/" target="_blank" rel="noopener"
+>moodle官网&lt;/a>大致看了一圈，发现moodle 是一个典型的PHP web应用。&lt;/p>
+&lt;p>其实这种&lt;code>LAMP (Linux, Apache, MySQL, PHP/Perl/Python)&lt;/code>的应用，&lt;/p>
+&lt;p>我一般会用docker componse快速部署的，比如这个&lt;a class="link" href="https://github.com/bitnami/bitnami-docker-moodle/blob/master/docker-compose.yml" target="_blank" rel="noopener"
+>docker componse&lt;/a>看上去就很不错。&lt;/p>
+&lt;p>但是客户不想用docker，要求直接在vm上部署。&lt;/p>
+&lt;p>初步确认部署环境为： &lt;code>nginx(let's encrypt)&lt;/code> + &lt;code>php 7.2&lt;/code> + &lt;code>pg 10&lt;/code> + &lt;code>Centos 7.4&lt;/code> 。&lt;/p>
+&lt;h2 id="安装软件">安装软件&lt;/h2>
+&lt;h3 id="初始化主机">初始化主机&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">hostnamectl set-hostname wutuofu.com
+&lt;span class="c1"># disable passwd login; use ssh-key only&lt;/span>
+vi /etc/ssh/sshd_config
+yum update -y
+yum upgrade -y
+init &lt;span class="m">6&lt;/span>
+&lt;span class="c1"># add remi repo&lt;/span>
+rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装nginx">安装nginx&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">yum install nginx
+yum -y install yum-utils
+yum-config-manager --enable rhui-REGION-rhel-server-extras rhui-REGION-rhel-server-optional
+&lt;span class="c1">## 安装let&amp;#39;s encrypt certbot&lt;/span>
+yum install certbot-nginx
+systemctl &lt;span class="nb">enable&lt;/span> nginx
+systemctl start nginx
+&lt;span class="c1">## 签发证书&lt;/span>
+certbot --nginx certonly
+ls -alh /etc/nginx/
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装php-dependency">安装php dependency&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php-fpm php-common php-opcache php-pecl-apcu php-cli php-pear php-pdo php-mysqlnd php-pgsql php-pecl-mongodb php-pecl-redis php-pecl-memcache php-pecl-memcached php-gd php-mbstring php-mcrypt php-xml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="配置nginx--php-fpm">配置nginx + php-fpm&lt;/h3>
+&lt;p>详细的配置内容看&lt;a class="link" href="#%e9%85%8d%e7%bd%ae" >这里&lt;/a>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">vi /etc/nginx/nginx.conf
+ls
+mv mood.conf /etc/nginx/conf.d/
+ls -ahl /etc/php-fpm.d/
+mv www.conf /etc/php-fpm.d/
+mv php.ini /etc/
+systemctl start php-fpm.service
+systemctl &lt;span class="nb">enable&lt;/span> php-fpm.service
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装postgresql-10">安装postgresql 10&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">fdisk -l
+bash newDisk.sh /dev/vdb
+mkdir /media/data/mood
+mkdir /media/data/pgdata
+yum install https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm -y
+yum install postgresql10 -y
+yum install postgresql10-server postgresql10-contrib -y
+ls -alh /var/lib/pgsql/10/data/
+chown -R postgres:postgres /media/data/pgdata
+vi /usr/lib/systemd/system/postgresql-10.service
+/usr/pgsql-10/bin/postgresql-10-setup initdb
+systemctl &lt;span class="nb">enable&lt;/span> postgresql-10
+systemctl start postgresql-10
+&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="配置postgresql-hba">配置postgresql hba&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">netstat -nlp
+vi /media/data/pgdata/pg_hba.conf
+systemctl restart postgresql-10
+netstat -nlp
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装moodle-34">安装moodle 34&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">ls
+mv moodle-latest-34.tgz zh_cn.zip /media/data/mood/
+&lt;span class="nb">cd&lt;/span> /media/data/mood/
+ls
+tar xzf moodle-latest-34.tgz
+vi /etc/nginx/conf.d/mood.conf
+chown -R nginx:nginx /media/data/mood
+ls -alh /var/lib/php/session/
+ls -alh /run/php-fpm/
+netstat -nlp &lt;span class="p">|&lt;/span> grep php
+chown -R nginx:nginx /var/lib/php/session/
+systemctl restart php-fpm
+su - postgres
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装moodle依赖包">安装moodle依赖包&lt;/h3>
+&lt;p>安装 &lt;code>zip&lt;/code>,&lt;code>xmlrpc&lt;/code>,&lt;code>soap&lt;/code>等依赖包：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php72-php-zip
+systemctl restart php-fpm.service
+systemctl restart nginx.service
+init &lt;span class="m">6&lt;/span>
+yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php72-php-pecl-zip
+yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php-zip
+systemctl restart php-fpm.service
+systemctl restart nginx
+yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php-intl
+yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install phpxmlrpc
+yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php-xmlrpc
+yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php-soap
+systemctl restart nginx
+systemctl restart php-fpm.service
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="配置">配置&lt;/h2>
+&lt;h3 id="配置nginx-php-fpm">配置nginx php-fpm&lt;/h3>
+&lt;p>moodle使用的nginx 配置，基本适用于所有的php 应用：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-nginx" data-lang="nginx">&lt;span class="c1"># PHP Upstream Handler
+&lt;/span>&lt;span class="c1">&lt;/span>&lt;span class="k">upstream&lt;/span> &lt;span class="s">php-handler&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="kn">server&lt;/span> &lt;span class="s">unix:/run/php-fpm/php-fpm.sock&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="k">server&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="kn">server_name&lt;/span> &lt;span class="s">moodle-demo.wutuofu.com&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="kn">ssl&lt;/span> &lt;span class="no">on&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="kn">listen&lt;/span> &lt;span class="s">[::]:443&lt;/span> &lt;span class="s">ssl&lt;/span> &lt;span class="s">ipv6only=on&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="kn">listen&lt;/span> &lt;span class="mi">443&lt;/span> &lt;span class="s">ssl&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="kn">ssl_certificate&lt;/span> &lt;span class="s">/etc/letsencrypt/live/moodle-demo.wutuofu.com/fullchain.pem&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="kn">ssl_certificate_key&lt;/span> &lt;span class="s">/etc/letsencrypt/live/moodle-demo.wutuofu.com/privkey.pem&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="kn">include&lt;/span> &lt;span class="s">/etc/letsencrypt/options-ssl-nginx.conf&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="kn">ssl_dhparam&lt;/span> &lt;span class="s">/etc/letsencrypt/ssl-dhparams.pem&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
+&lt;/span>&lt;span class="c1">&lt;/span>
+&lt;span class="kn">root&lt;/span> &lt;span class="s">/media/data/mood/moodle&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="kn">rewrite&lt;/span> &lt;span class="s">^/(.*\.php)(/)(.*)&lt;/span>$ &lt;span class="s">/&lt;/span>&lt;span class="nv">$1?file=/$3&lt;/span> &lt;span class="s">last&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="kn">location&lt;/span> &lt;span class="s">^~&lt;/span> &lt;span class="s">/&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="kn">try_files&lt;/span> &lt;span class="nv">$uri&lt;/span> &lt;span class="nv">$uri/&lt;/span> &lt;span class="s">/index.php?q=&lt;/span>&lt;span class="nv">$request_uri&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="kn">index&lt;/span> &lt;span class="s">index.php&lt;/span> &lt;span class="s">index.html&lt;/span> &lt;span class="s">index.htm&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="kn">location&lt;/span> &lt;span class="p">~&lt;/span> &lt;span class="sr">\.php$&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="kn">include&lt;/span> &lt;span class="s">fastcgi.conf&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="kn">fastcgi_pass&lt;/span> &lt;span class="s">php-handler&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="c1"># http -&amp;gt; https
+&lt;/span>&lt;span class="c1">&lt;/span>&lt;span class="k">server&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="kn">if&lt;/span> &lt;span class="s">(&lt;/span>&lt;span class="nv">$host&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s">moodle-demo.wutuofu.com)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="kn">return&lt;/span> &lt;span class="mi">301&lt;/span> &lt;span class="s">https://&lt;/span>&lt;span class="nv">$host$request_uri&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="p">}&lt;/span> &lt;span class="c1"># managed by Certbot
+&lt;/span>&lt;span class="c1">&lt;/span>
+&lt;span class="kn">listen&lt;/span> &lt;span class="mi">80&lt;/span> &lt;span class="p">;&lt;/span>
+&lt;span class="kn">listen&lt;/span> &lt;span class="s">[::]:80&lt;/span> &lt;span class="p">;&lt;/span>
+&lt;span class="kn">server_name&lt;/span> &lt;span class="s">moodle-demo.wutuofu.com&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="kn">return&lt;/span> &lt;span class="mi">404&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
+&lt;/span>&lt;span class="c1">&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="配置https证书">配置https证书&lt;/h3>
+&lt;p>配置let&amp;rsquo;s encrypt自更新&lt;code>crontab&lt;/code> job:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">certbot renew --dry-run
+crontab -e
+crontab -l
+&lt;span class="m">0&lt;/span> 0,12 * * * python -c &lt;span class="s1">&amp;#39;import random; import time; time.sleep(random.random() * 3600)&amp;#39;&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> certbot renew
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="参考">参考&lt;/h2>
+&lt;p>&lt;a class="link" href="https://docs.moodle.org/33/en/PostgreSQL" target="_blank" rel="noopener"
+>moodle: set up postgresql counts and database&lt;/a>&lt;/p>
+&lt;p>&lt;a class="link" href="https://www.howtoforge.com/tutorial/how-to-install-moodle-32-on-centos-7/" target="_blank" rel="noopener"
+>PHP(php-fpm) nginx&lt;/a>&lt;/p></description></item><item><title>安装配置openvpn</title><link>https://tab.wutuofu.com/posts/install-openvpn/</link><pubDate>Tue, 20 Feb 2018 13:24:19 +0800</pubDate><guid>https://tab.wutuofu.com/posts/install-openvpn/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/install-openvpn/openvpnflows.jpeg" alt="Featured image of post 安装配置openvpn" />&lt;p>开发需要能调用&lt;code>facebook&lt;/code>的接口，我们运维这边需要配置一台测试服务器能访问&lt;code>facebook&lt;/code>，用shadowsocks
 和squid 代理，性能不够好。所以决定上openvpn。&lt;/p>
 &lt;p>简单记录下openVPN的安装配置过程，服务端和客户端使用的操作系统均是centos 7。&lt;/p>
 &lt;h2 id="服务端">服务端&lt;/h2>
@@ -1707,146 +1849,4 @@ connections on Unix domain socket &lt;span class="s2">&amp;#34;/var/pgsql_socket
 &lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">database&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">xxx&lt;/span>&lt;span class="w">
 &lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">username&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">xxx&lt;/span>&lt;span class="w">
 &lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nt">password&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">&amp;lt;%= ENV[&amp;#39;xxx_xxx_PASSWORD&amp;#39;] %&amp;gt;&lt;/span>&lt;span class="w">
-&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>部署moodle</title><link>https://tab.wutuofu.com/posts/install-moodle/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://tab.wutuofu.com/posts/install-moodle/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/install-moodle/moodle.png" alt="Featured image of post 部署moodle" />&lt;p>客户需要部署一套 &lt;a class="link" href="https://download.moodle.org/releases/latest/" target="_blank" rel="noopener"
->moodle&lt;/a> 教学系统。&lt;/p>
-&lt;p>去&lt;a class="link" href="https://moodle.org/" target="_blank" rel="noopener"
->moodle官网&lt;/a>大致看了一圈，发现moodle 是一个典型的PHP web应用。&lt;/p>
-&lt;p>其实这种&lt;code>LAMP (Linux, Apache, MySQL, PHP/Perl/Python)&lt;/code>的应用，&lt;/p>
-&lt;p>我一般会用docker componse快速部署的，比如这个&lt;a class="link" href="https://github.com/bitnami/bitnami-docker-moodle/blob/master/docker-compose.yml" target="_blank" rel="noopener"
->docker componse&lt;/a>看上去就很不错。&lt;/p>
-&lt;p>但是客户不想用docker，要求直接在vm上部署。&lt;/p>
-&lt;p>初步确认部署环境为： &lt;code>nginx(let's encrypt)&lt;/code> + &lt;code>php 7.2&lt;/code> + &lt;code>pg 10&lt;/code> + &lt;code>Centos 7.4&lt;/code> 。&lt;/p>
-&lt;h2 id="安装软件">安装软件&lt;/h2>
-&lt;h3 id="初始化主机">初始化主机&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">hostnamectl set-hostname wutuofu.com
-&lt;span class="c1"># disable passwd login; use ssh-key only&lt;/span>
-vi /etc/ssh/sshd_config
-yum update -y
-yum upgrade -y
-init &lt;span class="m">6&lt;/span>
-&lt;span class="c1"># add remi repo&lt;/span>
-rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装nginx">安装nginx&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">yum install nginx
-yum -y install yum-utils
-yum-config-manager --enable rhui-REGION-rhel-server-extras rhui-REGION-rhel-server-optional
-&lt;span class="c1">## 安装let&amp;#39;s encrypt certbot&lt;/span>
-yum install certbot-nginx
-systemctl &lt;span class="nb">enable&lt;/span> nginx
-systemctl start nginx
-&lt;span class="c1">## 签发证书&lt;/span>
-certbot --nginx certonly
-ls -alh /etc/nginx/
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装php-dependency">安装php dependency&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php-fpm php-common php-opcache php-pecl-apcu php-cli php-pear php-pdo php-mysqlnd php-pgsql php-pecl-mongodb php-pecl-redis php-pecl-memcache php-pecl-memcached php-gd php-mbstring php-mcrypt php-xml
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="配置nginx--php-fpm">配置nginx + php-fpm&lt;/h3>
-&lt;p>详细的配置内容看&lt;a class="link" href="#%e9%85%8d%e7%bd%ae" >这里&lt;/a>&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">vi /etc/nginx/nginx.conf
-ls
-mv mood.conf /etc/nginx/conf.d/
-ls -ahl /etc/php-fpm.d/
-mv www.conf /etc/php-fpm.d/
-mv php.ini /etc/
-systemctl start php-fpm.service
-systemctl &lt;span class="nb">enable&lt;/span> php-fpm.service
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装postgresql-10">安装postgresql 10&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">fdisk -l
-bash newDisk.sh /dev/vdb
-mkdir /media/data/mood
-mkdir /media/data/pgdata
-yum install https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm -y
-yum install postgresql10 -y
-yum install postgresql10-server postgresql10-contrib -y
-ls -alh /var/lib/pgsql/10/data/
-chown -R postgres:postgres /media/data/pgdata
-vi /usr/lib/systemd/system/postgresql-10.service
-/usr/pgsql-10/bin/postgresql-10-setup initdb
-systemctl &lt;span class="nb">enable&lt;/span> postgresql-10
-systemctl start postgresql-10
-&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="配置postgresql-hba">配置postgresql hba&lt;/h4>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">netstat -nlp
-vi /media/data/pgdata/pg_hba.conf
-systemctl restart postgresql-10
-netstat -nlp
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装moodle-34">安装moodle 34&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">ls
-mv moodle-latest-34.tgz zh_cn.zip /media/data/mood/
-&lt;span class="nb">cd&lt;/span> /media/data/mood/
-ls
-tar xzf moodle-latest-34.tgz
-vi /etc/nginx/conf.d/mood.conf
-chown -R nginx:nginx /media/data/mood
-ls -alh /var/lib/php/session/
-ls -alh /run/php-fpm/
-netstat -nlp &lt;span class="p">|&lt;/span> grep php
-chown -R nginx:nginx /var/lib/php/session/
-systemctl restart php-fpm
-su - postgres
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装moodle依赖包">安装moodle依赖包&lt;/h3>
-&lt;p>安装 &lt;code>zip&lt;/code>,&lt;code>xmlrpc&lt;/code>,&lt;code>soap&lt;/code>等依赖包：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php72-php-zip
-systemctl restart php-fpm.service
-systemctl restart nginx.service
-init &lt;span class="m">6&lt;/span>
-yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php72-php-pecl-zip
-yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php-zip
-systemctl restart php-fpm.service
-systemctl restart nginx
-yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php-intl
-yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install phpxmlrpc
-yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php-xmlrpc
-yum --enablerepo&lt;span class="o">=&lt;/span>remi,remi-php72 install php-soap
-systemctl restart nginx
-systemctl restart php-fpm.service
-&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="配置">配置&lt;/h2>
-&lt;h3 id="配置nginx-php-fpm">配置nginx php-fpm&lt;/h3>
-&lt;p>moodle使用的nginx 配置，基本适用于所有的php 应用：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-nginx" data-lang="nginx">&lt;span class="c1"># PHP Upstream Handler
-&lt;/span>&lt;span class="c1">&lt;/span>&lt;span class="k">upstream&lt;/span> &lt;span class="s">php-handler&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;span class="kn">server&lt;/span> &lt;span class="s">unix:/run/php-fpm/php-fpm.sock&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;span class="p">}&lt;/span>
-&lt;span class="k">server&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;span class="kn">server_name&lt;/span> &lt;span class="s">moodle-demo.wutuofu.com&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;span class="kn">ssl&lt;/span> &lt;span class="no">on&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;span class="kn">listen&lt;/span> &lt;span class="s">[::]:443&lt;/span> &lt;span class="s">ssl&lt;/span> &lt;span class="s">ipv6only=on&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
-&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="kn">listen&lt;/span> &lt;span class="mi">443&lt;/span> &lt;span class="s">ssl&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
-&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="kn">ssl_certificate&lt;/span> &lt;span class="s">/etc/letsencrypt/live/moodle-demo.wutuofu.com/fullchain.pem&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
-&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="kn">ssl_certificate_key&lt;/span> &lt;span class="s">/etc/letsencrypt/live/moodle-demo.wutuofu.com/privkey.pem&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
-&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="kn">include&lt;/span> &lt;span class="s">/etc/letsencrypt/options-ssl-nginx.conf&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
-&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="kn">ssl_dhparam&lt;/span> &lt;span class="s">/etc/letsencrypt/ssl-dhparams.pem&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
-&lt;/span>&lt;span class="c1">&lt;/span>
-&lt;span class="kn">root&lt;/span> &lt;span class="s">/media/data/mood/moodle&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;span class="kn">rewrite&lt;/span> &lt;span class="s">^/(.*\.php)(/)(.*)&lt;/span>$ &lt;span class="s">/&lt;/span>&lt;span class="nv">$1?file=/$3&lt;/span> &lt;span class="s">last&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;span class="kn">location&lt;/span> &lt;span class="s">^~&lt;/span> &lt;span class="s">/&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;span class="kn">try_files&lt;/span> &lt;span class="nv">$uri&lt;/span> &lt;span class="nv">$uri/&lt;/span> &lt;span class="s">/index.php?q=&lt;/span>&lt;span class="nv">$request_uri&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;span class="kn">index&lt;/span> &lt;span class="s">index.php&lt;/span> &lt;span class="s">index.html&lt;/span> &lt;span class="s">index.htm&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;span class="kn">location&lt;/span> &lt;span class="p">~&lt;/span> &lt;span class="sr">\.php$&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;span class="kn">include&lt;/span> &lt;span class="s">fastcgi.conf&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;span class="kn">fastcgi_pass&lt;/span> &lt;span class="s">php-handler&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;span class="p">}&lt;/span>
-&lt;span class="p">}&lt;/span>
-&lt;span class="p">}&lt;/span>
-&lt;span class="c1"># http -&amp;gt; https
-&lt;/span>&lt;span class="c1">&lt;/span>&lt;span class="k">server&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;span class="kn">if&lt;/span> &lt;span class="s">(&lt;/span>&lt;span class="nv">$host&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s">moodle-demo.wutuofu.com)&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;span class="kn">return&lt;/span> &lt;span class="mi">301&lt;/span> &lt;span class="s">https://&lt;/span>&lt;span class="nv">$host$request_uri&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;span class="p">}&lt;/span> &lt;span class="c1"># managed by Certbot
-&lt;/span>&lt;span class="c1">&lt;/span>
-&lt;span class="kn">listen&lt;/span> &lt;span class="mi">80&lt;/span> &lt;span class="p">;&lt;/span>
-&lt;span class="kn">listen&lt;/span> &lt;span class="s">[::]:80&lt;/span> &lt;span class="p">;&lt;/span>
-&lt;span class="kn">server_name&lt;/span> &lt;span class="s">moodle-demo.wutuofu.com&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;span class="kn">return&lt;/span> &lt;span class="mi">404&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1"># managed by Certbot
-&lt;/span>&lt;span class="c1">&lt;/span>
-&lt;span class="p">}&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="配置https证书">配置https证书&lt;/h3>
-&lt;p>配置let&amp;rsquo;s encrypt自更新&lt;code>crontab&lt;/code> job:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">certbot renew --dry-run
-crontab -e
-crontab -l
-&lt;span class="m">0&lt;/span> 0,12 * * * python -c &lt;span class="s1">&amp;#39;import random; import time; time.sleep(random.random() * 3600)&amp;#39;&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> certbot renew
-&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="参考">参考&lt;/h2>
-&lt;p>&lt;a class="link" href="https://docs.moodle.org/33/en/PostgreSQL" target="_blank" rel="noopener"
->moodle: set up postgresql counts and database&lt;/a>&lt;/p>
-&lt;p>&lt;a class="link" href="https://www.howtoforge.com/tutorial/how-to-install-moodle-32-on-centos-7/" target="_blank" rel="noopener"
->PHP(php-fpm) nginx&lt;/a>&lt;/p></description></item></channel></rss>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>
