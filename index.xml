@@ -1,4 +1,81 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>人到三十</title><link>https://tab.wutuofu.com/</link><description>Recent content on 人到三十</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 19 Nov 2021 14:44:20 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>用户线程调度模型</title><link>https://tab.wutuofu.com/posts/go-scheduler/</link><pubDate>Fri, 19 Nov 2021 14:44:20 +0800</pubDate><guid>https://tab.wutuofu.com/posts/go-scheduler/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/go-scheduler/go-scheduler.png" alt="Featured image of post 用户线程调度模型" />&lt;p>一般来说多线程3种并发模型：&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>人到三十</title><link>https://tab.wutuofu.com/</link><description>Recent content on 人到三十</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 22 Nov 2021 18:39:03 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>clickhouse初始化</title><link>https://tab.wutuofu.com/posts/clickhouse-start/</link><pubDate>Mon, 22 Nov 2021 18:39:03 +0800</pubDate><guid>https://tab.wutuofu.com/posts/clickhouse-start/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/clickhouse-start/clickhouse.jpeg" alt="Featured image of post clickhouse初始化" />&lt;h2 id="server">server&lt;/h2>
+&lt;h3 id="docker-run">docker run&lt;/h3>
+&lt;p>启动clickhouse服务：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">docker run -d --name clickhouse-server -p 8123:8123 -p 9000:9000 --ulimit &lt;span class="nv">nofile&lt;/span>&lt;span class="o">=&lt;/span>262144:262144 yandex/clickhouse-server:21.8.10.19
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="default-user权限">default user权限&lt;/h3>
+&lt;p>默认defualt 用户不能添加新的用户，需要修改default权限，否则会报错&lt;code>Code: 497. DB::Exception: Received from localhost:9000. DB::Exception: default: Not enough privileges. To execute this query it's necessary to have the grant CREATE USER ON *.*. &lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">docker &lt;span class="nb">exec&lt;/span> -it clickhouse-server bash
+apt update -y
+apt install vim
+vi /etc/clickhouse-server/users.xml
+&lt;span class="c1"># update &amp;lt;access_management&amp;gt;1&amp;lt;/access_management&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 227;
+flex-basis: 545px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/clickhouse-start/default.png" data-size="1550x682">
+&lt;img src="https://tab.wutuofu.com/posts/clickhouse-start/default.png"
+width="1550"
+height="682"
+srcset="https://tab.wutuofu.com/posts/clickhouse-start/default_hu801c8cfdfea5b55e3cf77a27138605f8_217042_480x0_resize_box_3.png 480w, https://tab.wutuofu.com/posts/clickhouse-start/default_hu801c8cfdfea5b55e3cf77a27138605f8_217042_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="access management for default user">
+&lt;/a>
+&lt;figcaption>access management for default user&lt;/figcaption>
+&lt;/figure>&lt;/p>
+&lt;h2 id="client">client&lt;/h2>
+&lt;h3 id="docker-run-client">docker run client&lt;/h3>
+&lt;p>启动clickhouse client，添加用户和数据库：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">docker run -it --rm --link clickhouse-server:clickhouse-server yandex/clickhouse-client --host clickhouse-server
+&lt;span class="c1">## create database&lt;/span>
+fd87688bfa29 :&lt;span class="o">)&lt;/span> create database blc
+CREATE DATABASE blc
+Query id: 19562cda-a1e7-46f9-a3c2-03dec173e15b
+Ok.
+&lt;span class="m">0&lt;/span> rows in set. Elapsed: 0.009 sec.
+fd87688bfa29 :&lt;span class="o">)&lt;/span>
+&lt;span class="c1">## create user&lt;/span>
+fd87688bfa29 :&lt;span class="o">)&lt;/span> create user abc IDENTIFIED by &lt;span class="s1">&amp;#39;ssss&amp;#39;&lt;/span>
+CREATE USER abc IDENTIFIED WITH sha256_hash BY &lt;span class="s1">&amp;#39;28E51044F4A9CBAE2BBD3D8A9D8C902AD1455D42208277AC4A913B003038A3DC&amp;#39;&lt;/span>
+Query id: ee533fe8-7d66-428a-bbde-89d0a4d15924
+Ok.
+&lt;span class="m">0&lt;/span> rows in set. Elapsed: 0.002 sec.
+&lt;span class="c1">## grant &lt;/span>
+fd87688bfa29 :&lt;span class="o">)&lt;/span> GRANT ALL PRIVILEGES ON blc. * TO abc
+GRANT SHOW, SELECT, INSERT, ALTER, CREATE DATABASE, CREATE TABLE, CREATE VIEW, CREATE DICTIONARY, CREATE FUNCTION, DROP, TRUNCATE, OPTIMIZE, SYSTEM MERGES, SYSTEM TTL MERGES, SYSTEM FETCHES, SYSTEM MOVES, SYSTEM SENDS, SYSTEM REPLICATION QUEUES, SYSTEM DROP REPLICA, SYSTEM SYNC REPLICA, SYSTEM RESTART REPLICA, SYSTEM RESTORE REPLICA, SYSTEM FLUSH DISTRIBUTED, dictGet ON blc.* TO abc
+Query id: cd09b798-f7e0-45f7-8511-9914de75238c
+Ok.
+&lt;span class="m">0&lt;/span> rows in set. Elapsed: 0.002 sec.
+fd87688bfa29 :&lt;span class="o">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="sdk">sdk&lt;/h2>
+&lt;h3 id="connect-form-golang-client">connect form golang client&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-golang" data-lang="golang">&lt;span class="kn">package&lt;/span> &lt;span class="nx">db&lt;/span>
+&lt;span class="kn">import&lt;/span> &lt;span class="p">(&lt;/span>
+&lt;span class="s">&amp;#34;database/sql&amp;#34;&lt;/span>
+&lt;span class="nx">_&lt;/span> &lt;span class="s">&amp;#34;github.com/ClickHouse/clickhouse-go&amp;#34;&lt;/span>
+&lt;span class="p">)&lt;/span>
+&lt;span class="kd">var&lt;/span> &lt;span class="nx">globalDB&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">sql&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">DB&lt;/span>
+&lt;span class="c1">// Init open connection to clickhouse and check a ping cmd.
+&lt;/span>&lt;span class="c1">// url: &amp;#39;tcp://localhost:9000?debug=true&amp;amp;username=abc&amp;amp;password=ssss&amp;amp;database=blc&amp;#39;
+&lt;/span>&lt;span class="c1">&lt;/span>
+&lt;span class="kd">func&lt;/span> &lt;span class="nf">Init&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">url&lt;/span> &lt;span class="kt">string&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kd">func&lt;/span>&lt;span class="p">(),&lt;/span> &lt;span class="kt">error&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="nx">connect&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">sql&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Open&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;clickhouse&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">url&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;span class="k">if&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="k">return&lt;/span> &lt;span class="kc">nil&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="k">if&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">connect&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Ping&lt;/span>&lt;span class="p">();&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="k">return&lt;/span> &lt;span class="kc">nil&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="nx">globalDB&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">connect&lt;/span>
+&lt;span class="k">return&lt;/span> &lt;span class="kd">func&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span> &lt;span class="nx">connect&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Close&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">},&lt;/span> &lt;span class="kc">nil&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="c1">// Start create tables if not exists.
+&lt;/span>&lt;span class="c1">&lt;/span>&lt;span class="kd">func&lt;/span> &lt;span class="nf">Start&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="kt">error&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="k">return&lt;/span> &lt;span class="nf">createTables&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>用户线程调度模型</title><link>https://tab.wutuofu.com/posts/go-scheduler/</link><pubDate>Fri, 19 Nov 2021 14:44:20 +0800</pubDate><guid>https://tab.wutuofu.com/posts/go-scheduler/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/go-scheduler/go-scheduler.png" alt="Featured image of post 用户线程调度模型" />&lt;p>一般来说多线程3种并发模型：&lt;/p>
 &lt;ol>
 &lt;li>N:1， 把n个用户线程（Green threed）映射到一个操作系统的线程（OS Threed）上。&lt;/li>
 &lt;/ol>
@@ -684,7 +761,54 @@ vdb 252:16 &lt;span class="m">0&lt;/span> 300G &lt;span class="m">0&lt;/span> di
 &lt;p>Block math:
 $$
 \varphi = 1+\frac{1} {1+\frac{1} {1+\frac{1} {1+\cdots} } }
-$$&lt;/p></description></item><item><title>事件驱动</title><link>https://tab.wutuofu.com/posts/shell-fifo/</link><pubDate>Fri, 27 Apr 2018 12:20:29 +0800</pubDate><guid>https://tab.wutuofu.com/posts/shell-fifo/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/shell-fifo/pm.png" alt="Featured image of post 事件驱动" />&lt;p>在shell脚本里使用&lt;code>mkfifo&lt;/code>命令创建&lt;code>named pipes&lt;/code>可以实现简单的事件驱动，
+$$&lt;/p></description></item><item><title>bc语言</title><link>https://tab.wutuofu.com/posts/bc-language/</link><pubDate>Mon, 22 Oct 2018 18:16:25 +0800</pubDate><guid>https://tab.wutuofu.com/posts/bc-language/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/bc-language/calculator.jpeg" alt="Featured image of post bc语言" />&lt;h2 id="base">base&lt;/h2>
+&lt;p>通过修改&lt;code>ibase&lt;/code>和&lt;code>obase&lt;/code>可以实现各种进制的转化，比如十进制和二进制和十六进制之间的转换；&lt;/p>
+&lt;blockquote>
+&lt;p>If you aren’t familiar with conversion between decimal, binary, and hexadecimal formats, you can
+use a calculator utility such as bc or dc to convert between different radix representations. For
+example, in bc, you can run the command obase=2; 240 to print the number 240 in binary
+(base 2) form.&lt;/p>
+&lt;/blockquote>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>❯ bc -q
+ibase
+&lt;span class="m">10&lt;/span>
+obase
+&lt;span class="m">10&lt;/span>
+1+ &lt;span class="m">3&lt;/span> *3
+&lt;span class="m">10&lt;/span>
+&lt;span class="nv">obase&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">2&lt;/span>
+&lt;span class="m">245&lt;/span>
+&lt;span class="m">11110101&lt;/span>
+&lt;span class="m">255&lt;/span>
+&lt;span class="m">11111111&lt;/span>
+&lt;span class="m">192&lt;/span>
+&lt;span class="m">11000000&lt;/span>
+&lt;span class="m">168&lt;/span>
+&lt;span class="m">10101000&lt;/span>
+&lt;span class="m">1&lt;/span>
+&lt;span class="m">1&lt;/span>
+&lt;span class="m">172&lt;/span>
+&lt;span class="m">10101100&lt;/span>
+&lt;span class="nv">obase&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">16&lt;/span>
+&lt;span class="m">34&lt;/span>
+&lt;span class="m">22&lt;/span>
+&lt;span class="m">172&lt;/span>
+AC
+^D%
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="syntax">syntax&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell"> bc
+An arbitrary precision calculator language.
+More information: https://manned.org/bc.
+- Start bc in interactive mode using the standard math library:
+bc -l
+- Calculate the result of an expression:
+bc &lt;span class="o">&amp;lt;&amp;lt;&amp;lt;&lt;/span> &lt;span class="s2">&amp;#34;(1 + 2) * 2 ^ 2&amp;#34;&lt;/span>
+- Calculate the result of an expression and force the number of decimal places to 10:
+bc &lt;span class="o">&amp;lt;&amp;lt;&amp;lt;&lt;/span> &lt;span class="s2">&amp;#34;scale=10; 5 / 3&amp;#34;&lt;/span>
+- Calculate the result of an expression with sine and cosine using mathlib:
+bc -l &lt;span class="o">&amp;lt;&amp;lt;&amp;lt;&lt;/span> &lt;span class="s2">&amp;#34;s(1) + c(1)&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>事件驱动</title><link>https://tab.wutuofu.com/posts/shell-fifo/</link><pubDate>Fri, 27 Apr 2018 12:20:29 +0800</pubDate><guid>https://tab.wutuofu.com/posts/shell-fifo/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/shell-fifo/pm.png" alt="Featured image of post 事件驱动" />&lt;p>在shell脚本里使用&lt;code>mkfifo&lt;/code>命令创建&lt;code>named pipes&lt;/code>可以实现简单的事件驱动，
 避免poll（轮询）带来的时延（not real-time）和资源消耗的问题。&lt;/p>
 &lt;h2 id="mkfifo">mkfifo&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">❯ man mkfifo &lt;span class="p">|&lt;/span> head -n &lt;span class="m">12&lt;/span>

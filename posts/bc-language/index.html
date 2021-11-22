@@ -1,0 +1,249 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="unix自带bc数指计算语言"><title>bc语言</title>
+<link rel=canonical href=https://tab.wutuofu.com/posts/bc-language/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="bc语言">
+<meta property="og:description" content="unix自带bc数指计算语言">
+<meta property="og:url" content="https://tab.wutuofu.com/posts/bc-language/">
+<meta property="og:site_name" content="人到三十">
+<meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="bash"><meta property="article:tag" content="unix"><meta property="article:published_time" content="2018-10-22T18:16:25+08:00"><meta property="article:modified_time" content="2018-10-22T18:16:25+08:00"><meta property="og:image" content="https://tab.wutuofu.com/posts/bc-language/calculator.jpeg">
+<meta name=twitter:site content="@sinalph">
+<meta name=twitter:creator content="@sinalph"><meta name=twitter:title content="bc语言">
+<meta name=twitter:description content="unix自带bc数指计算语言"><meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://tab.wutuofu.com/posts/bc-language/calculator.jpeg">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class="has-image main-article">
+<header class=article-header>
+<div class=article-image>
+<a href=/posts/bc-language/>
+<img src=/posts/bc-language/calculator_hu7fe9f2c05e9afb6d43e72c846db96c5b_49911_800x0_resize_q75_box.jpeg srcset="/posts/bc-language/calculator_hu7fe9f2c05e9afb6d43e72c846db96c5b_49911_800x0_resize_q75_box.jpeg 800w, /posts/bc-language/calculator_hu7fe9f2c05e9afb6d43e72c846db96c5b_49911_1600x0_resize_q75_box.jpeg 1600w" width=800 height=457 loading=lazy alt="Featured image of post bc语言">
+</a>
+</div>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/%E5%BC%80%E5%8F%91/>
+开发
+</a>
+</header>
+<h2 class=article-title>
+<a href=/posts/bc-language/>bc语言</a>
+</h2>
+<h3 class=article-subtitle>
+unix自带bc数指计算语言
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Oct 22, 2018</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 1 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<h2 id=base>base</h2>
+<p>通过修改<code>ibase</code>和<code>obase</code>可以实现各种进制的转化，比如十进制和二进制和十六进制之间的转换；</p>
+<blockquote>
+<p>If you aren’t familiar with conversion between decimal, binary, and hexadecimal formats, you can
+use a calculator utility such as bc or dc to convert between different radix representations. For
+example, in bc, you can run the command obase=2; 240 to print the number 240 in binary
+(base 2) form.</p>
+</blockquote>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=cp>#!/bin/bash
+</span><span class=cp></span>❯ bc -q
+ibase
+<span class=m>10</span>
+obase
+<span class=m>10</span>
+
+1+ <span class=m>3</span> *3
+<span class=m>10</span>
+
+<span class=nv>obase</span><span class=o>=</span><span class=m>2</span>
+<span class=m>245</span>
+<span class=m>11110101</span>
+
+<span class=m>255</span>
+<span class=m>11111111</span>
+<span class=m>192</span>
+<span class=m>11000000</span>
+<span class=m>168</span>
+<span class=m>10101000</span>
+<span class=m>1</span>
+<span class=m>1</span>
+<span class=m>172</span>
+<span class=m>10101100</span>
+
+<span class=nv>obase</span><span class=o>=</span><span class=m>16</span>
+<span class=m>34</span>
+<span class=m>22</span>
+<span class=m>172</span>
+AC
+
+^D%
+</code></pre></div><h2 id=syntax>syntax</h2>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell> bc
+
+ An arbitrary precision calculator language.
+ More information: https://manned.org/bc.
+
+ - Start bc in interactive mode using the standard math library:
+   bc -l
+
+ - Calculate the result of an expression:
+   bc <span class=o>&lt;&lt;&lt;</span> <span class=s2>&#34;(1 + 2) * 2 ^ 2&#34;</span>
+
+ - Calculate the result of an expression and force the number of decimal places to 10:
+   bc <span class=o>&lt;&lt;&lt;</span> <span class=s2>&#34;scale=10; 5 / 3&#34;</span>
+
+ - Calculate the result of an expression with sine and cosine using mathlib:
+   bc -l <span class=o>&lt;&lt;&lt;</span> <span class=s2>&#34;s(1) + c(1)&#34;</span>
+</code></pre></div>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/bash/>bash</a>
+<a href=/tags/unix/>unix</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article class=has-image>
+<a href=/posts/carrier-return/>
+<div class=article-image>
+<img src=/posts/carrier-return/line-feed.147e6f846a298dc2e0a02df3dd36d7fa_hu785a82af1f66933866e69c44b5197412_39860_250x150_fill_q75_box_smart1.jpeg width=250 height=150 loading=lazy data-key data-hash="md5-FH5vhGopjcLgoC3z3TbX+g==">
+</div>
+<div class=article-details>
+<h2 class=article-title>换行符</h2>
+</div>
+</a>
+</article>
+<article class=has-image>
+<a href=/posts/bash-command/>
+<div class=article-image>
+<img src=/posts/bash-command/terminal.3d5715ab4fac1a152ddddcbd623152a8_hue2114e7452ea31417cca47ffc195f951_34424_250x150_fill_q75_box_smart1.jpeg width=250 height=150 loading=lazy data-key data-hash="md5-PVcVq0+sGhUt3dy9YjFSqA==">
+</div>
+<div class=article-details>
+<h2 class=article-title>bash简介</h2>
+</div>
+</a>
+</article>
+<article class=has-image>
+<a href=/posts/clickhouse-start/>
+<div class=article-image>
+<img src=/posts/clickhouse-start/clickhouse.f9f57263f5ae47b583e51561c42e5e72_hub7dd4e615b930761deceea7e40c4982b_81259_250x150_fill_q75_box_smart1.jpeg width=250 height=150 loading=lazy data-key data-hash="md5-+fVyY/WuR7WD5RVhxC5ecg==">
+</div>
+<div class=article-details>
+<h2 class=article-title>clickhouse初始化</h2>
+</div>
+</a>
+</article>
+<article class=has-image>
+<a href=/posts/go-scheduler/>
+<div class=article-image>
+<img src=/posts/go-scheduler/go-scheduler.e1a745eaaeab4e91bf35e80d8f16ae34_hu91e7c0d50c0fc2958389b4490ae56d77_169307_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy data-key data-hash="md5-4adF6q6rTpG/NegNjxauNA==">
+</div>
+<div class=article-details>
+<h2 class=article-title>用户线程调度模型</h2>
+</div>
+</a>
+</article>
+<article class=has-image>
+<a href=/posts/git-submodule/>
+<div class=article-image>
+<img src=/posts/git-submodule/git-submodule.8d23d8ef9881ee281fdfa5d7d12fe1d8_hubf47deaeadbbffe799a99e90ac214cb8_24021_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy data-key data-hash="md5-jSPY75iB7igf36XX0S/h2A==">
+</div>
+<div class=article-details>
+<h2 class=article-title>清理git submodule</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2021 人到三十
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.5.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg>
+</div>
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#base>base</a></li>
+<li><a href=#syntax>syntax</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>
