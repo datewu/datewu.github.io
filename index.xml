@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>人到三十</title><link>https://tab.wutuofu.com/</link><description>Recent content on 人到三十</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 22 Nov 2021 18:39:03 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>clickhouse初始化</title><link>https://tab.wutuofu.com/posts/clickhouse-start/</link><pubDate>Mon, 22 Nov 2021 18:39:03 +0800</pubDate><guid>https://tab.wutuofu.com/posts/clickhouse-start/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/clickhouse-start/clickhouse.jpeg" alt="Featured image of post clickhouse初始化" />&lt;p>总体来看&lt;code>clickhouse&lt;/code>的&lt;code>ddl&lt;/code>操作方式和&lt;code>mysql&lt;/code>很像。比如&lt;code>use database_name&lt;/code>， &lt;code>create user ... identified by ''&lt;/code>等。&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>而立有余</title><link>https://tab.wutuofu.com/</link><description>Recent content on 而立有余</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 22 Nov 2021 18:39:03 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>clickhouse初始化</title><link>https://tab.wutuofu.com/posts/clickhouse-start/</link><pubDate>Mon, 22 Nov 2021 18:39:03 +0800</pubDate><guid>https://tab.wutuofu.com/posts/clickhouse-start/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/clickhouse-start/clickhouse.jpeg" alt="Featured image of post clickhouse初始化" />&lt;p>总体来看&lt;code>clickhouse&lt;/code>的&lt;code>ddl&lt;/code>操作方式和&lt;code>mysql&lt;/code>很像。比如&lt;code>use database_name&lt;/code>， &lt;code>create user ... identified by ''&lt;/code>等。&lt;/p>
 &lt;h2 id="server">server&lt;/h2>
 &lt;h3 id="docker-run">docker run&lt;/h3>
 &lt;p>启动clickhouse服务：&lt;/p>
@@ -1057,7 +1057,142 @@ y &lt;span class="p">|&lt;/span> sync_state
 &lt;span class="nv">postgres&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="c1"># &lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="ps">PS&lt;/h2>
 &lt;h3 id="add-slave-to-slave">add slave to slave&lt;/h3>
-&lt;p>编辑&lt;code>recover.conf&lt;/code> 文件 的 &lt;code>primary_conninfo&lt;/code>地址信息可以实现&lt;code>slave&lt;/code> -&amp;gt; &lt;code>slave&lt;/code>的数据同步。&lt;/p></description></item><item><title>init优先级</title><link>https://tab.wutuofu.com/posts/golang-init/</link><pubDate>Tue, 23 Jan 2018 16:23:01 +0800</pubDate><guid>https://tab.wutuofu.com/posts/golang-init/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/golang-init/init.png" alt="Featured image of post init优先级" />&lt;p>假设一个golang项目的三个源文件&lt;code>a.go&lt;/code>,&lt;code>b.go&lt;/code>, &lt;code>c.go&lt;/code>，都定义了&lt;code>function inint(){}&lt;/code>函数，&lt;/p>
+&lt;p>编辑&lt;code>recover.conf&lt;/code> 文件 的 &lt;code>primary_conninfo&lt;/code>地址信息可以实现&lt;code>slave&lt;/code> -&amp;gt; &lt;code>slave&lt;/code>的数据同步。&lt;/p></description></item><item><title>orange网关</title><link>https://tab.wutuofu.com/posts/try-orange/</link><pubDate>Mon, 05 Feb 2018 19:37:23 +0800</pubDate><guid>https://tab.wutuofu.com/posts/try-orange/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/try-orange/orange.png" alt="Featured image of post orange网关" />&lt;p>几天之前试用过了&lt;a class="link" href="https://tab.wutuofu.com/posts/try-kong" >kong&lt;/a>效果不理想 ，今天来使用下小米出品（存疑？）的 &lt;a class="link" href="https://github.com/sumory/orange" target="_blank" rel="noopener"
+>orange&lt;/a>网关。&lt;/p>
+&lt;p>一个明显的区别是 kong的后端存储使用了postgresql，orange使用的是mysql。&lt;/p>
+&lt;p>好了，废话不多说，贴出安装部署的过程如下：&lt;/p>
+&lt;h2 id="安装">安装&lt;/h2>
+&lt;h3 id="mysql">mysql&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+sudo rpm -ivh mysql-community-release-el7-5.noarch.rpm
+sudo yum update
+sudo yum install mysql-server
+sudo systemctl start mysqld
+sudo systemctl &lt;span class="nb">enable&lt;/span> mysqld
+sudo mysql_secure_installation
+vi save_your_root_pwd
+git clone https://github.com/sumory/orange.git
+&lt;span class="nb">cd&lt;/span> orange/
+ls
+&lt;span class="nb">cd&lt;/span> install/
+ls
+head orange-v0.6.4.sql
+head -n &lt;span class="m">100&lt;/span> orange-v0.6.4.sql
+head -n &lt;span class="m">50&lt;/span> orange-v0.6.4.sql
+mysql -V
+mysql -u root -p
+&lt;span class="nb">cd&lt;/span> orange/
+&lt;span class="nb">cd&lt;/span> install/
+ls
+mysql -u o_usr -p o_database &amp;lt; orange-v0.6.4.sql
+mysql -u o_usr -p o_database
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="orange">orange&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>yum remove kong-community-edition &lt;span class="c1">## get rid of annoying lua 5.1 version conflict&lt;/span>
+&lt;span class="nb">cd&lt;/span> /data/nginx/conf/
+cp api.conf api.conf.bak.18.03.09 &lt;span class="c1">## always backup conf files : )&lt;/span>
+nginx -s stop
+netstat -nlp &lt;span class="p">|&lt;/span> grep &lt;span class="m">443&lt;/span>
+mv /usr/sbin/nginx /usr/sbin/nginx_old
+yum install yum-utils
+yum-config-manager --add-repo https://openresty.org/package/centos/openresty.repo
+yum install openresty openresty-resty -y
+git clone https://github.com/sumory/orange.git
+git clone https://github.com/sumory/lor.git
+&lt;span class="nb">pwd&lt;/span>
+mv lor ~
+mv orange ~
+&lt;span class="nb">cd&lt;/span>
+ls
+&lt;span class="nb">cd&lt;/span> lor/
+make install
+&lt;span class="nb">cd&lt;/span> ../orange/
+make install
+&lt;span class="nb">cd&lt;/span>
+ln -s /usr/local/bin/orange /bin/orange
+ln -s /usr/local/openresty/nginx/sbin/nginx /bin/nginx
+mv /home/wutuofu/orange.conf /home/wutuofu/nginx.conf /usr/local/orange/conf/
+vi /usr/local/orange/conf/orange.conf &lt;span class="c1">## make sure orange.conf has the right mysql server info&lt;/span>
+vi /data/nginx/conf/api.conf
+chown root:root /usr/local/orange/conf/*.conf
+orange start
+netstat -nlp &lt;span class="p">|&lt;/span> grep &lt;span class="m">443&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="小结">小结&lt;/h2>
+&lt;p>用了几天，感觉UI比起kong来说简单些，开箱即用的功能比kong也多一些。
+稳定性还有待进一步的观察。&lt;/p></description></item><item><title>kong网关</title><link>https://tab.wutuofu.com/posts/try-kong/</link><pubDate>Sat, 03 Feb 2018 18:05:04 +0800</pubDate><guid>https://tab.wutuofu.com/posts/try-kong/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/try-kong/kong.png" alt="Featured image of post kong网关" />&lt;p>updated: kong不满足要求，后面调研了另外一个API产品 &lt;a class="link" href="https://tab.wutuofu.com/posts/try-orange" >orange&lt;/a>&lt;/p>
+&lt;p>2015年接触openresty的时候接触过kong，了解到kong是基于openresty二次开发的商业产品，&lt;/p>
+&lt;p>正好目前新公司要调研稳定好用的&lt;code>API Gateway&lt;/code>产品，所以本文简单记录下我对kong的安装配置感受。&lt;/p>
+&lt;h2 id="安装">安装&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">yum install https://bintray.com/kong/kong-community-edition-rpm/download_file?file_path&lt;span class="o">=&lt;/span>centos/7/kong-community-edition-0.12.1.el7.noarch.rpm
+kong
+systemctl stop nginx
+netstat -nlp
+netstat -nlp&lt;span class="p">|&lt;/span>grep &lt;span class="m">80&lt;/span>
+ls
+date
+vi /etc/kong/kong.conf.default
+vipw
+su - postgres
+create user kong&lt;span class="p">;&lt;/span>
+create database kong ownner kong&lt;span class="p">;&lt;/span>
+create database kong owner kong&lt;span class="p">;&lt;/span>
+&lt;span class="nb">cd&lt;/span> /etc/kong/
+cp kong.conf.default kong.conf
+vi kong.conf
+kong migrations up
+psql -U kong
+tail /media/data/pgdata/log/postgresql-Wed.log
+vi /media/data/pgdata/pg_hba.conf
+systemctl restart postgresql-10.service
+kong migrations up
+kong
+kong check
+kong start
+netstat -nlp &lt;span class="p">|&lt;/span> grep &lt;span class="m">80&lt;/span>
+which nginx
+curl localhost:
+netstat -nlp
+vi /usr/local/kong/nginx-kong.conf
+which -a nginx
+kong
+kong restart --nginx-conf /etc/nginx/nginx.conf
+cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.tmpl
+vi /etc/nginx/nginx.conf.tmpl
+kong restart --nginx-conf /etc/nginx/nginx.conf.tmpl
+which -a npm
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装控制台">安装控制台&lt;/h3>
+&lt;p>使用&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">which -a docker
+yum remove docker docker-common docker-selinux docker-engine
+yum install -y yum-utils device-mapper-persistent-data lvm2
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum install docker-ce
+systemctl start docker
+docker run hello-world
+curl -sSL https://get.daocloud.io/daotools/set_mirror.sh &lt;span class="p">|&lt;/span> sh -s http://2b77623e.m.daocloud.io
+systemctl restart docker
+systemctl &lt;span class="nb">enable&lt;/span> docker
+docker run -d --rm -p 8080:8080 pgbi/kong-dashboard start --kong-url http://10.0.0.1:8001 --basic-auth &lt;span class="nv">usrtest&lt;/span>&lt;span class="o">=&lt;/span>pwdtest
+docker ps -a
+&lt;span class="c1">### registe the very first api through kong admin api&lt;/span>
+curl -i -X POST --url http://10.0.0.11:8001/apis --data &lt;span class="s1">&amp;#39;name=admin-api&amp;#39;&lt;/span> --data &lt;span class="s1">&amp;#39;hosts=a.k.wutuofu.com&amp;#39;&lt;/span> --data &lt;span class="s1">&amp;#39;upstream_url=http://localhost:8080&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="小结">小结&lt;/h2>
+&lt;p>开源Kong 的限制比较多，&lt;a class="link" href="https://tab.wutuofu.com/posts/nginx-proxy/" >反向代理&lt;/a>配置基本上靠插件，对现存的nginx的conf兼容性不友好。
+简单的&lt;code>proxy_cache&lt;/code>配置一定要企业版才支持，下面的更加&lt;code>精细&lt;/code>配置也没有支持：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-nginx" data-lang="nginx"> &lt;span class="k">valid_referers&lt;/span> &lt;span class="s">*.wutuofu.cn&lt;/span> &lt;span class="s">wutuofu.cn&lt;/span> &lt;span class="s">*.wutuofu.com&lt;/span> &lt;span class="s">wutuofu.com&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="k">add_header&lt;/span> &lt;span class="s">&amp;#39;Access-Control-Allow-Headers&amp;#39;&lt;/span> &lt;span class="s">&amp;#39;os,&lt;/span> &lt;span class="s">ver,&lt;/span> &lt;span class="s">hwid,&lt;/span> &lt;span class="s">innerver,&lt;/span> &lt;span class="s">channel,&lt;/span> &lt;span class="s">net,&lt;/span> &lt;span class="s">token,&lt;/span> &lt;span class="s">et&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="k">proxy_cache&lt;/span> &lt;span class="s">my_cache&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="k">proxy_cache_valid&lt;/span> &lt;span class="mi">200&lt;/span> &lt;span class="mi">302&lt;/span> &lt;span class="mi">304&lt;/span> &lt;span class="s">10s&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="k">proxy_ignore_headers&lt;/span> &lt;span class="s">Expires&lt;/span> &lt;span class="s">Cache-Control&lt;/span> &lt;span class="s">Set-Cookie&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="k">proxy_cache_key&lt;/span> &lt;span class="nv">$host$request_uri$is_args$args$http_token&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="k">if&lt;/span> &lt;span class="s">(&lt;/span>&lt;span class="nv">$request_uri&lt;/span> &lt;span class="p">~&lt;/span> &lt;span class="sr">img_vercode&lt;/span> &lt;span class="s">)&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;span class="kn">set&lt;/span> &lt;span class="nv">$no_proxy_cache&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="k">if&lt;/span> &lt;span class="s">(&lt;/span>&lt;span class="nv">$remote_addr&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">114&lt;/span>&lt;span class="s">.13.118.24)&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;span class="kn">set&lt;/span> &lt;span class="nv">$no_proxy_cache&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>init优先级</title><link>https://tab.wutuofu.com/posts/golang-init/</link><pubDate>Tue, 23 Jan 2018 16:23:01 +0800</pubDate><guid>https://tab.wutuofu.com/posts/golang-init/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/golang-init/init.png" alt="Featured image of post init优先级" />&lt;p>假设一个golang项目的三个源文件&lt;code>a.go&lt;/code>,&lt;code>b.go&lt;/code>, &lt;code>c.go&lt;/code>，都定义了&lt;code>function inint(){}&lt;/code>函数，&lt;/p>
 &lt;p>其中&lt;code>c.go&lt;/code>文件初始化了一个全局变量&lt;code>globalVar&lt;/code>，同时&lt;code>a.go&lt;/code> 或者&lt;code>b.go&lt;/code>的&lt;code>init func&lt;/code> 引用了这个全局变量&lt;code>globalVar&lt;/code>。&lt;/p>
 &lt;p>那么这个时候就会出现一个问题，在&lt;code>a.go&lt;/code>和 &lt;code>b.go&lt;/code>的init func中 &lt;code>globalVar&lt;/code>的引用是空值。&lt;/p>
 &lt;h2 id="示例">示例&lt;/h2>
