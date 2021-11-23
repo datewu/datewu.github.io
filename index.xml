@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>人到三十</title><link>https://tab.wutuofu.com/</link><description>Recent content on 人到三十</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 22 Nov 2021 18:39:03 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>clickhouse初始化</title><link>https://tab.wutuofu.com/posts/clickhouse-start/</link><pubDate>Mon, 22 Nov 2021 18:39:03 +0800</pubDate><guid>https://tab.wutuofu.com/posts/clickhouse-start/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/clickhouse-start/clickhouse.jpeg" alt="Featured image of post clickhouse初始化" />&lt;h2 id="server">server&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>人到三十</title><link>https://tab.wutuofu.com/</link><description>Recent content on 人到三十</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 22 Nov 2021 18:39:03 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>clickhouse初始化</title><link>https://tab.wutuofu.com/posts/clickhouse-start/</link><pubDate>Mon, 22 Nov 2021 18:39:03 +0800</pubDate><guid>https://tab.wutuofu.com/posts/clickhouse-start/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/clickhouse-start/clickhouse.jpeg" alt="Featured image of post clickhouse初始化" />&lt;p>总体来看&lt;code>clickhouse&lt;/code>的&lt;code>ddl&lt;/code>操作方式和&lt;code>mysql&lt;/code>很像。比如&lt;code>use database_name&lt;/code>， &lt;code>create user ... identified by ''&lt;/code>等。&lt;/p>
+&lt;h2 id="server">server&lt;/h2>
 &lt;h3 id="docker-run">docker run&lt;/h3>
 &lt;p>启动clickhouse服务：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">docker run -d --name clickhouse-server -p 8123:8123 -p 9000:9000 --ulimit &lt;span class="nv">nofile&lt;/span>&lt;span class="o">=&lt;/span>262144:262144 yandex/clickhouse-server:21.8.10.19
@@ -9,6 +10,8 @@ apt update -y
 apt install vim
 vi /etc/clickhouse-server/users.xml
 &lt;span class="c1"># update &amp;lt;access_management&amp;gt;1&amp;lt;/access_management&amp;gt;&lt;/span>
+&lt;span class="nb">exit&lt;/span>
+docker restart clickhouse-server
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;figure
 class="gallery-image"
 style="
@@ -50,7 +53,7 @@ Ok.
 &lt;span class="m">0&lt;/span> rows in set. Elapsed: 0.002 sec.
 fd87688bfa29 :&lt;span class="o">)&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="sdk">sdk&lt;/h2>
-&lt;h3 id="connect-form-golang-client">connect form golang client&lt;/h3>
+&lt;h3 id="connect-from-golang-client">connect from golang client&lt;/h3>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-golang" data-lang="golang">&lt;span class="kn">package&lt;/span> &lt;span class="nx">db&lt;/span>
 &lt;span class="kn">import&lt;/span> &lt;span class="p">(&lt;/span>
 &lt;span class="s">&amp;#34;database/sql&amp;#34;&lt;/span>
@@ -808,7 +811,7 @@ bc &lt;span class="o">&amp;lt;&amp;lt;&amp;lt;&lt;/span> &lt;span class="s2">&am
 bc &lt;span class="o">&amp;lt;&amp;lt;&amp;lt;&lt;/span> &lt;span class="s2">&amp;#34;scale=10; 5 / 3&amp;#34;&lt;/span>
 - Calculate the result of an expression with sine and cosine using mathlib:
 bc -l &lt;span class="o">&amp;lt;&amp;lt;&amp;lt;&lt;/span> &lt;span class="s2">&amp;#34;s(1) + c(1)&amp;#34;&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>事件驱动</title><link>https://tab.wutuofu.com/posts/shell-fifo/</link><pubDate>Fri, 27 Apr 2018 12:20:29 +0800</pubDate><guid>https://tab.wutuofu.com/posts/shell-fifo/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/shell-fifo/pm.png" alt="Featured image of post 事件驱动" />&lt;p>在shell脚本里使用&lt;code>mkfifo&lt;/code>命令创建&lt;code>named pipes&lt;/code>可以实现简单的事件驱动，
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>事件驱动</title><link>https://tab.wutuofu.com/posts/shell-fifo/</link><pubDate>Wed, 27 Jun 2018 12:20:29 +0800</pubDate><guid>https://tab.wutuofu.com/posts/shell-fifo/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/shell-fifo/pm.png" alt="Featured image of post 事件驱动" />&lt;p>在shell脚本里使用&lt;code>mkfifo&lt;/code>命令创建&lt;code>named pipes&lt;/code>可以实现简单的事件驱动，
 避免poll（轮询）带来的时延（not real-time）和资源消耗的问题。&lt;/p>
 &lt;h2 id="mkfifo">mkfifo&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">❯ man mkfifo &lt;span class="p">|&lt;/span> head -n &lt;span class="m">12&lt;/span>
@@ -994,100 +997,7 @@ crontab -l
 &lt;p>&lt;a class="link" href="https://docs.moodle.org/33/en/PostgreSQL" target="_blank" rel="noopener"
 >moodle: set up postgresql counts and database&lt;/a>&lt;/p>
 &lt;p>&lt;a class="link" href="https://www.howtoforge.com/tutorial/how-to-install-moodle-32-on-centos-7/" target="_blank" rel="noopener"
->PHP(php-fpm) nginx&lt;/a>&lt;/p></description></item><item><title>安装配置openvpn</title><link>https://tab.wutuofu.com/posts/install-openvpn/</link><pubDate>Tue, 20 Feb 2018 13:24:19 +0800</pubDate><guid>https://tab.wutuofu.com/posts/install-openvpn/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/install-openvpn/openvpnflows.jpeg" alt="Featured image of post 安装配置openvpn" />&lt;p>开发需要能调用&lt;code>facebook&lt;/code>的接口，我们运维这边需要配置一台测试服务器能访问&lt;code>facebook&lt;/code>，用shadowsocks
-和squid 代理，性能不够好。所以决定上openvpn。&lt;/p>
-&lt;p>简单记录下openVPN的安装配置过程，服务端和客户端使用的操作系统均是centos 7。&lt;/p>
-&lt;h2 id="服务端">服务端&lt;/h2>
-&lt;h3 id="安装">安装&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
-&lt;/span>&lt;span class="cp">&lt;/span>yum install epel-release -y
-yum install openvpn openssl -y
-&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="自签名证书">自签名证书&lt;/h4>
-&lt;p>使用&lt;code>openssl&lt;/code>工具生产自签名的ca，证书，client.key，并把这些证书传给客户端：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
-&lt;/span>&lt;span class="cp">&lt;/span>
-&lt;span class="c1">### CA&lt;/span>
-openssl dhparam -out /etc/openvpn/dh.pem &lt;span class="m">2048&lt;/span>
-openssl genrsa -out /etc/openvpn/ca.key &lt;span class="m">2048&lt;/span>
-openssl req -new -key /etc/openvpn/ca.key -out /etc/openvpn/ca.csr -subj /CN&lt;span class="o">=&lt;/span>OpenVPN-CA/
-openssl x509 -req -in /etc/openvpn/ca.csr -out /etc/openvpn/ca.crt -signkey /etc/openvpn/ca.key -days &lt;span class="m">3650&lt;/span>
-&lt;span class="nb">echo&lt;/span> &lt;span class="m">01&lt;/span> &amp;gt; /etc/openvpn/ca.srl
-chmod &lt;span class="m">600&lt;/span> /etc/openvpn/ca.key
-&lt;span class="c1">### Server &lt;/span>
-openssl genrsa -out /etc/openvpn/server.key &lt;span class="m">2048&lt;/span>
-openssl req -new -key /etc/openvpn/server.key -out /etc/openvpn/server.csr -subj /CN&lt;span class="o">=&lt;/span>OpenVPN/
-openssl x509 -req -in /etc/openvpn/server.csr -out /etc/openvpn/server.crt -CA /etc/openvpn/ca.crt -CAkey /etc/openvpn/ca.key -days &lt;span class="m">3650&lt;/span>
-chmod &lt;span class="m">600&lt;/span> /etc/openvpn/server.key
-&lt;span class="c1">### Client&lt;/span>
-openssl genrsa -out /etc/openvpn/client.key &lt;span class="m">2048&lt;/span>
-openssl req -new -key /etc/openvpn/client.key -out /etc/openvpn/client.csr -subj /CN&lt;span class="o">=&lt;/span>OpenVPN-Client/
-openssl x509 -req -in /etc/openvpn/client.csr -out /etc/openvpn/client.crt -CA /etc/openvpn/ca.crt -CAkey /etc/openvpn/ca.key -days &lt;span class="m">3650&lt;/span>
-chmod &lt;span class="m">600&lt;/span> /etc/openvpn/client.key
-&lt;span class="c1">### 把clinet的证书私钥和ca正式传给客户端&lt;/span>
-scp /etc/openvpn/ca.crt /etc/openvpn/client.crt /etc/openvpn/client.key client:
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="配置">配置&lt;/h3>
-&lt;h4 id="服务端配置文件">服务端配置文件:&lt;/h4>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1"># /etc/openvpn/server.conf&lt;/span>
-server 10.8.0.0 255.255.255.0
-verb &lt;span class="m">3&lt;/span>
-key /etc/openvpn/server.key
-ca /etc/openvpn/ca.crt
-cert /etc/openvpn/server.crt
-dh /etc/openvpn/dh.pem
-keepalive &lt;span class="m">10&lt;/span> &lt;span class="m">120&lt;/span>
-persist-key
-persist-tun
-comp-lzo
-push &lt;span class="s2">&amp;#34;redirect-gateway def1 bypass-dhcp&amp;#34;&lt;/span>
-push &lt;span class="s2">&amp;#34;dhcp-option DNS 8.8.8.8&amp;#34;&lt;/span>
-push &lt;span class="s2">&amp;#34;dhcp-option DNS 8.8.4.4&amp;#34;&lt;/span>
-user nobody
-group nogroup
-proto udp
-port &lt;span class="m">1194&lt;/span>
-dev tun1194
-status openvpn-status.log
-&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="kernel-iptables">kernel iptables&lt;/h4>
-&lt;p>打开服务器路由配置：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
-&lt;/span>&lt;span class="cp">&lt;/span>&lt;span class="nb">echo&lt;/span> &lt;span class="s1">&amp;#39;net.ipv4.ip_forward=1&amp;#39;&lt;/span> &amp;gt;&amp;gt; /etc/sysctl.conf
-sysctl -p
-iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="启动">启动&lt;/h3>
-&lt;p>服务器启动openVPN服务：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
-&lt;/span>&lt;span class="cp">&lt;/span>systemctl &lt;span class="nb">enable&lt;/span> openvpn@server
-systemctl start openvpn@server
-&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="客户端">客户端&lt;/h2>
-&lt;h3 id="安装-1">安装&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
-&lt;/span>&lt;span class="cp">&lt;/span>yum install epel-release -y
-yum install openvpn -y
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="配置-1">配置&lt;/h3>
-&lt;h4 id="证书">证书&lt;/h4>
-&lt;p>把前面服务端签名的证书移动到配置目录下：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
-&lt;/span>&lt;span class="cp">&lt;/span>mv ~/ca.crt /etc/openvpn
-mv ~/client* /etc/openvpn/
-&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="配置文件">配置文件&lt;/h4>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1"># /etc/openvpn/client.conf&lt;/span>
-client
-nobind
-dev tun
-redirect-gateway def1 bypass-dhcp
-remote CHANGE_TO_YOUR_SERVER_IP &lt;span class="m">1194&lt;/span> udp
-comp-lzo yes
-&lt;span class="c1">#duplicate-cn&lt;/span>
-key /etc/openvpn/client.key
-cert /etc/openvpn/client.crt
-ca /etc/openvpn/ca.crt
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="启动-1">启动&lt;/h3>
-&lt;p>客户端启动openVPN服务：&lt;/p>
-&lt;pre tabindex="0">&lt;code>#!/bin/bash
-systemctl enable openvpn@client
-systemctl start openvpn@client
-&lt;/code>&lt;/pre>&lt;p>&lt;a class="link" href="https://www.rosehosting.com/blog/how-to-install-openvpn-on-centos-7/" target="_blank" rel="noopener"
->参考How to Install OpenVPN on CentOS 7&lt;/a>&lt;/p></description></item><item><title>两个奴隶</title><link>https://tab.wutuofu.com/posts/postgre-two-slaves/</link><pubDate>Mon, 05 Feb 2018 21:55:41 +0800</pubDate><guid>https://tab.wutuofu.com/posts/postgre-two-slaves/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/postgre-two-slaves/postgres-replication.jpeg" alt="Featured image of post 两个奴隶" />&lt;p>一般postgres高可用集群是一个master配一个slave，但是开发这边需要做db的读写分离，所以运维这边
+>PHP(php-fpm) nginx&lt;/a>&lt;/p></description></item><item><title>两个奴隶</title><link>https://tab.wutuofu.com/posts/postgre-two-slaves/</link><pubDate>Mon, 05 Feb 2018 21:55:41 +0800</pubDate><guid>https://tab.wutuofu.com/posts/postgre-two-slaves/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/postgre-two-slaves/postgres-replication.jpeg" alt="Featured image of post 两个奴隶" />&lt;p>一般postgres高可用集群是一个master配一个slave，但是开发这边需要做db的读写分离，所以运维这边
 又添加了一台slave专门暴露出来做读操作。原来的slave还是只做备份。&lt;/p>
 &lt;h2 id="ha">HA&lt;/h2>
 &lt;p>一主一从高可用的配置可以参考下面这篇文章
@@ -1147,7 +1057,75 @@ y &lt;span class="p">|&lt;/span> sync_state
 &lt;span class="nv">postgres&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="c1"># &lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="ps">PS&lt;/h2>
 &lt;h3 id="add-slave-to-slave">add slave to slave&lt;/h3>
-&lt;p>编辑&lt;code>recover.conf&lt;/code> 文件 的 &lt;code>primary_conninfo&lt;/code>地址信息可以实现&lt;code>slave&lt;/code> -&amp;gt; &lt;code>slave&lt;/code>的数据同步。&lt;/p></description></item><item><title>试用Azure Centos虚拟机</title><link>https://tab.wutuofu.com/posts/azure-centos/</link><pubDate>Wed, 15 Nov 2017 10:48:20 +0800</pubDate><guid>https://tab.wutuofu.com/posts/azure-centos/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/azure-centos/Azure.png" alt="Featured image of post 试用Azure Centos虚拟机" />&lt;p>换了份工作，新公司是做加密币交易所的，服务器都在国外。所以有机会接触到了微软的azure云服务，
+&lt;p>编辑&lt;code>recover.conf&lt;/code> 文件 的 &lt;code>primary_conninfo&lt;/code>地址信息可以实现&lt;code>slave&lt;/code> -&amp;gt; &lt;code>slave&lt;/code>的数据同步。&lt;/p></description></item><item><title>init优先级</title><link>https://tab.wutuofu.com/posts/golang-init/</link><pubDate>Tue, 23 Jan 2018 16:23:01 +0800</pubDate><guid>https://tab.wutuofu.com/posts/golang-init/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/golang-init/init.png" alt="Featured image of post init优先级" />&lt;p>假设一个golang项目的三个源文件&lt;code>a.go&lt;/code>,&lt;code>b.go&lt;/code>, &lt;code>c.go&lt;/code>，都定义了&lt;code>function inint(){}&lt;/code>函数，&lt;/p>
+&lt;p>其中&lt;code>c.go&lt;/code>文件初始化了一个全局变量&lt;code>globalVar&lt;/code>，同时&lt;code>a.go&lt;/code> 或者&lt;code>b.go&lt;/code>的&lt;code>init func&lt;/code> 引用了这个全局变量&lt;code>globalVar&lt;/code>。&lt;/p>
+&lt;p>那么这个时候就会出现一个问题，在&lt;code>a.go&lt;/code>和 &lt;code>b.go&lt;/code>的init func中 &lt;code>globalVar&lt;/code>的引用是空值。&lt;/p>
+&lt;h2 id="示例">示例&lt;/h2>
+&lt;h3 id="文件结构">文件结构&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">❯ tree
+.
+├── a.go
+├── b.go
+├── c.go
+├── go.mod
+└── main.go
+&lt;span class="m">0&lt;/span> directories, &lt;span class="m">5&lt;/span> files
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="源代码">源代码&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-golang" data-lang="golang">
+&lt;span class="c1">// file `a.go`
+&lt;/span>&lt;span class="c1">&lt;/span>&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;span class="kn">import&lt;/span> &lt;span class="s">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;span class="kd">func&lt;/span> &lt;span class="nf">init&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="c1">// globalVar is empty
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;globalVar in a.go:&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">globalVar&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="c1">// file `b.go`
+&lt;/span>&lt;span class="c1">&lt;/span>&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;span class="kn">import&lt;/span> &lt;span class="s">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;span class="kd">func&lt;/span> &lt;span class="nf">init&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="c1">// globalVar is empty
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;globalVar in b.go:&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">globalVar&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="c1">// file `c.go`
+&lt;/span>&lt;span class="c1">&lt;/span>&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;span class="kn">import&lt;/span> &lt;span class="p">(&lt;/span>
+&lt;span class="s">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;span class="s">&amp;#34;time&amp;#34;&lt;/span>
+&lt;span class="p">)&lt;/span>
+&lt;span class="kd">func&lt;/span> &lt;span class="nf">init&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="nx">globalVar&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nf">initVar&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;globalVar in c.go:&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">globalVar&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="kd">func&lt;/span> &lt;span class="nf">initVar&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="kt">string&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Sleep&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">20&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Millisecond&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;span class="k">return&lt;/span> &lt;span class="s">&amp;#34;late is better than never&amp;#34;&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="c1">// file `main.go`
+&lt;/span>&lt;span class="c1">&lt;/span>&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;span class="kn">import&lt;/span> &lt;span class="s">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;span class="kd">var&lt;/span> &lt;span class="nx">globalVar&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s">&amp;#34;&amp;#34;&lt;/span>
+&lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;vim-go&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="result">result&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">❯ go build -o demo
+❯ ./demo
+globalVar in a.go:
+globalVar in b.go:
+globalVar in c.go: late is better than never
+vim-go
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解决办法">解决办法&lt;/h2>
+&lt;p>简单的解决办法可以是重命名&lt;code>c.go&lt;/code>为&lt;code>0a.go&lt;/code>保证&lt;code>0a.go&lt;/code>中的&lt;code>init&lt;/code>最早执行完成，&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">mv c.go 01.go
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>这个解决方案的优点是可以不用修改代码，但是不够优雅。&lt;/p>
+&lt;p>比较好的解决方式应该是，不要在&lt;code>init func&lt;/code>里初始化全局变量，应该直接在&lt;code>top block context&lt;/code>中对全局变量初始化：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-golang" data-lang="golang">&lt;span class="c1">// file `c.go`
+&lt;/span>&lt;span class="c1">&lt;/span>&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;span class="kd">var&lt;/span> &lt;span class="nx">globalVar&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nf">initVar&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;span class="kd">func&lt;/span> &lt;span class="nf">init&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="c1">// ...
+&lt;/span>&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>试用Azure Centos虚拟机</title><link>https://tab.wutuofu.com/posts/azure-centos/</link><pubDate>Wed, 15 Nov 2017 10:48:20 +0800</pubDate><guid>https://tab.wutuofu.com/posts/azure-centos/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/azure-centos/Azure.png" alt="Featured image of post 试用Azure Centos虚拟机" />&lt;p>换了份工作，新公司是做加密币交易所的，服务器都在国外。所以有机会接触到了微软的azure云服务，
 服务器基本都在亚太区新加坡。&lt;/p>
 &lt;p>ps：这是我第一次实操单台配置32c64g的虚拟机，纪念一下。以前工作中最多就8c16g，数量的话两三百台机器。&lt;/p>
 &lt;h2 id="history">history&lt;/h2>
@@ -1492,7 +1470,100 @@ mount -t tmpfs -o &lt;span class="nv">size&lt;/span>&lt;span class="o">=&lt;/spa
 &lt;span class="kn">proxy_buffering&lt;/span> &lt;span class="no">on&lt;/span>&lt;span class="p">;&lt;/span>
 &lt;span class="kn">proxy_pass&lt;/span> &lt;span class="s">http://upV1&lt;/span>&lt;span class="p">;&lt;/span>
 &lt;span class="p">}&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Ansible</title><link>https://tab.wutuofu.com/posts/ansible-memo/</link><pubDate>Sat, 16 Apr 2016 11:33:05 +0800</pubDate><guid>https://tab.wutuofu.com/posts/ansible-memo/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/ansible-memo/ansible.png" alt="Featured image of post Ansible" />&lt;p>本文不定期更新 :)&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>安装配置openvpn</title><link>https://tab.wutuofu.com/posts/install-openvpn/</link><pubDate>Mon, 20 Feb 2017 13:24:19 +0800</pubDate><guid>https://tab.wutuofu.com/posts/install-openvpn/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/install-openvpn/openvpnflows.jpeg" alt="Featured image of post 安装配置openvpn" />&lt;p>开发需要能调用&lt;code>facebook&lt;/code>的接口，我们运维这边需要配置一台测试服务器能访问&lt;code>facebook&lt;/code>，用shadowsocks
+和squid 代理，性能不够好。所以决定上openvpn。&lt;/p>
+&lt;p>简单记录下openVPN的安装配置过程，服务端和客户端使用的操作系统均是centos 7。&lt;/p>
+&lt;h2 id="服务端">服务端&lt;/h2>
+&lt;h3 id="安装">安装&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>yum install epel-release -y
+yum install openvpn openssl -y
+&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="自签名证书">自签名证书&lt;/h4>
+&lt;p>使用&lt;code>openssl&lt;/code>工具生产自签名的ca，证书，client.key，并把这些证书传给客户端：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>
+&lt;span class="c1">### CA&lt;/span>
+openssl dhparam -out /etc/openvpn/dh.pem &lt;span class="m">2048&lt;/span>
+openssl genrsa -out /etc/openvpn/ca.key &lt;span class="m">2048&lt;/span>
+openssl req -new -key /etc/openvpn/ca.key -out /etc/openvpn/ca.csr -subj /CN&lt;span class="o">=&lt;/span>OpenVPN-CA/
+openssl x509 -req -in /etc/openvpn/ca.csr -out /etc/openvpn/ca.crt -signkey /etc/openvpn/ca.key -days &lt;span class="m">3650&lt;/span>
+&lt;span class="nb">echo&lt;/span> &lt;span class="m">01&lt;/span> &amp;gt; /etc/openvpn/ca.srl
+chmod &lt;span class="m">600&lt;/span> /etc/openvpn/ca.key
+&lt;span class="c1">### Server &lt;/span>
+openssl genrsa -out /etc/openvpn/server.key &lt;span class="m">2048&lt;/span>
+openssl req -new -key /etc/openvpn/server.key -out /etc/openvpn/server.csr -subj /CN&lt;span class="o">=&lt;/span>OpenVPN/
+openssl x509 -req -in /etc/openvpn/server.csr -out /etc/openvpn/server.crt -CA /etc/openvpn/ca.crt -CAkey /etc/openvpn/ca.key -days &lt;span class="m">3650&lt;/span>
+chmod &lt;span class="m">600&lt;/span> /etc/openvpn/server.key
+&lt;span class="c1">### Client&lt;/span>
+openssl genrsa -out /etc/openvpn/client.key &lt;span class="m">2048&lt;/span>
+openssl req -new -key /etc/openvpn/client.key -out /etc/openvpn/client.csr -subj /CN&lt;span class="o">=&lt;/span>OpenVPN-Client/
+openssl x509 -req -in /etc/openvpn/client.csr -out /etc/openvpn/client.crt -CA /etc/openvpn/ca.crt -CAkey /etc/openvpn/ca.key -days &lt;span class="m">3650&lt;/span>
+chmod &lt;span class="m">600&lt;/span> /etc/openvpn/client.key
+&lt;span class="c1">### 把clinet的证书私钥和ca正式传给客户端&lt;/span>
+scp /etc/openvpn/ca.crt /etc/openvpn/client.crt /etc/openvpn/client.key client:
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="配置">配置&lt;/h3>
+&lt;h4 id="服务端配置文件">服务端配置文件:&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1"># /etc/openvpn/server.conf&lt;/span>
+server 10.8.0.0 255.255.255.0
+verb &lt;span class="m">3&lt;/span>
+key /etc/openvpn/server.key
+ca /etc/openvpn/ca.crt
+cert /etc/openvpn/server.crt
+dh /etc/openvpn/dh.pem
+keepalive &lt;span class="m">10&lt;/span> &lt;span class="m">120&lt;/span>
+persist-key
+persist-tun
+comp-lzo
+push &lt;span class="s2">&amp;#34;redirect-gateway def1 bypass-dhcp&amp;#34;&lt;/span>
+push &lt;span class="s2">&amp;#34;dhcp-option DNS 8.8.8.8&amp;#34;&lt;/span>
+push &lt;span class="s2">&amp;#34;dhcp-option DNS 8.8.4.4&amp;#34;&lt;/span>
+user nobody
+group nogroup
+proto udp
+port &lt;span class="m">1194&lt;/span>
+dev tun1194
+status openvpn-status.log
+&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="kernel-iptables">kernel iptables&lt;/h4>
+&lt;p>打开服务器路由配置：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>&lt;span class="nb">echo&lt;/span> &lt;span class="s1">&amp;#39;net.ipv4.ip_forward=1&amp;#39;&lt;/span> &amp;gt;&amp;gt; /etc/sysctl.conf
+sysctl -p
+iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="启动">启动&lt;/h3>
+&lt;p>服务器启动openVPN服务：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>systemctl &lt;span class="nb">enable&lt;/span> openvpn@server
+systemctl start openvpn@server
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="客户端">客户端&lt;/h2>
+&lt;h3 id="安装-1">安装&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>yum install epel-release -y
+yum install openvpn -y
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="配置-1">配置&lt;/h3>
+&lt;h4 id="证书">证书&lt;/h4>
+&lt;p>把前面服务端签名的证书移动到配置目录下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>mv ~/ca.crt /etc/openvpn
+mv ~/client* /etc/openvpn/
+&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="配置文件">配置文件&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1"># /etc/openvpn/client.conf&lt;/span>
+client
+nobind
+dev tun
+redirect-gateway def1 bypass-dhcp
+remote CHANGE_TO_YOUR_SERVER_IP &lt;span class="m">1194&lt;/span> udp
+comp-lzo yes
+&lt;span class="c1">#duplicate-cn&lt;/span>
+key /etc/openvpn/client.key
+cert /etc/openvpn/client.crt
+ca /etc/openvpn/ca.crt
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="启动-1">启动&lt;/h3>
+&lt;p>客户端启动openVPN服务：&lt;/p>
+&lt;pre tabindex="0">&lt;code>#!/bin/bash
+systemctl enable openvpn@client
+systemctl start openvpn@client
+&lt;/code>&lt;/pre>&lt;p>&lt;a class="link" href="https://www.rosehosting.com/blog/how-to-install-openvpn-on-centos-7/" target="_blank" rel="noopener"
+>参考How to Install OpenVPN on CentOS 7&lt;/a>&lt;/p></description></item><item><title>Ansible</title><link>https://tab.wutuofu.com/posts/ansible-memo/</link><pubDate>Sat, 16 Apr 2016 11:33:05 +0800</pubDate><guid>https://tab.wutuofu.com/posts/ansible-memo/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/ansible-memo/ansible.png" alt="Featured image of post Ansible" />&lt;p>本文不定期更新 :)&lt;/p>
 &lt;p>&lt;a class="link" href="https://www.redhat.com/en/blog/system-administrators-guide-getting-started-ansible-fast?extIdCarryOver=true&amp;amp;sc_cid=701f2000001OH7YAAW" target="_blank" rel="noopener"
 >A system administrator&amp;rsquo;s guide to getting started with Ansible&lt;/a>&lt;/p>
 &lt;h2 id="ad-hoc">ad-hoc&lt;/h2>
