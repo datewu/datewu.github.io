@@ -855,7 +855,103 @@ mkfifo &lt;span class="nv">$pipe&lt;/span>
 &lt;span class="k">fi&lt;/span>
 &lt;span class="nv">msg&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="s2">&amp;#34;Hello from &lt;/span>&lt;span class="nv">$$&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">}&lt;/span>
 &lt;span class="nb">echo&lt;/span> &lt;span class="nv">$msg&lt;/span> &amp;gt;&lt;span class="nv">$pipe&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>部署moodle</title><link>https://tab.wutuofu.com/posts/install-moodle/</link><pubDate>Tue, 20 Mar 2018 13:58:27 +0800</pubDate><guid>https://tab.wutuofu.com/posts/install-moodle/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/install-moodle/moodle.png" alt="Featured image of post 部署moodle" />&lt;p>客户需要部署一套 &lt;a class="link" href="https://download.moodle.org/releases/latest/" target="_blank" rel="noopener"
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>分页打印日志</title><link>https://tab.wutuofu.com/posts/git-pager/</link><pubDate>Sat, 14 Apr 2018 10:38:59 +0800</pubDate><guid>https://tab.wutuofu.com/posts/git-pager/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/git-pager/pager.jpeg" alt="Featured image of post 分页打印日志" />&lt;p>默认配置命令&lt;code>git log&lt;/code>会在新的窗口打印日志内容，需要敲一下键盘&lt;code>q&lt;/code> 才能返回当前目录，不方便连续查看:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">➜ lgthw_orign git:&lt;span class="o">(&lt;/span>otherbranch&lt;span class="o">)&lt;/span> git log --oneline --decorate --all --graph
+&lt;span class="c1">## NOTE content below will be displayed on new window/buff&lt;/span>
+* 40303b7 &lt;span class="o">(&lt;/span>HEAD -&amp;gt; otherbranch&lt;span class="o">)&lt;/span> thirdcommit
+&lt;span class="p">|&lt;/span> * 3e6e2f7 &lt;span class="o">(&lt;/span>master&lt;span class="o">)&lt;/span> secondcommit
+&lt;span class="p">|&lt;/span>/
+* f40475e &lt;span class="o">(&lt;/span>tag: firstcommittag&lt;span class="o">)&lt;/span> firstcommit
+&lt;span class="o">(&lt;/span>END&lt;span class="o">)&lt;/span>
+&lt;span class="c1">## press `q` to exist&lt;/span>
+➜ lgthw_orign git:&lt;span class="o">(&lt;/span>master&lt;span class="o">)&lt;/span> git log --no-pager
+fatal: unrecognized argument: --no-pager
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>可以把默认的分页改为&lt;code>inline&lt;/code>模式，可以更快的查看连续的日志：&lt;/p>
+&lt;h2 id="meat">meat&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1"># use --no-pager options&lt;/span>
+&lt;span class="c1"># or set pager to cat&lt;/span>
+git config --global core.pager cat
+&lt;span class="c1"># or set pager to less&lt;/span>
+&lt;span class="c1"># git config --global core.pager &amp;#34;less -erX&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="demo">demo&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">➜ lgthw_orign git:&lt;span class="o">(&lt;/span>master&lt;span class="o">)&lt;/span> git log --oneline --decorate --all --graph
+* f40475e &lt;span class="o">(&lt;/span>HEAD -&amp;gt; master&lt;span class="o">)&lt;/span> firstcommit
+➜ lgthw_orign git:&lt;span class="o">(&lt;/span>master&lt;span class="o">)&lt;/span> git branch otherbranch
+➜ lgthw_orign git:&lt;span class="o">(&lt;/span>master&lt;span class="o">)&lt;/span> git tag firstcommittag
+➜ lgthw_orign git:&lt;span class="o">(&lt;/span>master&lt;span class="o">)&lt;/span> git log --oneline --decorate --all --graph
+* f40475e &lt;span class="o">(&lt;/span>HEAD -&amp;gt; master, tag: firstcommittag, otherbranch&lt;span class="o">)&lt;/span> firstcommit
+➜ lgthw_orign git:&lt;span class="o">(&lt;/span>master&lt;span class="o">)&lt;/span> date &amp;gt;&amp;gt; afile
+➜ lgthw_orign git:&lt;span class="o">(&lt;/span>master&lt;span class="o">)&lt;/span> ✗ git commit -am secondcommit
+&lt;span class="o">[&lt;/span>master 3e6e2f7&lt;span class="o">]&lt;/span> secondcommit
+&lt;span class="m">1&lt;/span> file changed, &lt;span class="m">1&lt;/span> insertion&lt;span class="o">(&lt;/span>+&lt;span class="o">)&lt;/span>
+➜ lgthw_orign git:&lt;span class="o">(&lt;/span>master&lt;span class="o">)&lt;/span> git checkout .
+➜ lgthw_orign git:&lt;span class="o">(&lt;/span>master&lt;span class="o">)&lt;/span> git log --oneline --decorate --all --graph
+* 3e6e2f7 &lt;span class="o">(&lt;/span>HEAD -&amp;gt; master&lt;span class="o">)&lt;/span> secondcommit
+* f40475e &lt;span class="o">(&lt;/span>tag: firstcommittag, otherbranch&lt;span class="o">)&lt;/span> firstcommit
+➜ lgthw_orign git:&lt;span class="o">(&lt;/span>master&lt;span class="o">)&lt;/span> git checkout otherbranch
+Switched to branch &lt;span class="s1">&amp;#39;otherbranch&amp;#39;&lt;/span>
+➜ lgthw_orign git:&lt;span class="o">(&lt;/span>otherbranch&lt;span class="o">)&lt;/span> git log --oneline --decorate --all --graph
+* 3e6e2f7 &lt;span class="o">(&lt;/span>master&lt;span class="o">)&lt;/span> secondcommit
+* f40475e &lt;span class="o">(&lt;/span>HEAD -&amp;gt; otherbranch, tag: firstcommittag&lt;span class="o">)&lt;/span> firstcommit
+➜ lgthw_orign git:&lt;span class="o">(&lt;/span>otherbranch&lt;span class="o">)&lt;/span> date &amp;gt;&amp;gt; afile
+➜ lgthw_orign git:&lt;span class="o">(&lt;/span>otherbranch&lt;span class="o">)&lt;/span> ✗ git commit -am thirdcommit
+&lt;span class="o">[&lt;/span>otherbranch 40303b7&lt;span class="o">]&lt;/span> thirdcommit
+&lt;span class="m">1&lt;/span> file changed, &lt;span class="m">1&lt;/span> insertion&lt;span class="o">(&lt;/span>+&lt;span class="o">)&lt;/span>
+➜ lgthw_orign git:&lt;span class="o">(&lt;/span>otherbranch&lt;span class="o">)&lt;/span> git log --oneline --decorate --all --graph
+* 40303b7 &lt;span class="o">(&lt;/span>HEAD -&amp;gt; otherbranch&lt;span class="o">)&lt;/span> thirdcommit
+&lt;span class="p">|&lt;/span> * 3e6e2f7 &lt;span class="o">(&lt;/span>master&lt;span class="o">)&lt;/span> secondcommit
+&lt;span class="p">|&lt;/span>/
+* f40475e &lt;span class="o">(&lt;/span>tag: firstcommittag&lt;span class="o">)&lt;/span> firstcommit
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="参考">参考&lt;/h3>
+&lt;p>&lt;a class="link" href="http://blog.timlockridge.com/blog/2013/01/22/changing-the-display-of-git-log/" target="_blank" rel="noopener"
+>Changing the Display of Git Log&lt;/a>&lt;/p>
+&lt;blockquote>
+&lt;p>FYI, &lt;code>cat&lt;/code> is not the ideal pager for me, since it displays the full git log from the beginning if I don&amp;rsquo;t append a -1 in the end of the command.
+&lt;code>more&lt;/code> was not a good candidate either, since colors was not well displayed in the console with &lt;code>more&lt;/code>
+I preferred to keep &lt;code>less&lt;/code> as the pager, but display content in the console.
+So for me :
+git config &amp;ndash;global core.pager &amp;ldquo;less -erX&amp;rdquo;
+(important option here is the -X option)&lt;/p>
+&lt;/blockquote></description></item><item><title>pip包冲突</title><link>https://tab.wutuofu.com/posts/python-import/</link><pubDate>Fri, 30 Mar 2018 10:21:25 +0800</pubDate><guid>https://tab.wutuofu.com/posts/python-import/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/python-import/pip.png" alt="Featured image of post pip包冲突" />&lt;p>遇到一个奇怪的问题执行&lt;code>certbot&lt;/code>会报错，&lt;code>moudle conflict&lt;/code>和 &lt;code>No module&lt;/code>，但是&lt;code>yum install certbot&lt;/code>的时候没有报错。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">certbot
+Traceback &lt;span class="o">(&lt;/span>most recent call last&lt;span class="o">)&lt;/span>:
+File &lt;span class="s2">&amp;#34;/bin/certbot&amp;#34;&lt;/span>, line 7, in &amp;lt;module&amp;gt;
+from certbot.main import main
+File &lt;span class="s2">&amp;#34;/usr/lib/python2.7/site-packages/certbot/main.py&amp;#34;&lt;/span>, line 17, in &amp;lt;module&amp;gt;
+from certbot import account
+File &lt;span class="s2">&amp;#34;/usr/lib/python2.7/site-packages/certbot/account.py&amp;#34;&lt;/span>, line 17, in &amp;lt;module&amp;gt;
+from acme import messages
+File &lt;span class="s2">&amp;#34;/usr/lib/python2.7/site-packages/acme/messages.py&amp;#34;&lt;/span>, line 7, in &amp;lt;module&amp;gt;
+from acme import challenges
+File &lt;span class="s2">&amp;#34;/usr/lib/python2.7/site-packages/acme/challenges.py&amp;#34;&lt;/span>, line 11, in &amp;lt;module&amp;gt;
+import requests
+File &lt;span class="s2">&amp;#34;/usr/lib/python2.7/site-packages/requests/__init__.py&amp;#34;&lt;/span>, line 58, in &amp;lt;module&amp;gt;
+from . import utils
+File &lt;span class="s2">&amp;#34;/usr/lib/python2.7/site-packages/requests/utils.py&amp;#34;&lt;/span>, line 32, in &amp;lt;module&amp;gt;
+from .exceptions import InvalidURL
+File &lt;span class="s2">&amp;#34;/usr/lib/python2.7/site-packages/requests/exceptions.py&amp;#34;&lt;/span>, line 10, in &amp;lt;module&amp;gt;
+from .packages.urllib3.exceptions import HTTPError as BaseHTTPError
+File &lt;span class="s2">&amp;#34;/usr/lib/python2.7/site-packages/requests/packages/__init__.py&amp;#34;&lt;/span>, line 95, in load_module
+raise ImportError&lt;span class="o">(&lt;/span>&lt;span class="s2">&amp;#34;No module named &amp;#39;%s&amp;#39;&amp;#34;&lt;/span> % &lt;span class="o">(&lt;/span>name,&lt;span class="o">))&lt;/span>
+ImportError: No module named &lt;span class="s1">&amp;#39;requests.packages.urllib3&amp;#39;&lt;/span>
+pip install requests urllib3 pyOpenSSL --force --upgrade
+certbot
+An unexpected error occurred:
+VersionConflict: &lt;span class="o">(&lt;/span>setuptools 0.9.8 &lt;span class="o">(&lt;/span>/usr/lib/python2.7/site-packages&lt;span class="o">)&lt;/span>, Requirement.parse&lt;span class="o">(&lt;/span>&lt;span class="s1">&amp;#39;setuptools&amp;gt;=1.0&amp;#39;&lt;/span>&lt;span class="o">))&lt;/span>
+pip install --upgrade pip setuptools
+certbot
+ls
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="meat">meat&lt;/h2>
+&lt;p>弄了很久决定抛弃&lt;code>yum&lt;/code>直接使用 &lt;code>pip&lt;/code>安装certbot，安装完成后，发现不再报错：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">yum install openssl-devel python-devel
+pip install --upgrade pip setuptools
+pip install certbot
+pip install requests urllib3 pyOpenSSL --force --upgrade
+certbot -d tab.wutuofu.com --manual --preferred-challenges dns certonly
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="小结">小结&lt;/h2>
+&lt;p>本来是不想写这篇博文的，估摸着&lt;code>letsencrypt&lt;/code>官方 迟早会修复certbot rpm包的，结果一等就是两个月，
+letsencrypt都没修复 rpm包。&lt;/p>
+&lt;p>最近多台服务器的&lt;code>certbot&lt;/code>安装又遇到这个不兼容的问题，每次去其它的服务器上找&lt;code>command history&lt;/code>有点麻烦，所以记下来方便查找。&lt;/p></description></item><item><title>部署moodle</title><link>https://tab.wutuofu.com/posts/install-moodle/</link><pubDate>Tue, 20 Mar 2018 13:58:27 +0800</pubDate><guid>https://tab.wutuofu.com/posts/install-moodle/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/install-moodle/moodle.png" alt="Featured image of post 部署moodle" />&lt;p>客户需要部署一套 &lt;a class="link" href="https://download.moodle.org/releases/latest/" target="_blank" rel="noopener"
 >moodle&lt;/a> 教学系统。&lt;/p>
 &lt;p>去&lt;a class="link" href="https://moodle.org/" target="_blank" rel="noopener"
 >moodle官网&lt;/a>大致看了一圈，发现moodle 是一个典型的PHP web应用。&lt;/p>
