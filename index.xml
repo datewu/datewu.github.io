@@ -855,7 +855,202 @@ mkfifo &lt;span class="nv">$pipe&lt;/span>
 &lt;span class="k">fi&lt;/span>
 &lt;span class="nv">msg&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="s2">&amp;#34;Hello from &lt;/span>&lt;span class="nv">$$&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">}&lt;/span>
 &lt;span class="nb">echo&lt;/span> &lt;span class="nv">$msg&lt;/span> &amp;gt;&lt;span class="nv">$pipe&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>分页打印日志</title><link>https://tab.wutuofu.com/posts/git-pager/</link><pubDate>Sat, 14 Apr 2018 10:38:59 +0800</pubDate><guid>https://tab.wutuofu.com/posts/git-pager/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/git-pager/pager.jpeg" alt="Featured image of post 分页打印日志" />&lt;p>默认配置命令&lt;code>git log&lt;/code>会在新的窗口打印日志内容，需要敲一下键盘&lt;code>q&lt;/code> 才能返回当前目录，不方便连续查看:&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>vim配置</title><link>https://tab.wutuofu.com/posts/vim-conf/</link><pubDate>Mon, 14 May 2018 11:42:23 +0800</pubDate><guid>https://tab.wutuofu.com/posts/vim-conf/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/vim-conf/vim.png" alt="Featured image of post vim配置" />&lt;p>使用vim有7，8年了，整理一下自己用到的vim配置，方便自查。&lt;/p>
+&lt;h2 id="vim">vim&lt;/h2>
+&lt;h3 id="basic">basic&lt;/h3>
+&lt;p>基本设置，语法高亮，行号，等等：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-vimrc" data-lang="vimrc">&lt;span class="nx">execute&lt;/span> &lt;span class="nx">pathogen&lt;/span>#&lt;span class="nx">infect&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">syntax&lt;/span> &lt;span class="nx">on&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">filetype&lt;/span> &lt;span class="nx">plugin&lt;/span> &lt;span class="nx">indent&lt;/span> &lt;span class="nx">on&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">set&lt;/span> &lt;span class="nx">number&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="fold">fold&lt;/h3>
+&lt;p>代码折叠：
+&lt;a class="link" href="http://vim.wikia.com/wiki/Folding" target="_blank" rel="noopener"
+>Folding wiki&lt;/a>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-vimrc" data-lang="vimrc">&lt;span class="c">&amp;#34; close zc&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; open zo&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="font">font&lt;/h3>
+&lt;p>安装字体：
+&lt;a class="link" href="https://github.com/powerline/powerline" target="_blank" rel="noopener"
+>install powerline font&lt;/a>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">wget https://github.com/powerline/powerline/raw/develop/font/PowerlineSymbols.otf
+open .
+&lt;span class="c1"># double click the otf file you&amp;#39;ve just downloaded.&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="kubectl-eidt-issue">kubectl eidt issue&lt;/h3>
+&lt;p>使用&lt;code>kubectl edit&lt;/code>时，当yaml文件的annotation行过大会报错:&lt;/p>
+&lt;p>&lt;code>annotation: kubectl.kubernetes.io/last-applied-configuration is too large&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-vimrc" data-lang="vimrc">&lt;span class="c">&amp;#34; annotation: kubectl.kubernetes.io/last-applied-configuration&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; is too large&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">set&lt;/span> &lt;span class="nx">maxmempattern&lt;/span>&lt;span class="p">=&lt;/span>&lt;span class="m">200000&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="neovim">neovim&lt;/h2>
+&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 177;
+flex-basis: 425px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/vim-conf/neovim.png" data-size="996x562">
+&lt;img src="https://tab.wutuofu.com/posts/vim-conf/neovim.png"
+width="996"
+height="562"
+srcset="https://tab.wutuofu.com/posts/vim-conf/neovim_hu5b6b3b4ece43278365f5779b75ee7ecd_83052_480x0_resize_box_3.png 480w, https://tab.wutuofu.com/posts/vim-conf/neovim_hu5b6b3b4ece43278365f5779b75ee7ecd_83052_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="neovim v0.5.1">
+&lt;/a>
+&lt;figcaption>neovim v0.5.1&lt;/figcaption>
+&lt;/figure>&lt;/p>
+&lt;p>今年（2020），我从vim 8 迁移到了&lt;code>neovim&lt;/code>，下面是 &lt;code>~/.config/nvim/init.vim&lt;/code>的配置内容&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-vimrc" data-lang="vimrc">&lt;span class="c">&amp;#34; cp from ~/.vimrc&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; execute pathogen#infect()&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;syntax on&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;filetype plugin indent on&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">language&lt;/span> &lt;span class="nx">en_US&lt;/span>.&lt;span class="nx">UTF&lt;/span>&lt;span class="m">-8&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">set&lt;/span> &lt;span class="nx">rtp&lt;/span>&lt;span class="p">+=&lt;/span>&lt;span class="sr">/usr/&lt;/span>&lt;span class="nx">local&lt;/span>&lt;span class="sr">/opt/&lt;/span>&lt;span class="nx">fzf&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">set&lt;/span> &lt;span class="nx">number&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">set&lt;/span> &lt;span class="nx">encoding&lt;/span>&lt;span class="p">=&lt;/span>&lt;span class="nx">utf&lt;/span>&lt;span class="m">-8&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">
+&lt;/span>&lt;span class="c">&amp;#34; You need to set ignorecase if you want to use what smartcase provides&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">set&lt;/span> &lt;span class="nx">ignorecase&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">set&lt;/span> &lt;span class="nx">smartcase&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">
+&lt;/span>&lt;span class="c">&amp;#34; kubectl edit&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; annotation: kubectl.kubernetes.io/last-applied-configuration&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; is too large&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">set&lt;/span> &lt;span class="nx">maxmempattern&lt;/span>&lt;span class="p">=&lt;/span>&lt;span class="m">200000&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;set foldmethod=syntax&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;set clipboard=unnamed&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">
+&lt;/span>&lt;span class="c">&amp;#34;autocmd vimenter * NERDTree&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;autocmd StdinReadPre * let s:std_in=1&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;autocmd VimEnter * if argc() == 0 &amp;amp;&amp;amp; !exists(&amp;#34;s:std_in&amp;#34;) | NERDTree | endif&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">autocmd&lt;/span> &lt;span class="nx">StdinReadPre&lt;/span> * &lt;span class="k">let&lt;/span> &lt;span class="nx">s&lt;/span>:&lt;span class="nx">std_in&lt;/span>&lt;span class="p">=&lt;/span>&lt;span class="m">1&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">autocmd&lt;/span> &lt;span class="nx">VimEnter&lt;/span> * &lt;span class="k">if&lt;/span> &lt;span class="nx">argc&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">==&lt;/span> &lt;span class="m">1&lt;/span> &amp;amp;&amp;amp; &lt;span class="nx">isdirectory&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">argv&lt;/span>&lt;span class="p">()&lt;/span>[&lt;span class="m">0&lt;/span>]&lt;span class="p">)&lt;/span> &amp;amp;&amp;amp; &lt;span class="p">!&lt;/span>&lt;span class="nx">exists&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;s:std_in&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">|&lt;/span> &lt;span class="nx">exe&lt;/span> &lt;span class="s1">&amp;#39;NERDTree&amp;#39;&lt;/span> &lt;span class="nx">argv&lt;/span>&lt;span class="p">()&lt;/span>[&lt;span class="m">0&lt;/span>] &lt;span class="p">|&lt;/span> &lt;span class="nx">wincmd&lt;/span> &lt;span class="nx">p&lt;/span> &lt;span class="p">|&lt;/span> &lt;span class="nx">ene&lt;/span> &lt;span class="p">|&lt;/span> &lt;span class="nx">exe&lt;/span> &lt;span class="s1">&amp;#39;cd &amp;#39;&lt;/span>.&lt;span class="nx">argv&lt;/span>&lt;span class="p">()&lt;/span>[&lt;span class="m">0&lt;/span>] &lt;span class="p">|&lt;/span> &lt;span class="k">endif&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">call&lt;/span> &lt;span class="nx">plug&lt;/span>#&lt;span class="nx">begin&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">stdpath&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;data&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span> .&lt;span class="s1">&amp;#39;/plugged&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; call plug#begin(&amp;#39;~/.vim/plugged&amp;#39;)&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; Make sure you use single quotes&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;tpope/vim-commentary&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;vim-airline/vim-airline&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;vim-airline/vim-airline-themes&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; &amp;#34; Shorthand notation; fetches https://github.com/junegunn/vim-easy-align&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;junegunn/vim-easy-align&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; &amp;#34; Any valid git URL is allowed&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;https://github.com/junegunn/vim-github-dashboard.git&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; &amp;#34; Multiple Plug commands can be written in a single line using | separators&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;SirVer/ultisnips&amp;#39;&lt;/span> &lt;span class="p">|&lt;/span> &lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;honza/vim-snippets&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; &amp;#34; On-demand loading&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;scrooloose/nerdtree&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> { &lt;span class="s1">&amp;#39;on&amp;#39;&lt;/span>: &lt;span class="s1">&amp;#39;NERDTreeToggle&amp;#39;&lt;/span> }&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;preservim/tagbar&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">
+&lt;/span>&lt;span class="c">
+&lt;/span>&lt;span class="c">&amp;#34; Plug &amp;#39;tpope/vim-fireplace&amp;#39;, { &amp;#39;for&amp;#39;: &amp;#39;clojure&amp;#39; }&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; &amp;#34; Using a non-default branch&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;rdnetto/YCM-Generator&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> { &lt;span class="s1">&amp;#39;branch&amp;#39;&lt;/span>: &lt;span class="s1">&amp;#39;stable&amp;#39;&lt;/span> }&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; &amp;#34; Using a tagged release; wildcard allowed (requires git 1.9.2 or above)&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;fatih/vim-go&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> { &lt;span class="s1">&amp;#39;do&amp;#39;&lt;/span>: &lt;span class="s1">&amp;#39;:GoUpdateBinaries&amp;#39;&lt;/span> }&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; &amp;#34; Plugin outside ~/.vim/plugged with post-update hook&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;junegunn/fzf&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> { &lt;span class="s1">&amp;#39;dir&amp;#39;&lt;/span>: &lt;span class="s1">&amp;#39;~/.fzf&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;do&amp;#39;&lt;/span>: &lt;span class="s1">&amp;#39;./install --all&amp;#39;&lt;/span> }&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;junegunn/fzf.vim&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">
+&lt;/span>&lt;span class="c">&amp;#34; Track the engine.&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;SirVer/ultisnips&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; Snippets are separated from the engine. Add this if you want them:&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;honza/vim-snippets&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="k">if&lt;/span> &lt;span class="nx">has&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;nvim&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span> &lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;Shougo/deoplete.nvim&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> { &lt;span class="s1">&amp;#39;do&amp;#39;&lt;/span>: &lt;span class="s1">&amp;#39;:UpdateRemotePlugins&amp;#39;&lt;/span> }&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="k">else&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span> &lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;Shougo/deoplete.nvim&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span> &lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;roxma/nvim-yarp&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span> &lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;roxma/vim-hug-neovim-rpc&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="k">endif&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;tpope/vim-sensible&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;rust-lang/rust.vim&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">
+&lt;/span>&lt;span class="c">&amp;#34; for reactjs jsx&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;pangloss/vim-javascript&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;leafgarland/typescript-vim&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;peitalin/vim-jsx-typescript&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">Plug&lt;/span> &lt;span class="s1">&amp;#39;styled-components/vim-styled-components&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> { &lt;span class="s1">&amp;#39;branch&amp;#39;&lt;/span>: &lt;span class="s1">&amp;#39;main&amp;#39;&lt;/span> }&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">
+&lt;/span>&lt;span class="c">&amp;#34; Plug &amp;#39;autozimu/LanguageClient-neovim&amp;#39;, {&amp;#39;branch&amp;#39;: &amp;#39;next&amp;#39;, &amp;#39;do&amp;#39;: &amp;#39;bash install.sh&amp;#39; }&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;Plug &amp;#39;jparise/vim-graphql&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">
+&lt;/span>&lt;span class="c">&amp;#34;Plug &amp;#39;neoclide/coc.nvim&amp;#39;, {&amp;#39;branch&amp;#39;: &amp;#39;release&amp;#39;}&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">call&lt;/span> &lt;span class="nx">plug&lt;/span>#&lt;span class="nx">end&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">
+&lt;/span>&lt;span class="c">&amp;#34; let g:coc_global_extensions = [&amp;#39;coc-json&amp;#39;, &amp;#39;coc-tsserver&amp;#39;]&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">
+&lt;/span>&lt;span class="c">&amp;#34; for js/ts synax&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; syntax highlighting can get out of sync i&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; https://thoughtbot.com/blog/modern-typescript-and-react-development-in-vim&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">autocmd&lt;/span> &lt;span class="nx">BufEnter&lt;/span> *.{&lt;span class="nx">js&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="nx">jsx&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="nx">ts&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="nx">tsx&lt;/span>} :&lt;span class="nx">syntax&lt;/span> &lt;span class="nx">sync&lt;/span> &lt;span class="nx">fromstart&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">autocmd&lt;/span> &lt;span class="nx">BufLeave&lt;/span> *.{&lt;span class="nx">js&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="nx">jsx&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="nx">ts&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="nx">tsx&lt;/span>} :&lt;span class="nx">syntax&lt;/span> &lt;span class="nx">sync&lt;/span> &lt;span class="nx">clear&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="k">let&lt;/span> &lt;span class="nx">g&lt;/span>:&lt;span class="nx">deoplete&lt;/span>#&lt;span class="nx">enable_at_startup&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="m">1&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="k">let&lt;/span> &lt;span class="nx">g&lt;/span>:&lt;span class="nx">go_def_mode&lt;/span>&lt;span class="p">=&lt;/span>&lt;span class="s1">&amp;#39;gopls&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="k">let&lt;/span> &lt;span class="nx">g&lt;/span>:&lt;span class="nx">go_info_mode&lt;/span>&lt;span class="p">=&lt;/span>&lt;span class="s1">&amp;#39;gopls&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="k">let&lt;/span> &lt;span class="nx">g&lt;/span>:&lt;span class="nx">UltiSnipsEditSplit&lt;/span>&lt;span class="p">=&lt;/span>&lt;span class="s2">&amp;#34;vertical&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">call&lt;/span> &lt;span class="nx">deoplete&lt;/span>#&lt;span class="nx">custom&lt;/span>#&lt;span class="nx">option&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;omni_patterns&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> { &lt;span class="s1">&amp;#39;go&amp;#39;&lt;/span>: &lt;span class="s1">&amp;#39;[^. *\t]\.\w*&amp;#39;&lt;/span> }&lt;span class="p">)&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">
+&lt;/span>&lt;span class="c">
+&lt;/span>&lt;span class="c">&amp;#34;set list&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;set listchars=tab:&amp;gt;-&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">set&lt;/span> &lt;span class="nx">tabstop&lt;/span>&lt;span class="p">=&lt;/span>&lt;span class="m">4&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;set expandtab&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;set shiftwidth=2&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">set&lt;/span> &lt;span class="nx">autoindent&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">set&lt;/span> &lt;span class="nx">smartindent&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="k">let&lt;/span> &lt;span class="nx">mapleader&lt;/span>&lt;span class="p">=&lt;/span>&lt;span class="s1">&amp;#39;,&amp;#39;&lt;/span> &lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">nmap&lt;/span> &lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nx">C&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="nx">P&lt;/span>&lt;span class="p">&amp;gt;&lt;/span> :&lt;span class="nx">FZF&lt;/span>&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nx">CR&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="k">let&lt;/span> &lt;span class="nx">NERDTreeShowHidden&lt;/span>&lt;span class="p">=&lt;/span>&lt;span class="m">1&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">
+&lt;/span>&lt;span class="c">
+&lt;/span>&lt;span class="c">&amp;#34; If more than one window and previous buffer was NERDTree, go back to it.&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">autocmd&lt;/span> &lt;span class="nx">BufEnter&lt;/span> * &lt;span class="k">if&lt;/span> &lt;span class="nx">bufname&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;#&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">=~&lt;/span># &lt;span class="s2">&amp;#34;^NERD_tree_&amp;#34;&lt;/span> &amp;amp;&amp;amp; &lt;span class="nx">winnr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;$&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">&amp;gt;&lt;/span> &lt;span class="m">1&lt;/span> &lt;span class="p">|&lt;/span> &lt;span class="nx">b&lt;/span># &lt;span class="p">|&lt;/span> &lt;span class="k">endif&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="k">let&lt;/span> &lt;span class="nx">g&lt;/span>:&lt;span class="nx">plug_window&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s1">&amp;#39;noautocmd vertical topleft new&amp;#39;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="k">if&lt;/span> &lt;span class="nx">has&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;nvim&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c"> &amp;#34;highlight! link TermCursor Cursor&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span> &lt;span class="nx">highlight&lt;/span>&lt;span class="p">!&lt;/span> &lt;span class="nx">TermCursorNC&lt;/span> &lt;span class="nx">guibg&lt;/span>&lt;span class="p">=&lt;/span>&lt;span class="nx">red&lt;/span> &lt;span class="nx">guifg&lt;/span>&lt;span class="p">=&lt;/span>&lt;span class="nx">white&lt;/span> &lt;span class="nx">ctermbg&lt;/span>&lt;span class="p">=&lt;/span>&lt;span class="m">1&lt;/span> &lt;span class="nx">ctermfg&lt;/span>&lt;span class="p">=&lt;/span>&lt;span class="m">15&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="k">endif&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="nx">set&lt;/span> &lt;span class="nx">clipboard&lt;/span>&lt;span class="p">+=&lt;/span>&lt;span class="nx">unnamedplus&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="k">let&lt;/span> &lt;span class="nx">g&lt;/span>:&lt;span class="nx">go_imports_autosave&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="m">1&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">
+&lt;/span>&lt;span class="c">&amp;#34; nmap &amp;lt;silent&amp;gt; gd &amp;lt;Plug&amp;gt;(coc-definition)&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; nmap &amp;lt;silent&amp;gt; gy &amp;lt;Plug&amp;gt;(coc-type-definition)&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; nmap &amp;lt;silent&amp;gt; gr &amp;lt;Plug&amp;gt;(coc-references)&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34; nmap &amp;lt;leader&amp;gt;rn &amp;lt;Plug&amp;gt;(coc-rename)&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">&lt;/span>&lt;span class="c">&amp;#34;let g:LanguageClient_serverCommands = {&amp;#39;javascript&amp;#39;: [&amp;#39;javascript-typescript-stdio&amp;#39;]}&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>分页打印日志</title><link>https://tab.wutuofu.com/posts/git-pager/</link><pubDate>Sat, 14 Apr 2018 10:38:59 +0800</pubDate><guid>https://tab.wutuofu.com/posts/git-pager/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/git-pager/pager.jpeg" alt="Featured image of post 分页打印日志" />&lt;p>默认配置命令&lt;code>git log&lt;/code>会在新的窗口打印日志内容，需要敲一下键盘&lt;code>q&lt;/code> 才能返回当前目录，不方便连续查看:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">➜ lgthw_orign git:&lt;span class="o">(&lt;/span>otherbranch&lt;span class="o">)&lt;/span> git log --oneline --decorate --all --graph
 &lt;span class="c1">## NOTE content below will be displayed on new window/buff&lt;/span>
 * 40303b7 &lt;span class="o">(&lt;/span>HEAD -&amp;gt; otherbranch&lt;span class="o">)&lt;/span> thirdcommit
@@ -1093,7 +1288,78 @@ crontab -l
 &lt;p>&lt;a class="link" href="https://docs.moodle.org/33/en/PostgreSQL" target="_blank" rel="noopener"
 >moodle: set up postgresql counts and database&lt;/a>&lt;/p>
 &lt;p>&lt;a class="link" href="https://www.howtoforge.com/tutorial/how-to-install-moodle-32-on-centos-7/" target="_blank" rel="noopener"
->PHP(php-fpm) nginx&lt;/a>&lt;/p></description></item><item><title>两个奴隶</title><link>https://tab.wutuofu.com/posts/postgre-two-slaves/</link><pubDate>Mon, 05 Feb 2018 21:55:41 +0800</pubDate><guid>https://tab.wutuofu.com/posts/postgre-two-slaves/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/postgre-two-slaves/postgres-replication.jpeg" alt="Featured image of post 两个奴隶" />&lt;p>一般postgres高可用集群是一个master配一个slave，但是开发这边需要做db的读写分离，所以运维这边
+>PHP(php-fpm) nginx&lt;/a>&lt;/p></description></item><item><title>数据库备份</title><link>https://tab.wutuofu.com/posts/postgresql-backup/</link><pubDate>Sat, 24 Feb 2018 11:21:55 +0800</pubDate><guid>https://tab.wutuofu.com/posts/postgresql-backup/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/postgresql-backup/postgresql-backup.jpeg" alt="Featured image of post 数据库备份" />&lt;p>工作需要定时备份postgresql slave数据库数据数据，服务器上运行了两个&lt;code>slave&lt;/code>实例，隶属于两个不同的&lt;code>master&lt;/code>。&lt;/p>
+&lt;h2 id="备份">备份&lt;/h2>
+&lt;p>两个&lt;code>slave server&lt;/code>实例分别监听在 &lt;code>5432&lt;/code>和 &lt;code>4432&lt;/code>端口&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>&lt;span class="c1">#&lt;/span>
+&lt;span class="c1"># Daily PostgreSQL maintenance: vacuuming and backuping.&lt;/span>
+&lt;span class="c1">#&lt;/span>
+&lt;span class="c1">##&lt;/span>
+&lt;span class="nb">set&lt;/span> -e
+&lt;span class="k">for&lt;/span> port in &lt;span class="m">5432&lt;/span> 4432&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span>
+&lt;span class="nv">BACKDIR&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/data/pg_back/&lt;/span>&lt;span class="nv">$port&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;span class="o">[&lt;/span> -d &lt;span class="nv">$BACKDIR&lt;/span> &lt;span class="o">]&lt;/span> &lt;span class="o">||&lt;/span> mkdir -p &lt;span class="nv">$BACKDIR&lt;/span>
+&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;[`date`] begin Maintaining pg on port &lt;/span>&lt;span class="nv">$port&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;span class="c1"># no need to use -U option for DB in $(psql -l -t -p $port |awk &amp;#39;{ print $1}&amp;#39; |grep -vE &amp;#39;^-|:|^List|^Name|template[0|1]|postgres|\|&amp;#39;); do&lt;/span>
+&lt;span class="c1">### swith form &amp;#39;awk and grep&amp;#39; hacks to psql options and &amp;#39;select sql&amp;#39;&lt;/span>
+&lt;span class="c1">### which is more dbaer professioner :)&lt;/span>
+&lt;span class="k">for&lt;/span> DB in &lt;span class="k">$(&lt;/span>psql -AqXtc &lt;span class="s1">&amp;#39;SELECT datname FROM pg_database WHERE datistemplate = false;&amp;#39;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span>
+&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34; [`date`] Maintaining &lt;/span>&lt;span class="nv">$DB&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;span class="nv">PREFIX&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$BACKDIR&lt;/span>&lt;span class="s2">/&lt;/span>&lt;span class="nv">$DB&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;span class="c1"># NO need to do `vacuum` on slaves&lt;/span>
+&lt;span class="c1"># do `vacunm` on master instead&lt;/span>
+&lt;span class="c1"># echo &amp;#39;VACUUM&amp;#39; | psql -U postgres -hlocalhost -d $DB&lt;/span>
+&lt;span class="nv">DUMP&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$PREFIX&lt;/span>&lt;span class="s2">.`date &amp;#39;+%Y%m%d&amp;#39;`.sql.gz&amp;#34;&lt;/span>
+&lt;span class="c1"># no need for -U postgres option&lt;/span>
+pg_dump -p &lt;span class="nv">$port&lt;/span> &lt;span class="nv">$DB&lt;/span> &lt;span class="p">|&lt;/span> gzip -c &amp;gt; &lt;span class="nv">$DUMP&lt;/span>
+&lt;span class="nv">PREV&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$PREFIX&lt;/span>&lt;span class="s2">.`date -d&amp;#39;1 day ago&amp;#39; &amp;#39;+%Y%m%d&amp;#39;`.sql.gz&amp;#34;&lt;/span>
+&lt;span class="c1"># md5sum -b $DUMP &amp;gt; $DUMP.md5&lt;/span>
+&lt;span class="nv">md5&lt;/span>&lt;span class="o">=(&lt;/span>&lt;span class="k">$(&lt;/span>md5sum -b &lt;span class="nv">$DUMP&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;span class="nb">echo&lt;/span> &lt;span class="nv">$md5&lt;/span> &amp;gt; &lt;span class="nv">$DUMP&lt;/span>.md5
+&lt;span class="k">if&lt;/span> &lt;span class="o">[&lt;/span> -f &lt;span class="nv">$PREV&lt;/span>.md5 &lt;span class="o">]&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> diff &lt;span class="nv">$PREV&lt;/span>.md5 &lt;span class="nv">$DUMP&lt;/span>.md5&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+rm -f &lt;span class="nv">$PREV&lt;/span> &lt;span class="nv">$PREV&lt;/span>.md5
+&lt;span class="k">fi&lt;/span>
+&lt;span class="c1">## delete too old backup&lt;/span>
+&lt;span class="nv">TOOOLD&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$PREFIX&lt;/span>&lt;span class="s2">.`date -d&amp;#39;15 day ago&amp;#39; &amp;#39;+%Y%m%d&amp;#39;`.sql.gz&amp;#34;&lt;/span>
+&lt;span class="o">[&lt;/span> -f &lt;span class="nv">$TOOOLD&lt;/span> &lt;span class="o">]&lt;/span> &lt;span class="o">||&lt;/span> rm -f &lt;span class="nv">$TOOOLD&lt;/span>
+&lt;span class="k">done&lt;/span>
+&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;[`date`] Maintain pg on port &lt;/span>&lt;span class="nv">$port&lt;/span>&lt;span class="s2"> finished&amp;#34;&lt;/span>
+&lt;span class="k">done&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;a class="link" href="https://luxagraf.net/src/automatic-offsite-postgresql-backups" target="_blank" rel="noopener"
+>参考：Automatic Offsite PostgreSQL Backups Without a Password&lt;/a>&lt;/p>
+&lt;p>&lt;a class="link" href="https://stackoverflow.com/a/5773761" target="_blank" rel="noopener"
+>参考：Only get hash value using md5sum (without filename) &lt;/a>&lt;/p>
+&lt;h3 id="定时">定时&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">chmod +x pg_backup.sh
+su - postgres
+crontab -e
+&lt;span class="c1"># 16 2 * * * /var/lib/pgsql/pg_backup.sh &amp;gt;&amp;gt; /var/log/psql_corn_bak.log&lt;/span>
+&lt;span class="c1"># */3 * * * * /var/lib/pgsql/pg_backup.sh &amp;gt;&amp;gt; /var/log/psql_corn_bak.log 2&amp;gt;&amp;amp;1 ## every 3 minutes&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="psql">psql&lt;/h2>
+&lt;p>一般情况下&lt;code>psql&lt;/code>的工作模式是和人的相互交互模式(interpreter)，在shell脚本里可以使用下面的options &lt;code> -AqXt -c&lt;/code>
+会更实用写&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">-A: The output is not aligned&lt;span class="p">;&lt;/span> by default, the output is aligned.
+-q &lt;span class="o">(&lt;/span>quiet&lt;span class="o">)&lt;/span>: This option forces psql not to write a welcome message or any other
+informational output.
+-t: This option tells psql to write the tuples only, without any header
+information.
+-X: This option informs psql to ignore the psql configuration that is stored in
+~/.psqlrc file.
+-o: This option specifies psql to output the query result to a certain location.
+-F: This option determines the field separator between columns. This option can
+be used to generate CSV, which is useful to import data to Excel files.
+PGOPTIONS: psql can use PGOPTIONS to add command-line options to send to the
+server at runtime. This can be used to control statement behavior such as to
+allow index scan only or to specify the statement timeout.
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="demo">demo&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;span class="cp">&lt;/span>&lt;span class="nv">connection_number&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="sb">`&lt;/span>&lt;span class="nv">PGOPTIONS&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;--statement_timeout=0&amp;#39;&lt;/span> psql -AqXt -c&lt;span class="s2">&amp;#34;SELECT count(*) FROM pg_stat_activity&amp;#34;&lt;/span>&lt;span class="sb">`&lt;/span>
+&lt;span class="c1"># The result of the command psql -AqXt –d postgres -c &amp;#34;SELECT count(*) FROM pg_stat_activity&amp;#34; is assigned to a bash variable. &lt;/span>
+&lt;span class="c1">#The options -AqXt, as discussed previously, cause psql to return only the result without any decoration, as follows:&lt;/span>
+psql -AqXt -c &lt;span class="s2">&amp;#34;SELECT count(*) FROM pg_stat_activity&amp;#34;&lt;/span>
+&lt;span class="m">1&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>两个奴隶</title><link>https://tab.wutuofu.com/posts/postgre-two-slaves/</link><pubDate>Mon, 05 Feb 2018 21:55:41 +0800</pubDate><guid>https://tab.wutuofu.com/posts/postgre-two-slaves/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/postgre-two-slaves/postgres-replication.jpeg" alt="Featured image of post 两个奴隶" />&lt;p>一般postgres高可用集群是一个master配一个slave，但是开发这边需要做db的读写分离，所以运维这边
 又添加了一台slave专门暴露出来做读操作。原来的slave还是只做备份。&lt;/p>
 &lt;h2 id="ha">HA&lt;/h2>
 &lt;p>一主一从高可用的配置可以参考下面这篇文章
