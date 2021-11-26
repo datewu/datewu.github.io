@@ -940,7 +940,161 @@ mkfifo &lt;span class="nv">$pipe&lt;/span>
 &lt;span class="k">fi&lt;/span>
 &lt;span class="nv">msg&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="s2">&amp;#34;Hello from &lt;/span>&lt;span class="nv">$$&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">}&lt;/span>
 &lt;span class="nb">echo&lt;/span> &lt;span class="nv">$msg&lt;/span> &amp;gt;&lt;span class="nv">$pipe&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>vim配置</title><link>https://tab.wutuofu.com/posts/vim-conf/</link><pubDate>Mon, 14 May 2018 11:42:23 +0800</pubDate><guid>https://tab.wutuofu.com/posts/vim-conf/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/vim-conf/vim.png" alt="Featured image of post vim配置" />&lt;p>使用vim有7，8年了，整理一下自己用到的vim配置，方便自查。&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>审计目录</title><link>https://tab.wutuofu.com/posts/audit-file/</link><pubDate>Wed, 20 Jun 2018 17:02:58 +0800</pubDate><guid>https://tab.wutuofu.com/posts/audit-file/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/audit-file/audit.jpeg" alt="Featured image of post 审计目录" />&lt;p>今天调试容器应用的时候发现，app运行一段时间后，容器外挂的一个volumn会偶发性的被删除。
+于是需要监控下到底是谁/哪个进程把文件目录给删除了。&lt;/p>
+&lt;p>google一阵子后，发现可以使用&lt;code>auditd&lt;/code> 服务来监控和搜索出都有那些进程操作够目标文件/目录。&lt;/p>
+&lt;p>整个过程分为3步：&lt;/p>
+&lt;ol>
+&lt;li>开启 auditd 服务；&lt;/li>
+&lt;li>使用auditctl 配置 auditd服务；&lt;/li>
+&lt;li>一段时间之后 使用 ausearch 来查看/搜索审计的日志。&lt;/li>
+&lt;/ol>
+&lt;h2 id="启动监控">启动监控&lt;/h2>
+&lt;p>开启&lt;code>auditd&lt;/code>服务：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">systemctl start auditd
+&lt;span class="c1">## you may need `mkdir /var/log/audit`&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="添加监控规则">添加监控规则&lt;/h2>
+&lt;p>编辑审计规则：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1">## list existing rules&lt;/span>
+auditctl -l
+&lt;span class="c1">## clean existing rules&lt;/span>
+auditctl -D
+&lt;span class="c1">## watch /var/run/yourfolder&lt;/span>
+auditctl -w /var/run/yourfolder -p war -k serachkey
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="auditctl语法">auditctl语法&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="o">[&lt;/span>root@dwutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># auditctl -h&lt;/span>
+usage: auditctl &lt;span class="o">[&lt;/span>options&lt;span class="o">]&lt;/span>
+-a &amp;lt;l,a&amp;gt; Append rule to end of &amp;lt;l&amp;gt;ist with &amp;lt;a&amp;gt;ction
+-A &amp;lt;l,a&amp;gt; Add rule at beginning of &amp;lt;l&amp;gt;ist with &amp;lt;a&amp;gt;ction
+-b &amp;lt;backlog&amp;gt; Set max number of outstanding audit buffers
+allowed &lt;span class="nv">Default&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">64&lt;/span>
+-c Continue through errors in rules
+-C &lt;span class="nv">f&lt;/span>&lt;span class="o">=&lt;/span>f Compare collected fields &lt;span class="k">if&lt;/span> available:
+Field name, operator&lt;span class="o">(=&lt;/span>,!&lt;span class="o">=)&lt;/span>, field name
+-d &amp;lt;l,a&amp;gt; Delete rule from &amp;lt;l&amp;gt;ist with &amp;lt;a&amp;gt;ction
+&lt;span class="nv">l&lt;/span>&lt;span class="o">=&lt;/span>task,exit,user,exclude
+&lt;span class="nv">a&lt;/span>&lt;span class="o">=&lt;/span>never,always
+-D Delete all rules and watches
+-e &lt;span class="o">[&lt;/span>0..2&lt;span class="o">]&lt;/span> Set enabled flag
+-f &lt;span class="o">[&lt;/span>0..2&lt;span class="o">]&lt;/span> Set failure flag
+&lt;span class="nv">0&lt;/span>&lt;span class="o">=&lt;/span>silent &lt;span class="nv">1&lt;/span>&lt;span class="o">=&lt;/span>printk &lt;span class="nv">2&lt;/span>&lt;span class="o">=&lt;/span>panic
+-F &lt;span class="nv">f&lt;/span>&lt;span class="o">=&lt;/span>v Build rule: field name, operator&lt;span class="o">(=&lt;/span>,!&lt;span class="o">=&lt;/span>,&amp;lt;,&amp;gt;,&amp;lt;&lt;span class="o">=&lt;/span>,
+&amp;gt;&lt;span class="o">=&lt;/span>,&lt;span class="p">&amp;amp;&lt;/span>,&lt;span class="p">&amp;amp;&lt;/span>&lt;span class="o">=)&lt;/span> value
+-h Help
+-i Ignore errors when reading rules from file
+-k &amp;lt;key&amp;gt; Set filter key on audit rule
+-l List rules
+-m text Send a user-space message
+-p &lt;span class="o">[&lt;/span>r&lt;span class="p">|&lt;/span>w&lt;span class="p">|&lt;/span>x&lt;span class="p">|&lt;/span>a&lt;span class="o">]&lt;/span> Set permissions filter on watch
+&lt;span class="nv">r&lt;/span>&lt;span class="o">=&lt;/span>read, &lt;span class="nv">w&lt;/span>&lt;span class="o">=&lt;/span>write, &lt;span class="nv">x&lt;/span>&lt;span class="o">=&lt;/span>execute, &lt;span class="nv">a&lt;/span>&lt;span class="o">=&lt;/span>attribute
+-q &amp;lt;mount,subtree&amp;gt; make subtree part of mount point&lt;span class="err">&amp;#39;&lt;/span>s dir watches
+-r &amp;lt;rate&amp;gt; Set limit in messages/sec &lt;span class="o">(&lt;/span>&lt;span class="nv">0&lt;/span>&lt;span class="o">=&lt;/span>none&lt;span class="o">)&lt;/span>
+-R &amp;lt;file&amp;gt; &lt;span class="nb">read&lt;/span> rules from file
+-s Report status
+-S syscall Build rule: syscall name or number
+-t Trim directory watches
+-v Version
+-w &amp;lt;path&amp;gt; Insert watch at &amp;lt;path&amp;gt;
+-W &amp;lt;path&amp;gt; Remove watch at &amp;lt;path&amp;gt;
+--loginuid-immutable Make loginuids unchangeable once &lt;span class="nb">set&lt;/span>
+--reset-lost Reset the lost record counter
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="分析日志">分析日志&lt;/h2>
+&lt;p>查看/搜索 审计日志：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># ausearch -k wiserun -i &lt;/span>
+&lt;span class="nv">type&lt;/span>&lt;span class="o">=&lt;/span>SYSCALL &lt;span class="nv">msg&lt;/span>&lt;span class="o">=&lt;/span>audit&lt;span class="o">(&lt;/span>2018年06月20日 14:22:33.669:8377&lt;span class="o">)&lt;/span> : &lt;span class="nv">arch&lt;/span>&lt;span class="o">=&lt;/span>x86_64 &lt;span class="nv">syscall&lt;/span>&lt;span class="o">=&lt;/span>unlinkat &lt;span class="nv">success&lt;/span>&lt;span class="o">=&lt;/span>no &lt;span class="nv">exit&lt;/span>&lt;span class="o">=&lt;/span>ENOTEMPTY&lt;span class="o">(&lt;/span>目录非空&lt;span class="o">)&lt;/span> &lt;span class="nv">a0&lt;/span>&lt;span class="o">=&lt;/span>0xffffffffffffff9c &lt;span class="nv">a1&lt;/span>&lt;span class="o">=&lt;/span>0xc42038ca80 &lt;span class="nv">a2&lt;/span>&lt;span class="o">=&lt;/span>0x200 &lt;span class="nv">a3&lt;/span>&lt;span class="o">=&lt;/span>0x0 &lt;span class="nv">items&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">2&lt;/span> &lt;span class="nv">ppid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">20523&lt;/span> &lt;span class="nv">pid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">1890&lt;/span> &lt;span class="nv">auid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nb">unset&lt;/span> &lt;span class="nv">uid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">gid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">euid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">suid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">fsuid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">egid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">sgid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">fsgid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">tty&lt;/span>&lt;span class="o">=(&lt;/span>none&lt;span class="o">)&lt;/span> &lt;span class="nv">ses&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nb">unset&lt;/span> &lt;span class="nv">comm&lt;/span>&lt;span class="o">=&lt;/span>yes_i_changed_you &lt;span class="nv">exe&lt;/span>&lt;span class="o">=&lt;/span>/root/yes_i_changed_you &lt;span class="nv">key&lt;/span>&lt;span class="o">=&lt;/span>wiserun
+&lt;span class="nv">type&lt;/span>&lt;span class="o">=&lt;/span>SYSCALL &lt;span class="nv">msg&lt;/span>&lt;span class="o">=&lt;/span>audit&lt;span class="o">(&lt;/span>2018年06月20日 14:22:33.669:8376&lt;span class="o">)&lt;/span> : &lt;span class="nv">arch&lt;/span>&lt;span class="o">=&lt;/span>x86_64 &lt;span class="nv">syscall&lt;/span>&lt;span class="o">=&lt;/span>unlinkat &lt;span class="nv">success&lt;/span>&lt;span class="o">=&lt;/span>no &lt;span class="nv">exit&lt;/span>&lt;span class="o">=&lt;/span>EISDIR&lt;span class="o">(&lt;/span>是一个目录&lt;span class="o">)&lt;/span> &lt;span class="nv">a0&lt;/span>&lt;span class="o">=&lt;/span>0xffffffffffffff9c &lt;span class="nv">a1&lt;/span>&lt;span class="o">=&lt;/span>0xc42038ca60 &lt;span class="nv">a2&lt;/span>&lt;span class="o">=&lt;/span>0x0 &lt;span class="nv">a3&lt;/span>&lt;span class="o">=&lt;/span>0x0 &lt;span class="nv">items&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">2&lt;/span> &lt;span class="nv">ppid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">20523&lt;/span> &lt;span class="nv">pid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">1890&lt;/span> &lt;span class="nv">auid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nb">unset&lt;/span> &lt;span class="nv">uid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">gid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">euid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">suid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">fsuid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">egid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">sgid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">fsgid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">tty&lt;/span>&lt;span class="o">=(&lt;/span>none&lt;span class="o">)&lt;/span> &lt;span class="nv">ses&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nb">unset&lt;/span> &lt;span class="nv">comm&lt;/span>&lt;span class="o">=&lt;/span>yes_i_changed_you &lt;span class="nv">exe&lt;/span>&lt;span class="o">=&lt;/span>/root/yes_i_changed_you &lt;span class="nv">key&lt;/span>&lt;span class="o">=&lt;/span>wiserun
+&lt;span class="nv">type&lt;/span>&lt;span class="o">=&lt;/span>SYSCALL &lt;span class="nv">msg&lt;/span>&lt;span class="o">=&lt;/span>audit&lt;span class="o">(&lt;/span>2018年06月20日 14:22:33.669:8378&lt;span class="o">)&lt;/span> : &lt;span class="nv">arch&lt;/span>&lt;span class="o">=&lt;/span>x86_64 &lt;span class="nv">syscall&lt;/span>&lt;span class="o">=&lt;/span>openat &lt;span class="nv">success&lt;/span>&lt;span class="o">=&lt;/span>yes &lt;span class="nv">exit&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">6&lt;/span> &lt;span class="nv">a0&lt;/span>&lt;span class="o">=&lt;/span>0xffffffffffffff9c &lt;span class="nv">a1&lt;/span>&lt;span class="o">=&lt;/span>0xc42038cae0 &lt;span class="nv">a2&lt;/span>&lt;span class="o">=&lt;/span>O_RDONLY&lt;span class="p">|&lt;/span>O_CLOEXEC &lt;span class="nv">a3&lt;/span>&lt;span class="o">=&lt;/span>0x0 &lt;span class="nv">items&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> &lt;span class="nv">ppid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">20523&lt;/span> &lt;span class="nv">pid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">1890&lt;/span> &lt;span class="nv">auid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nb">unset&lt;/span> &lt;span class="nv">uid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">gid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">euid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">suid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">fsuid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">egid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">sgid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">fsgid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">tty&lt;/span>&lt;span class="o">=(&lt;/span>none&lt;span class="o">)&lt;/span> &lt;span class="nv">ses&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nb">unset&lt;/span> &lt;span class="nv">comm&lt;/span>&lt;span class="o">=&lt;/span>yes_i_changed_you &lt;span class="nv">exe&lt;/span>&lt;span class="o">=&lt;/span>/root/yes_i_changed_you &lt;span class="nv">key&lt;/span>&lt;span class="o">=&lt;/span>wiserun
+&lt;span class="nv">type&lt;/span>&lt;span class="o">=&lt;/span>SYSCALL &lt;span class="nv">msg&lt;/span>&lt;span class="o">=&lt;/span>audit&lt;span class="o">(&lt;/span>2018年06月20日 14:22:33.669:8379&lt;span class="o">)&lt;/span> : &lt;span class="nv">arch&lt;/span>&lt;span class="o">=&lt;/span>x86_64 &lt;span class="nv">syscall&lt;/span>&lt;span class="o">=&lt;/span>unlinkat &lt;span class="nv">success&lt;/span>&lt;span class="o">=&lt;/span>no &lt;span class="nv">exit&lt;/span>&lt;span class="o">=&lt;/span>EISDIR&lt;span class="o">(&lt;/span>是一个目录&lt;span class="o">)&lt;/span> &lt;span class="nv">a0&lt;/span>&lt;span class="o">=&lt;/span>0xffffffffffffff9c &lt;span class="nv">a1&lt;/span>&lt;span class="o">=&lt;/span>0xc42003e3c0 &lt;span class="nv">a2&lt;/span>&lt;span class="o">=&lt;/span>0x0 &lt;span class="nv">a3&lt;/span>&lt;span class="o">=&lt;/span>0x0 &lt;span class="nv">items&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">2&lt;/span> &lt;span class="nv">ppid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">20523&lt;/span> &lt;span class="nv">pid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">1890&lt;/span> &lt;span class="nv">auid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nb">unset&lt;/span> &lt;span class="nv">uid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">gid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">euid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">suid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">fsuid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">egid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">sgid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">fsgid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">tty&lt;/span>&lt;span class="o">=(&lt;/span>none&lt;span class="o">)&lt;/span> &lt;span class="nv">ses&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nb">unset&lt;/span> &lt;span class="nv">comm&lt;/span>&lt;span class="o">=&lt;/span>yes_i_changed_you &lt;span class="nv">exe&lt;/span>&lt;span class="o">=&lt;/span>/root/yes_i_changed_you &lt;span class="nv">key&lt;/span>&lt;span class="o">=&lt;/span>wiserun
+&lt;span class="nv">type&lt;/span>&lt;span class="o">=&lt;/span>SYSCALL &lt;span class="nv">msg&lt;/span>&lt;span class="o">=&lt;/span>audit&lt;span class="o">(&lt;/span>2018年06月20日 14:22:33.669:8380&lt;span class="o">)&lt;/span> : &lt;span class="nv">arch&lt;/span>&lt;span class="o">=&lt;/span>x86_64 &lt;span class="nv">syscall&lt;/span>&lt;span class="o">=&lt;/span>unlinkat &lt;span class="nv">success&lt;/span>&lt;span class="o">=&lt;/span>yes &lt;span class="nv">exit&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">0&lt;/span> &lt;span class="nv">a0&lt;/span>&lt;span class="o">=&lt;/span>0xffffffffffffff9c &lt;span class="nv">a1&lt;/span>&lt;span class="o">=&lt;/span>0xc42003e410 &lt;span class="nv">a2&lt;/span>&lt;span class="o">=&lt;/span>0x200 &lt;span class="nv">a3&lt;/span>&lt;span class="o">=&lt;/span>0x0 &lt;span class="nv">items&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">2&lt;/span> &lt;span class="nv">ppid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">20523&lt;/span> &lt;span class="nv">pid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">1890&lt;/span> &lt;span class="nv">auid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nb">unset&lt;/span> &lt;span class="nv">uid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">gid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">euid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">suid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">fsuid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">egid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">sgid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">fsgid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">tty&lt;/span>&lt;span class="o">=(&lt;/span>none&lt;span class="o">)&lt;/span> &lt;span class="nv">ses&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nb">unset&lt;/span> &lt;span class="nv">comm&lt;/span>&lt;span class="o">=&lt;/span>yes_i_changed_you &lt;span class="nv">exe&lt;/span>&lt;span class="o">=&lt;/span>/root/yes_i_changed_you &lt;span class="nv">key&lt;/span>&lt;span class="o">=&lt;/span>wiserun
+&lt;span class="nv">type&lt;/span>&lt;span class="o">=&lt;/span>SYSCALL &lt;span class="nv">msg&lt;/span>&lt;span class="o">=&lt;/span>audit&lt;span class="o">(&lt;/span>2018年06月20日 14:22:33.669:8381&lt;span class="o">)&lt;/span> : &lt;span class="nv">arch&lt;/span>&lt;span class="o">=&lt;/span>x86_64 &lt;span class="nv">syscall&lt;/span>&lt;span class="o">=&lt;/span>unlinkat &lt;span class="nv">success&lt;/span>&lt;span class="o">=&lt;/span>no &lt;span class="nv">exit&lt;/span>&lt;span class="o">=&lt;/span>EISDIR&lt;span class="o">(&lt;/span>是一个目录&lt;span class="o">)&lt;/span> &lt;span class="nv">a0&lt;/span>&lt;span class="o">=&lt;/span>0xffffffffffffff9c &lt;span class="nv">a1&lt;/span>&lt;span class="o">=&lt;/span>0xc42038cb80 &lt;span class="nv">a2&lt;/span>&lt;span class="o">=&lt;/span>0x0 &lt;span class="nv">a3&lt;/span>&lt;span class="o">=&lt;/span>0x0 &lt;span class="nv">items&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">2&lt;/span> &lt;span class="nv">ppid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">20523&lt;/span> &lt;span class="nv">pid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">1890&lt;/span> &lt;span class="nv">auid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nb">unset&lt;/span> &lt;span class="nv">uid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">gid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">euid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">suid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">fsuid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">egid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">sgid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">fsgid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">tty&lt;/span>&lt;span class="o">=(&lt;/span>none&lt;span class="o">)&lt;/span> &lt;span class="nv">ses&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nb">unset&lt;/span> &lt;span class="nv">comm&lt;/span>&lt;span class="o">=&lt;/span>yes_i_changed_you &lt;span class="nv">exe&lt;/span>&lt;span class="o">=&lt;/span>/root/yes_i_changed_you &lt;span class="nv">key&lt;/span>&lt;span class="o">=&lt;/span>wiserun
+&lt;span class="nv">type&lt;/span>&lt;span class="o">=&lt;/span>SYSCALL &lt;span class="nv">msg&lt;/span>&lt;span class="o">=&lt;/span>audit&lt;span class="o">(&lt;/span>2018年06月20日 14:22:33.669:8382&lt;span class="o">)&lt;/span> : &lt;span class="nv">arch&lt;/span>&lt;span class="o">=&lt;/span>x86_64 &lt;span class="nv">syscall&lt;/span>&lt;span class="o">=&lt;/span>unlinkat &lt;span class="nv">success&lt;/span>&lt;span class="o">=&lt;/span>yes &lt;span class="nv">exit&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">0&lt;/span> &lt;span class="nv">a0&lt;/span>&lt;span class="o">=&lt;/span>0xffffffffffffff9c &lt;span class="nv">a1&lt;/span>&lt;span class="o">=&lt;/span>0xc42038cbc0 &lt;span class="nv">a2&lt;/span>&lt;span class="o">=&lt;/span>0x200 &lt;span class="nv">a3&lt;/span>&lt;span class="o">=&lt;/span>0x0 &lt;span class="nv">items&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">2&lt;/span> &lt;span class="nv">ppid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">20523&lt;/span> &lt;span class="nv">pid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">1890&lt;/span> &lt;span class="nv">auid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nb">unset&lt;/span> &lt;span class="nv">uid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">gid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">euid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">suid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">fsuid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">egid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">sgid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">fsgid&lt;/span>&lt;span class="o">=&lt;/span>root &lt;span class="nv">tty&lt;/span>&lt;span class="o">=(&lt;/span>none&lt;span class="o">)&lt;/span> &lt;span class="nv">ses&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nb">unset&lt;/span> &lt;span class="nv">comm&lt;/span>&lt;span class="o">=&lt;/span>yes_i_changed_you &lt;span class="nv">exe&lt;/span>&lt;span class="o">=&lt;/span>/root/yes_i_changed_you &lt;span class="nv">key&lt;/span>&lt;span class="o">=&lt;/span>wiserun
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="ausearch语法">ausearch语法&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># ausearch -h&lt;/span>
+usage: ausearch &lt;span class="o">[&lt;/span>options&lt;span class="o">]&lt;/span>
+-a,--event &amp;lt;Audit event id&amp;gt; search based on audit event id
+--arch &amp;lt;CPU&amp;gt; search based on the CPU architecture
+-c,--comm &amp;lt;Comm name&amp;gt; search based on &lt;span class="nb">command&lt;/span> line name
+--checkpoint &amp;lt;checkpoint file&amp;gt; search from last &lt;span class="nb">complete&lt;/span> event
+--debug Write malformed events that are skipped to stderr
+-e,--exit &amp;lt;Exit code or errno&amp;gt; search based on syscall &lt;span class="nb">exit&lt;/span> code
+-f,--file &amp;lt;File name&amp;gt; search based on file name
+-ga,--gid-all &amp;lt;all Group id&amp;gt; search based on All group ids
+-ge,--gid-effective &amp;lt;effective Group id&amp;gt; search based on Effective
+group id
+-gi,--gid &amp;lt;Group Id&amp;gt; search based on group id
+-h,--help &lt;span class="nb">help&lt;/span>
+-hn,--host &amp;lt;Host Name&amp;gt; search based on remote host name
+-i,--interpret Interpret results to be human readable
+-if,--input &amp;lt;Input File name&amp;gt; use this file instead of current logs
+--input-logs Use the logs even &lt;span class="k">if&lt;/span> stdin is a pipe
+--just-one Emit just one event
+-k,--key &amp;lt;key string&amp;gt; search based on key field
+-l, --line-buffered Flush output on every line
+-m,--message &amp;lt;Message type&amp;gt; search based on message &lt;span class="nb">type&lt;/span>
+-n,--node &amp;lt;Node name&amp;gt; search based on machine&lt;span class="s1">&amp;#39;s name
+&lt;/span>&lt;span class="s1"> -o,--object &amp;lt;SE Linux Object context&amp;gt; search based on context of object
+&lt;/span>&lt;span class="s1"> -p,--pid &amp;lt;Process id&amp;gt; search based on process id
+&lt;/span>&lt;span class="s1"> -pp,--ppid &amp;lt;Parent Process id&amp;gt; search based on parent process id
+&lt;/span>&lt;span class="s1"> -r,--raw output is completely unformatted
+&lt;/span>&lt;span class="s1"> -sc,--syscall &amp;lt;SysCall name&amp;gt; search based on syscall name or number
+&lt;/span>&lt;span class="s1"> -se,--context &amp;lt;SE Linux context&amp;gt; search based on either subject or
+&lt;/span>&lt;span class="s1"> object
+&lt;/span>&lt;span class="s1"> --session &amp;lt;login session id&amp;gt; search based on login session id
+&lt;/span>&lt;span class="s1"> -su,--subject &amp;lt;SE Linux context&amp;gt; search based on context of the Subject
+&lt;/span>&lt;span class="s1"> -sv,--success &amp;lt;Success Value&amp;gt; search based on syscall or event
+&lt;/span>&lt;span class="s1"> success value
+&lt;/span>&lt;span class="s1"> -te,--end [end date] [end time] ending date &amp;amp; time for search
+&lt;/span>&lt;span class="s1"> -ts,--start [start date] [start time] starting data &amp;amp; time for search
+&lt;/span>&lt;span class="s1"> -tm,--terminal &amp;lt;TerMinal&amp;gt; search based on terminal
+&lt;/span>&lt;span class="s1"> -ua,--uid-all &amp;lt;all User id&amp;gt; search based on All user id&amp;#39;&lt;/span>s
+-ue,--uid-effective &amp;lt;effective User id&amp;gt; search based on Effective
+user id
+-ui,--uid &amp;lt;User Id&amp;gt; search based on user id
+-ul,--loginuid &amp;lt;login id&amp;gt; search based on the User&lt;span class="err">&amp;#39;&lt;/span>s Login id
+-uu,--uuid &amp;lt;guest UUID&amp;gt; search &lt;span class="k">for&lt;/span> events related to the virtual
+machine with the given UUID.
+-v,--version version
+-vm,--vm-name &amp;lt;guest name&amp;gt; search &lt;span class="k">for&lt;/span> events related to the virtual
+machine with the name.
+-w,--word string matches are whole word
+-x,--executable &amp;lt;executable name&amp;gt; search based on executable name
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="tips">TIPS&lt;/h2>
+&lt;p>如果需要记录被审计对象被删除事件，则需要审计该对象的上一级目录。&lt;/p>
+&lt;p>&lt;a class="link" href="https://stackoverflow.com/questions/29519590/monitor-audit-file-delete-on-linux" target="_blank" rel="noopener"
+>Monitor/audit file delete on Linux&lt;/a>&lt;/p></description></item><item><title>内核升级</title><link>https://tab.wutuofu.com/posts/kernel-upgrade/</link><pubDate>Wed, 16 May 2018 16:50:31 +0800</pubDate><guid>https://tab.wutuofu.com/posts/kernel-upgrade/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/kernel-upgrade/kernel.png" alt="Featured image of post 内核升级" />&lt;p>众所周知centos的内核版本选择很保守，很多新内核的新特性，特别是网络和debug方面的特性都没有，所以我们来给centos升级下 kernel吧。&lt;/p>
+&lt;p>整个升级安装的过程其实挺简单的一共分为4步：&lt;/p>
+&lt;ol>
+&lt;li>找到repo源；&lt;/li>
+&lt;li>yum安装最新的kernel；&lt;/li>
+&lt;li>修改grub2启动项；&lt;/li>
+&lt;li>移除旧的kernel。&lt;/li>
+&lt;/ol>
+&lt;h2 id="安装">安装&lt;/h2>
+&lt;h3 id="elrepo">elrepo&lt;/h3>
+&lt;p>访问&lt;a class="link" href="http://elrepo.org/tiki/tiki-index.php" target="_blank" rel="noopener"
+>elrepo website&lt;/a>查看对应 centos 版本最新的kernel repo源。
+然后使用&lt;code>rpm&lt;/code>添加kernel源：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="install">install&lt;/h3>
+&lt;p>安装内核：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">yum --disablerepo&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;\*&amp;#34;&lt;/span> --enablerepo&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;elrepo-kernel&amp;#34;&lt;/span> list available
+yum --enablerepo&lt;span class="o">=&lt;/span>elrepo-kernel install kernel-ml kernel-ml-devel
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="boot">boot&lt;/h3>
+&lt;p>修改&lt;code>grub2&lt;/code>启动项，开机使用新的内核：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">awk -F&lt;span class="se">\&amp;#39;&lt;/span> &lt;span class="s1">&amp;#39;$1==&amp;#34;menuentry &amp;#34; {print i++ &amp;#34; : &amp;#34; $2}&amp;#39;&lt;/span> /etc/grub2.cfg
+grub2-set-default &lt;span class="m">0&lt;/span>
+init &lt;span class="m">6&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="cleanup">cleanup&lt;/h3>
+&lt;p>删除旧内核&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">yum install yum-utils
+package-cleanup --oldkernels --count&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span>
+uname -a
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="参考">参考&lt;/h2>
+&lt;p>&lt;a class="link" href="https://www.howtoforge.com/tutorial/how-to-upgrade-kernel-in-centos-7-server/" target="_blank" rel="noopener"
+>How to Upgrade Kernel on CentOS 7&lt;/a>&lt;/p>
+&lt;p>&lt;a class="link" href="https://www.tecmint.com/install-upgrade-kernel-version-in-centos-7/" target="_blank" rel="noopener"
+>How to Install or Upgrade to Kernel 4.15 in CentOS 7&lt;/a>&lt;/p></description></item><item><title>vim配置</title><link>https://tab.wutuofu.com/posts/vim-conf/</link><pubDate>Mon, 14 May 2018 11:42:23 +0800</pubDate><guid>https://tab.wutuofu.com/posts/vim-conf/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/vim-conf/vim.png" alt="Featured image of post vim配置" />&lt;p>使用vim有7，8年了，整理一下自己用到的vim配置，方便自查。&lt;/p>
 &lt;h2 id="vim">vim&lt;/h2>
 &lt;h3 id="basic">basic&lt;/h3>
 &lt;p>基本设置，语法高亮，行号，等等：&lt;/p>
@@ -1135,7 +1289,147 @@ alt="neovim v0.5.1">
 &lt;/span>&lt;span class="err">
 &lt;/span>&lt;span class="err">
 &lt;/span>&lt;span class="err">
-&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>分页打印日志</title><link>https://tab.wutuofu.com/posts/git-pager/</link><pubDate>Sat, 14 Apr 2018 10:38:59 +0800</pubDate><guid>https://tab.wutuofu.com/posts/git-pager/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/git-pager/pager.jpeg" alt="Featured image of post 分页打印日志" />&lt;p>默认配置命令&lt;code>git log&lt;/code>会在新的窗口打印日志内容，需要敲一下键盘&lt;code>q&lt;/code> 才能返回当前目录，不方便连续查看:&lt;/p>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>配置vscode eslint</title><link>https://tab.wutuofu.com/posts/vscode-eslint/</link><pubDate>Mon, 16 Apr 2018 16:34:09 +0800</pubDate><guid>https://tab.wutuofu.com/posts/vscode-eslint/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/vscode-eslint/eslint-airbnb.jpeg" alt="Featured image of post 配置vscode eslint" />&lt;p>离职一段时间了，需要自己写点前端代码。
+奈何&lt;code>vim&lt;/code>的js插件对&lt;code>jsx&lt;/code>的支持不太友好，所以转向&lt;code>vscode&lt;/code>写点&lt;code>jsx&lt;/code>。&lt;/p>
+&lt;p>写了些&lt;code>react app&lt;/code>代码后，&lt;code>IDE&lt;/code>到处飘红色的波浪线〰️〰️〰️，很是恼人。&lt;/p>
+&lt;p>全局配置&lt;code>react eslint&lt;/code>好多了， 记录下配置的过程备查。&lt;/p>
+&lt;h2 id="配置">配置&lt;/h2>
+&lt;p>基本上是用了&lt;code>airbnb&lt;/code>的配置：&lt;/p>
+&lt;p>具体的步骤很简单，两步就好了：&lt;/p>
+&lt;ol>
+&lt;li>npm安装eslint和要用到plugin；&lt;/li>
+&lt;li>根据需求配置全局的&lt;code>eslintrc&lt;/code>文件&lt;/li>
+&lt;/ol>
+&lt;h3 id="plugin">plugin&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">npm install -g jshint
+npm install -g eslint eslint-config-airbnb-base eslint-plugin-import
+vi .eslintrc.js
+ls -alh /usr/local/bin/npm
+ls /usr/local/lib/node_modules/eslint-config-airbnb-base
+npm link eslint-config-airbnb-base
+ls node_modules
+npm link eslint-plugin-import
+npm i -g eslint-plugin-react
+npm i -g eslint-plugin-jsx-a11y
+npm link eslint-plugin-jsx-a11y eslint-plugin-react
+vi .eslintrc.js
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="elinttcjs">.elinttc.js&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-js" data-lang="js">&lt;span class="c1">// ~/.eslintrc.js
+&lt;/span>&lt;span class="c1">&lt;/span>&lt;span class="nx">module&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">exports&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="nx">parser&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="s2">&amp;#34;babel-eslint&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;span class="s2">&amp;#34;plugins&amp;#34;&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="s2">&amp;#34;react&amp;#34;&lt;/span>&lt;span class="p">],&lt;/span>
+&lt;span class="s2">&amp;#34;extends&amp;#34;&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="p">[&lt;/span>
+&lt;span class="s2">&amp;#34;airbnb-base&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;span class="s2">&amp;#34;eslint:recommended&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;span class="s2">&amp;#34;plugin:react/recommended&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;span class="p">],&lt;/span>
+&lt;span class="s2">&amp;#34;rules&amp;#34;&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="c1">// &amp;#34;no-unused-vars&amp;#34;:0,
+&lt;/span>&lt;span class="c1">&lt;/span>&lt;span class="s2">&amp;#34;no-console&amp;#34;&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="s1">&amp;#39;off&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;span class="s2">&amp;#34;max-len&amp;#34;&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="mi">120&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="mi">2&lt;/span>&lt;span class="p">,{&lt;/span>&lt;span class="nx">ignoreComments&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="kc">true&lt;/span>&lt;span class="p">}]&lt;/span>
+&lt;span class="c1">// &amp;#34;prop-types&amp;#34;: [2]
+&lt;/span>&lt;span class="c1">&lt;/span>&lt;span class="p">},&lt;/span>
+&lt;span class="s2">&amp;#34;env&amp;#34;&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="s2">&amp;#34;browser&amp;#34;&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="kc">true&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;span class="s2">&amp;#34;node&amp;#34;&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="kc">true&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;span class="s2">&amp;#34;jasmine&amp;#34;&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="kc">true&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="p">};&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="参考">参考&lt;/h2>
+&lt;p>&lt;a class="link" href="https://www.robinwieruch.de/react-eslint-webpack-babel/" target="_blank" rel="noopener"
+>react eslint webpack babel&lt;/a>&lt;/p>
+&lt;p>&lt;a class="link" href="http://www.zsoltnagy.eu/use-eslint-like-a-pro-with-es6-and-react/" target="_blank" rel="noopener"
+>Use ESLint Like a Pro with ES6 and React&lt;/a>&lt;/p></description></item><item><title>配置http selinux</title><link>https://tab.wutuofu.com/posts/http-selinux/</link><pubDate>Mon, 16 Apr 2018 16:10:45 +0800</pubDate><guid>https://tab.wutuofu.com/posts/http-selinux/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/http-selinux/selinux.webp" alt="Featured image of post 配置http selinux" />&lt;p>今天在&lt;code>digitocean&lt;/code>一台新申请的主机上部署web应用。部署完成，打开浏览器发现报错403。&lt;/p>
+&lt;p>部署的web应用很简单，后端用nginx做了&lt;a class="link" href="https://tab.wutuofu.com/posts/nginx-proxy/" >反向代理&lt;/a>，应该没啥大问题。&lt;/p>
+&lt;p>进一步打开chrome的console，发现对&lt;code>static file&lt;/code>的访问报错&lt;code>403&lt;/code>，还没到后端就已经报错了，
+估计后面的 upstream socket也会报错。&lt;/p>
+&lt;p>&lt;code>ssh&lt;/code>登陆到服务器上看了下nginx的日志，发现是权限的问题。&lt;/p>
+&lt;p>进一步debug了之后发现虚拟机开启selinux，当时心头就一紧，估计要改selinux配置了，这是个麻烦事儿。&lt;/p>
+&lt;p>想简单点直接关闭selinux，转念一想&lt;code>digitocean&lt;/code>的主机直接暴露在interner上，开着selinux 其实是个很好的保护。&lt;code>digitocean&lt;/code>打开自有它打开的道理，我猜可能有很多vm被攻破沦为僵尸网络了。&lt;/p>
+&lt;p>google搜索了selinux的web server常用的配置，验证后，解决了&lt;code>nginx 403&lt;/code>的问题。记录分享如下：&lt;/p>
+&lt;h2 id="check-selinux">check seLinux&lt;/h2>
+&lt;h3 id="查看系统状态">查看系统状态&lt;/h3>
+&lt;p>&lt;a class="link" href="https://www.centos.org/docs/5/html/5.1/Deployment_Guide/sec-selinux-status-viewing.html" target="_blank" rel="noopener"
+>查看selinux配置和状态&lt;/a>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="o">[&lt;/span>root@deo ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># sestatus -v&lt;/span>
+SELinux status: enabled
+SELinuxfs mount: /sys/fs/selinux
+SELinux root directory: /etc/selinux
+Loaded policy name: targeted
+Current mode: enforcing
+Mode from config file: enforcing
+Policy MLS status: enabled
+Policy deny_unknown status: allowed
+Max kernel policy version: &lt;span class="m">28&lt;/span>
+Process contexts:
+Current context: unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+Init context: system_u:system_r:init_t:s0
+/usr/sbin/sshd system_u:system_r:sshd_t:s0-s0:c0.c1023
+File contexts:
+Controlling terminal: unconfined_u:object_r:user_devpts_t:s0
+/etc/passwd system_u:object_r:passwd_file_t:s0
+/etc/shadow system_u:object_r:shadow_t:s0
+/bin/bash system_u:object_r:shell_exec_t:s0
+/bin/login system_u:object_r:login_exec_t:s0
+/bin/sh system_u:object_r:bin_t:s0 -&amp;gt; system_u:object_r:shell_exec_t:s0
+/sbin/agetty system_u:object_r:getty_exec_t:s0
+/sbin/init system_u:object_r:bin_t:s0 -&amp;gt; system_u:object_r:init_exec_t:s0
+/usr/sbin/sshd system_u:object_r:sshd_exec_t:s0
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="查看文件目录的selinux-label">查看文件目录的selinux label&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="o">[&lt;/span>root@deo &lt;span class="o">]&lt;/span>&lt;span class="c1"># ls -Z /opt/todolist&lt;/span>
+-rw-r--r--. root root unconfined_u:object_r:admin_home_t:s0 index.html
+drwxr-xr-x. root root unconfined_u:object_r:admin_home_t:s0 static
+&lt;span class="o">[&lt;/span>root@deo &lt;span class="o">]&lt;/span>&lt;span class="c1"># ls -Z /usr/share/nginx/html&lt;/span>
+-rw-r--r--. root root system_u:object_r:httpd_sys_content_t:s0 50x.html
+-rw-r--r--. root root system_u:object_r:httpd_sys_content_t:s0 index.html
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="meat">meat&lt;/h2>
+&lt;p>下面两种方法选一种就可以了&lt;/p>
+&lt;h3 id="label">label&lt;/h3>
+&lt;p>修改目录label使得selinux 放行nginx:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">chcon -Rt httpd_sys_content_t /opt/todolist/
+ls -Z /opt/todolist/
+-rw-r--r--. root root unconfined_u:object_r:httpd_sys_content_t:s0 index.html
+drwxr-xr-x. root root unconfined_u:object_r:httpd_sys_content_t:s0 static
+setsebool -P httpd_can_network_connect &lt;span class="m">1&lt;/span> &lt;span class="p">;&lt;/span> setsebool -P httpd_enable_homedirs on
+chmod &lt;span class="m">701&lt;/span> /home/dir
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="semanage">semanage&lt;/h3>
+&lt;p>或者使用&lt;code>semanage&lt;/code>命令修改&lt;code>enforcement mode&lt;/code>：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">~ &lt;span class="o">[&lt;/span>root@jp ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># cat fix_selinux_ng.sh&lt;/span>
+semanage permissive -a httpd_tp
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>segmanage&lt;/code>语法：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="o">[&lt;/span>root@jp ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># semanage -h&lt;/span>
+usage: semanage &lt;span class="o">[&lt;/span>-h&lt;span class="o">]&lt;/span>
+&lt;span class="o">{&lt;/span>import,export,login,user,port,ibpkey,ibendport,interface,module,node,fcontext,boolean,permissive,dontaudit&lt;span class="o">}&lt;/span>
+...
+semanage is used to configure certain elements of SELinux policy with-out
+requiring modification to or recompilation from policy source.
+positional arguments:
+&lt;span class="o">{&lt;/span>import,export,login,user,port,ibpkey,ibendport,interface,module,node,fcontext,boolean,permissive,dontaudit&lt;span class="o">}&lt;/span>
+import Import &lt;span class="nb">local&lt;/span> customizations
+&lt;span class="nb">export&lt;/span> Output &lt;span class="nb">local&lt;/span> customizations
+login Manage login mappings between linux users and SELinux
+confined users
+user Manage SELinux confined users &lt;span class="o">(&lt;/span>Roles and levels &lt;span class="k">for&lt;/span> an
+SELinux user&lt;span class="o">)&lt;/span>
+port Manage network port &lt;span class="nb">type&lt;/span> definitions
+ibpkey Manage infiniband ibpkey &lt;span class="nb">type&lt;/span> definitions
+ibendport Manage infiniband end port &lt;span class="nb">type&lt;/span> definitions
+interface Manage network interface &lt;span class="nb">type&lt;/span> definitions
+module Manage SELinux policy modules
+node Manage network node &lt;span class="nb">type&lt;/span> definitions
+fcontext Manage file context mapping definitions
+boolean Manage booleans to selectively &lt;span class="nb">enable&lt;/span> functionality
+permissive Manage process &lt;span class="nb">type&lt;/span> enforcement mode
+dontaudit Disable/Enable dontaudit rules in policy
+optional arguments:
+-h, --help show this &lt;span class="nb">help&lt;/span> message and &lt;span class="nb">exit&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="参考">参考&lt;/h2>
+&lt;p>&lt;a class="link" href="https://thecruskit.com/fixing-403-errors-when-using-nginx-with-selinux/" target="_blank" rel="noopener"
+>Fixing 403 errors when using nginx with SELinux&lt;/a>&lt;/p>
+&lt;p>&lt;a class="link" href="https://stackoverflow.com/questions/25995060/nginx-cannot-connect-to-jenkins-on-centos-7" target="_blank" rel="noopener"
+>NGinX cannot connect to Jenkins on CentOS 7&lt;/a>&lt;/p>
+&lt;p>&lt;a class="link" href="https://serverfault.com/questions/686732/nginx-refuses-to-read-new-directory-in-home" target="_blank" rel="noopener"
+> Nginx refuses to read new directory in /home&lt;/a>&lt;/p></description></item><item><title>分页打印日志</title><link>https://tab.wutuofu.com/posts/git-pager/</link><pubDate>Sat, 14 Apr 2018 10:38:59 +0800</pubDate><guid>https://tab.wutuofu.com/posts/git-pager/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/git-pager/pager.jpeg" alt="Featured image of post 分页打印日志" />&lt;p>默认配置命令&lt;code>git log&lt;/code>会在新的窗口打印日志内容，需要敲一下键盘&lt;code>q&lt;/code> 才能返回当前目录，不方便连续查看:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">➜ lgthw_orign git:&lt;span class="o">(&lt;/span>otherbranch&lt;span class="o">)&lt;/span> git log --oneline --decorate --all --graph
 &lt;span class="c1">## NOTE content below will be displayed on new window/buff&lt;/span>
 * 40303b7 &lt;span class="o">(&lt;/span>HEAD -&amp;gt; otherbranch&lt;span class="o">)&lt;/span> thirdcommit
