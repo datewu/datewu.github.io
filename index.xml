@@ -1,4 +1,89 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>而立有余</title><link>https://tab.wutuofu.com/</link><description>Recent content on 而立有余</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 22 Nov 2021 18:39:03 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>clickhouse初始化</title><link>https://tab.wutuofu.com/posts/clickhouse-start/</link><pubDate>Mon, 22 Nov 2021 18:39:03 +0800</pubDate><guid>https://tab.wutuofu.com/posts/clickhouse-start/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/clickhouse-start/clickhouse.jpeg" alt="Featured image of post clickhouse初始化" />&lt;p>总体来看&lt;code>clickhouse&lt;/code>的&lt;code>ddl&lt;/code>操作方式和&lt;code>mysql&lt;/code>很像。比如&lt;code>use database_name&lt;/code>， &lt;code>create user ... identified by ''&lt;/code>等。&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>而立有余</title><link>https://tab.wutuofu.com/</link><description>Recent content on 而立有余</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 26 Nov 2021 11:33:15 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>fish shell</title><link>https://tab.wutuofu.com/posts/try-fish/</link><pubDate>Fri, 26 Nov 2021 11:33:15 +0800</pubDate><guid>https://tab.wutuofu.com/posts/try-fish/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/try-fish/fish.png" alt="Featured image of post fish shell" />&lt;p>今天在hacker news上闲逛，又看到有人推销&lt;code>fish&lt;/code>。心想马上就2022年了，不如换个shell耍耍。&lt;/p>
+&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 134;
+flex-basis: 323px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/try-fish/hn-fish.png" data-size="1436x1066">
+&lt;img src="https://tab.wutuofu.com/posts/try-fish/hn-fish.png"
+width="1436"
+height="1066"
+srcset="https://tab.wutuofu.com/posts/try-fish/hn-fish_hufedcf2709999a125b54ea6d9eb6768c1_417931_480x0_resize_box_3.png 480w, https://tab.wutuofu.com/posts/try-fish/hn-fish_hufedcf2709999a125b54ea6d9eb6768c1_417931_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="fish shell topic on hackernews">
+&lt;/a>
+&lt;figcaption>fish shell topic on hackernews&lt;/figcaption>
+&lt;/figure>&lt;/p>
+&lt;p>其实早在2013年就接触过&lt;a class="link" href="https://fishshell.com/" target="_blank" rel="noopener"
+>fish&lt;/a>，那个时候自己比较菜，工作的时候很多bash脚本在fish上都不能使用，所以就放弃fish。&lt;/p>
+&lt;h2 id="安装">安装&lt;/h2>
+&lt;p>安装fish&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">sudo port install fish
+sudo chpass -s /opt/local/bin/fish &lt;span class="si">${&lt;/span>&lt;span class="nv">USER&lt;/span>&lt;span class="si">}&lt;/span>
+cat
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>退出&lt;code>zsh&lt;/code>，重启&lt;code>terminal&lt;/code>&lt;/p>
+&lt;h2 id="安装插件">安装插件&lt;/h2>
+&lt;h3 id="oh-my-fish--fisher">oh-my-fish / fisher&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fish" data-lang="fish">&lt;span class="nf">curl&lt;/span> https://raw.githubusercontent.com/oh-my-&lt;span class="nb">fish&lt;/span>/oh-my-&lt;span class="nb">fish&lt;/span>/master/bin/install &lt;span class="o">&amp;gt;&lt;/span> install
+&lt;span class="nb">fish &lt;/span>install &lt;span class="na">--path&lt;/span>&lt;span class="o">=&lt;/span>~/.local/share/omf &lt;span class="na">--config&lt;/span>&lt;span class="o">=&lt;/span>~/.config/omf
+&lt;span class="nf">curl&lt;/span> &lt;span class="na">-sL&lt;/span> https://git.io/fisher &lt;span class="o">|&lt;/span> &lt;span class="nb">source&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nf">fisher&lt;/span> install jorgebucaran/fisher
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="autojump-j">autojump/ j&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fish" data-lang="fish">&lt;span class="nf">sudo&lt;/span> &lt;span class="nf">port&lt;/span> uninstall autojump
+&lt;span class="nf">git&lt;/span> clone https://github.com/wting/autojump.git
+&lt;span class="k">cd&lt;/span> autojump/
+./install.py
+&lt;span class="k">cd&lt;/span> repo/github/autojump/
+&lt;span class="nf">vi&lt;/span> .config/&lt;span class="nb">fish&lt;/span>/config.&lt;span class="nb">fish
+&lt;/span>&lt;span class="nb">&lt;/span>&lt;span class="nf">j&lt;/span> home
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="nvm">nvm&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fish" data-lang="fish">&lt;span class="nf">sudo&lt;/span> &lt;span class="nf">port&lt;/span> uninstall nvm
+&lt;span class="nf">fisher&lt;/span> install jorgebucaran/nvm.&lt;span class="nb">fish
+&lt;/span>&lt;span class="nb">&lt;/span>&lt;span class="nf">nvm&lt;/span> install latest
+&lt;span class="nf">nvm&lt;/span> list
+&lt;span class="nf">nvm&lt;/span> &lt;span class="na">--version&lt;/span>
+&lt;span class="nf">nvm&lt;/span> use v17.&lt;span class="m">1&lt;/span>.&lt;span class="m">0&lt;/span>
+&lt;span class="nf">Now&lt;/span> using Node v17.&lt;span class="m">1&lt;/span>.&lt;span class="m">0&lt;/span> &lt;span class="o">(&lt;/span>&lt;span class="nf">npm&lt;/span> &lt;span class="m">8&lt;/span>.&lt;span class="m">1&lt;/span>.&lt;span class="m">2&lt;/span>&lt;span class="o">)&lt;/span> ~/.local/share/nvm/v17.&lt;span class="m">1&lt;/span>.&lt;span class="m">0&lt;/span>/bin/node
+&lt;span class="nf">node&lt;/span> &lt;span class="na">--version&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="fisher-plugins">fisher plugins&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fish" data-lang="fish">&lt;span class="nf">fisher&lt;/span> install IlanCosman/tide@v5
+&lt;span class="nf">fisher&lt;/span> install PatrickF1/fzf.&lt;span class="nb">fish
+&lt;/span>&lt;span class="nb">
+&lt;/span>&lt;span class="nb">&lt;/span>&lt;span class="nf">fisher&lt;/span> install franciscolourenco/done
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="配置">配置&lt;/h2>
+&lt;h3 id="path">PATH&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fish" data-lang="fish">&lt;span class="k">echo&lt;/span> &lt;span class="nv">$PATH&lt;/span>
+&lt;span class="nb">fish_add_path&lt;/span> /Users/r/go/bin
+&lt;span class="nb">fish_add_path&lt;/span> /opt/local/bin
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="alias">alias&lt;/h3>
+&lt;p>默认&lt;code>ls&lt;/code>命令对文件和目录没有做颜色的区分，可以使用&lt;code>alias ls='ls -G'&lt;/code>加上颜色选项:)&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fish" data-lang="fish">&lt;span class="c"># ~/.config/fish/config.fish
+&lt;/span>&lt;span class="c">#starship init fish | source
+&lt;/span>&lt;span class="c">&lt;/span>
+&lt;span class="k">begin&lt;/span>
+&lt;span class="k">if&lt;/span> &lt;span class="k">test&lt;/span> &lt;span class="na">-f&lt;/span> /Users/r/.autojump/share/autojump/autojump.&lt;span class="nb">fish&lt;/span>&lt;span class="p">;&lt;/span> . /Users/r/.autojump/share/autojump/autojump.&lt;span class="nb">fish&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">end&lt;/span>
+&lt;span class="k">set&lt;/span> &lt;span class="na">--local&lt;/span> &lt;span class="nv">AUTOJUMP_PATH&lt;/span> &lt;span class="nv">$HOME&lt;/span>/.autojump/share/autojump/autojump.&lt;span class="nb">fish
+&lt;/span>&lt;span class="nb"> &lt;/span>&lt;span class="k">if&lt;/span> &lt;span class="k">test&lt;/span> &lt;span class="na">-e&lt;/span> &lt;span class="nv">$AUTOJUMP_PATH&lt;/span>
+&lt;span class="nb">source&lt;/span> &lt;span class="nv">$AUTOJUMP_PATH&lt;/span>
+&lt;span class="k">end&lt;/span>
+&lt;span class="k">end&lt;/span>
+&lt;span class="k">begin&lt;/span>
+&lt;span class="nb">alias &lt;/span>&lt;span class="nv">ls&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;ls -G&amp;#39;&lt;/span>
+&lt;span class="nb">alias &lt;/span>&lt;span class="nv">yaegi&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;rlwrap yaegi&amp;#39;&lt;/span>
+&lt;span class="c">#alias swagger=&amp;#34;docker run --rm -it -e GOPATH=$HOME/go:/go -v $HOME:$HOME -w $(pwd) quay.io/goswagger/swagger&amp;#34;
+&lt;/span>&lt;span class="c">&lt;/span> &lt;span class="nb">alias &lt;/span>&lt;span class="nv">kks&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;kubectl -n kube-system &amp;#39;&lt;/span>
+&lt;span class="nb">alias &lt;/span>&lt;span class="nv">kku&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;kubectl -n wu &amp;#39;&lt;/span>
+&lt;span class="nb">alias &lt;/span>&lt;span class="nv">kkl&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;kubectl -n location &amp;#39;&lt;/span>
+&lt;span class="nb">alias &lt;/span>&lt;span class="nv">pt&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;git push &amp;amp;&amp;amp; git push --tags&amp;#39;&lt;/span>
+&lt;span class="nb">alias &lt;/span>&lt;span class="nv">vi&lt;/span>&lt;span class="o">=&lt;/span>nvim
+&lt;span class="nb">alias &lt;/span>&lt;span class="nv">vim&lt;/span>&lt;span class="o">=&lt;/span>nvim
+&lt;span class="c"># alias code=nvim
+&lt;/span>&lt;span class="c">&lt;/span> &lt;span class="nb">alias &lt;/span>&lt;span class="nv">t&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;tmux -u&amp;#39;&lt;/span>
+&lt;span class="c"># alias docker_prune=&amp;#34;docker rmi `docker images -f &amp;#39;dangling=true&amp;#39; -q`&amp;#34;
+&lt;/span>&lt;span class="c">&lt;/span> &lt;span class="c"># alias docker_prune=&amp;#34;docker system prune&amp;#34;
+&lt;/span>&lt;span class="c">&lt;/span> &lt;span class="nb">alias &lt;/span>&lt;span class="nv">chrome&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome&amp;#34;&lt;/span>
+&lt;span class="k">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>clickhouse初始化</title><link>https://tab.wutuofu.com/posts/clickhouse-start/</link><pubDate>Mon, 22 Nov 2021 18:39:03 +0800</pubDate><guid>https://tab.wutuofu.com/posts/clickhouse-start/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/clickhouse-start/clickhouse.jpeg" alt="Featured image of post clickhouse初始化" />&lt;p>总体来看&lt;code>clickhouse&lt;/code>的&lt;code>ddl&lt;/code>操作方式和&lt;code>mysql&lt;/code>很像。比如&lt;code>use database_name&lt;/code>， &lt;code>create user ... identified by ''&lt;/code>等。&lt;/p>
 &lt;h2 id="server">server&lt;/h2>
 &lt;h3 id="docker-run">docker run&lt;/h3>
 &lt;p>启动clickhouse服务：&lt;/p>
