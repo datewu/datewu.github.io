@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>豆腐炒糖</title><link>https://tab.wutuofu.com/</link><description>Recent content on 豆腐炒糖</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 26 Nov 2021 11:33:15 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>fish shell</title><link>https://tab.wutuofu.com/posts/try-fish/</link><pubDate>Fri, 26 Nov 2021 11:33:15 +0800</pubDate><guid>https://tab.wutuofu.com/posts/try-fish/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/try-fish/fish.png" alt="Featured image of post fish shell" />&lt;p>今天在hacker news上闲逛，又看到有人推销&lt;code>fish&lt;/code>。心想马上就2022年了，不如换个shell耍耍。&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>鬼画桃符</title><link>https://tab.wutuofu.com/</link><description>Recent content on 鬼画桃符</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 26 Nov 2021 11:33:15 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>fish shell</title><link>https://tab.wutuofu.com/posts/try-fish/</link><pubDate>Fri, 26 Nov 2021 11:33:15 +0800</pubDate><guid>https://tab.wutuofu.com/posts/try-fish/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/try-fish/fish.png" alt="Featured image of post fish shell" />&lt;p>今天在hacker news上闲逛，又看到有人推销&lt;code>fish&lt;/code>。心想马上就2022年了，不如换个shell耍耍。&lt;/p>
 &lt;p>&lt;figure
 class="gallery-image"
 style="
@@ -896,6 +896,229 @@ bc &lt;span class="o">&amp;lt;&amp;lt;&amp;lt;&lt;/span> &lt;span class="s2">&am
 bc &lt;span class="o">&amp;lt;&amp;lt;&amp;lt;&lt;/span> &lt;span class="s2">&amp;#34;scale=10; 5 / 3&amp;#34;&lt;/span>
 - Calculate the result of an expression with sine and cosine using mathlib:
 bc -l &lt;span class="o">&amp;lt;&amp;lt;&amp;lt;&lt;/span> &lt;span class="s2">&amp;#34;s(1) + c(1)&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Makefile简介</title><link>https://tab.wutuofu.com/posts/makefile-tutorial/</link><pubDate>Fri, 27 Jul 2018 12:38:51 +0800</pubDate><guid>https://tab.wutuofu.com/posts/makefile-tutorial/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/makefile-tutorial/gnu-make.png" alt="Featured image of post Makefile简介" />&lt;p>网络上关于 &lt;code>makefile&lt;/code>的教程有很多，由于我日常不是写&lt;code>c/c++&lt;/code>的，
+不常使用&lt;code>makefile&lt;/code>，需要用的时候总是要重新Google搜索makefile的语法。&lt;/p>
+&lt;p>索性整理出来这篇 makefile 教程，备忘。&lt;/p>
+&lt;h2 id="教程">教程&lt;/h2>
+&lt;p>Makefile简易教程：&lt;/p>
+&lt;h3 id="基本语法">基本语法&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-makefile" data-lang="makefile">&lt;span class="nf">target&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">dependency&lt;/span>1 &lt;span class="n">dependency&lt;/span>2 ...
+&lt;span class="err">[TAB]&lt;/span> &lt;span class="err">action1&lt;/span>
+&lt;span class="err">[TAB]&lt;/span> &lt;span class="err">action2&lt;/span>
+&lt;span class="err">...&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>下面的makefile摘抄自&lt;a class="link" href="https://opensourceforu.com/2012/06/gnu-make-in-detail-for-beginners/" target="_blank" rel="noopener"
+>GNU Make in Detail for Beginners&lt;/a>，这篇入门文章把makefile的语法写的非常透彻。&lt;/p>
+&lt;p>推荐大家多读几遍&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-makefile" data-lang="makefile">&lt;span class="c">##### makefile for compile C programs
+&lt;/span>&lt;span class="c"># Compiler to use
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nv">CC&lt;/span> &lt;span class="o">=&lt;/span> gcc
+&lt;span class="c"># -g for debug, -O2 for optimise and -Wall additonal messages
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nv">OPTIONS&lt;/span> &lt;span class="o">=&lt;/span> -O2 -g -Wall
+&lt;span class="c"># Directory for header file
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nv">INCLUDES&lt;/span> &lt;span class="o">=&lt;/span> -I .
+&lt;span class="c"># List of objects to be build
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nv">OBJS&lt;/span> &lt;span class="o">=&lt;/span> main.o module.o
+&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">all&lt;/span> &lt;span class="n">list&lt;/span> &lt;span class="n">clean&lt;/span>
+&lt;span class="nf">all&lt;/span>&lt;span class="o">:&lt;/span> ${&lt;span class="n">OBJS&lt;/span>}
+@echo &lt;span class="s2">&amp;#34;Building...&amp;#34;&lt;/span> &lt;span class="c1"># print &amp;#34;Building...&amp;#34; message&lt;/span>
+&lt;span class="si">${&lt;/span>&lt;span class="nv">CC&lt;/span>&lt;span class="si">}&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">OPTIONS&lt;/span>&lt;span class="si">}&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">INCLUDES&lt;/span>&lt;span class="si">}&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">OBJS&lt;/span>&lt;span class="si">}&lt;/span> -o main_bin
+&lt;span class="nf">%.o&lt;/span>&lt;span class="o">:&lt;/span> %.&lt;span class="n">c&lt;/span> &lt;span class="c"># &amp;#39;%&amp;#39; pattern wildcard matching
+&lt;/span>&lt;span class="c">&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">CC&lt;/span>&lt;span class="si">}&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">OPTIONS&lt;/span>&lt;span class="si">}&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">INCLUDES&lt;/span>&lt;span class="si">}&lt;/span> -c %.c
+&lt;span class="nf">list&lt;/span>&lt;span class="o">:&lt;/span>
+@echo &lt;span class="k">$(&lt;/span>shell ls&lt;span class="k">)&lt;/span> &lt;span class="c1"># print output of command `ls`&lt;/span>
+&lt;span class="nf">clean&lt;/span>&lt;span class="o">:&lt;/span>
+@echo Cleaning up...
+-rm -rf *.0 &lt;span class="c1"># &amp;#39;-&amp;#39; prefix for ignoring errors and continue execution&lt;/span>
+-rm main_bin
+&lt;span class="c">#### makefile for img manage
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nv">FILES&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="k">$(&lt;/span>shell find imgs -type f -iname &lt;span class="s2">&amp;#34;*.jpg&amp;#34;&lt;/span> &lt;span class="p">|&lt;/span> sed &lt;span class="s1">&amp;#39;s/imgs/thumb/g&amp;#39;&lt;/span>&lt;span class="k">)&lt;/span>
+&lt;span class="nv">CONVERT_CMD&lt;/span> &lt;span class="o">=&lt;/span> convert -resize &lt;span class="s2">&amp;#34;100x100&amp;#34;&lt;/span> $&amp;lt; &lt;span class="nv">$@&lt;/span>
+&lt;span class="nv">MSG&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;\nUpdating thumbnail&amp;#34;&lt;/span> &lt;span class="nv">$@&lt;/span>
+&lt;span class="nf">all_thumb&lt;/span>&lt;span class="o">:&lt;/span> ${&lt;span class="n">FILES&lt;/span>}
+&lt;span class="nf">thumb/%.jpg&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">imgs&lt;/span>/%.&lt;span class="n">jpg&lt;/span>
+&lt;span class="si">${&lt;/span>&lt;span class="nv">MSG&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;span class="si">${&lt;/span>&lt;span class="nv">CONVERT_CMD&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;span class="nf">thumb/%.JPG&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">imgs&lt;/span>/%.&lt;span class="n">JPG&lt;/span>
+&lt;span class="si">${&lt;/span>&lt;span class="nv">MSG&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;span class="si">${&lt;/span>&lt;span class="nv">CONVERT_CMD&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;span class="nf">clean_all&lt;/span>&lt;span class="o">:&lt;/span>
+@echo Cleaning up files...
+-rm -rf thumb/*.&lt;span class="o">{&lt;/span>jpg,JPG&lt;span class="o">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="变量">变量&lt;/h3>
+&lt;h4 id="赋值">赋值&lt;/h4>
+&lt;h5 id="simple-assignment-">Simple assignment (:=)&lt;/h5>
+&lt;p>We can assign values (RHS) to variables (LHS) with this operator, for example: CC := gcc. With simple assignment (:=), the value is expanded and stored to all occurrences in the Makefile when its first definition is found.&lt;/p>
+&lt;p>For example, when a CC := ${GCC} ${FLAGS} simple definition is first encountered, CC is set to gcc -W and wherever ${CC} occurs in actions, it is replaced with gcc -W.&lt;/p>
+&lt;h5 id="recursive-assignment-">Recursive assignment (=)&lt;/h5>
+&lt;p>Recursive assignment (the operator used is =) involves variables and values that are not evaluated immediately on encountering their definition, but are re-evaluated every time they are encountered in an action that is being executed. As an example, say we have:&lt;/p>
+&lt;p>GCC = gcc
+FLAGS = -W
+With the above lines, CC = ${GCC} {FLAGS} will be converted to gcc -W only when an action like ${CC} file.c is executed somewhere in the Makefile. With recursive assignation, if the GCC variable is changed later (for example, GCC = c++), then when it is next encountered in an action line that is being updated, it will be re-evaluated, and the new value will be used; ${CC} will now expand to c++ -W.&lt;/p>
+&lt;p>We will also have an interesting and useful application further in the article, where this feature is used to deal with varying cases of filename extensions of image files.&lt;/p>
+&lt;h5 id="conditional-assignment-">Conditional assignment (?=)&lt;/h5>
+&lt;p>Conditional assignment statements assign the given value to the variable only if the variable does not yet have a value.&lt;/p>
+&lt;h5 id="appending-">Appending (+=)&lt;/h5>
+&lt;p>The appending operation appends texts to an existing variable. For example:&lt;/p>
+&lt;p>CC = gcc
+CC += -W
+CC now holds the value gcc -W.&lt;/p>
+&lt;h4 id="action内置变量">action内置变量&lt;/h4>
+&lt;p>The &lt;code>%&lt;/code> character can be used for wildcard pattern-matching, to provide generic targets. For example:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-makefile" data-lang="makefile">&lt;span class="nf">%.o&lt;/span>&lt;span class="o">:&lt;/span> %.&lt;span class="n">c&lt;/span>
+&lt;span class="err">[TAB]&lt;/span> &lt;span class="err">actions&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>When &lt;code>%&lt;/code> appears in the dependency list, it is replaced with the same string that was used to perform substitution in the target.
+Inside actions, we can use special variables for matching filenames. Some of them are:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-makefile" data-lang="makefile">&lt;span class="k">$@&lt;/span> &lt;span class="err">(full&lt;/span> &lt;span class="err">target&lt;/span> &lt;span class="err">name&lt;/span> &lt;span class="err">of&lt;/span> &lt;span class="err">the&lt;/span> &lt;span class="err">current&lt;/span> &lt;span class="err">target)&lt;/span>
+&lt;span class="k">$?&lt;/span> &lt;span class="err">(returns&lt;/span> &lt;span class="err">the&lt;/span> &lt;span class="err">dependencies&lt;/span> &lt;span class="err">that&lt;/span> &lt;span class="err">are&lt;/span> &lt;span class="err">newer&lt;/span> &lt;span class="err">than&lt;/span> &lt;span class="err">the&lt;/span> &lt;span class="err">current&lt;/span> &lt;span class="err">target)&lt;/span>
+&lt;span class="k">$*&lt;/span> &lt;span class="err">(returns&lt;/span> &lt;span class="err">the&lt;/span> &lt;span class="err">text&lt;/span> &lt;span class="err">that&lt;/span> &lt;span class="err">corresponds&lt;/span> &lt;span class="err">to&lt;/span> &lt;span class="err">%&lt;/span> &lt;span class="err">in&lt;/span> &lt;span class="err">the&lt;/span> &lt;span class="err">target)&lt;/span>
+&lt;span class="k">$&amp;lt;&lt;/span> &lt;span class="err">(name&lt;/span> &lt;span class="err">of&lt;/span> &lt;span class="err">the&lt;/span> &lt;span class="err">first&lt;/span> &lt;span class="err">dependency)&lt;/span>
+&lt;span class="nf">dep.o&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">dep&lt;/span>.&lt;span class="n">src&lt;/span> &lt;span class="n">config&lt;/span>1.&lt;span class="n">cfg&lt;/span> &lt;span class="n">config&lt;/span>2.&lt;span class="n">cfg&lt;/span>
+@echo the second preq is &lt;span class="k">$(&lt;/span>word 2,$^&lt;span class="k">)&lt;/span>, the third is &lt;span class="k">$(&lt;/span>word 3,$^&lt;span class="k">)&lt;/span>
+&lt;span class="err">$^&lt;/span> &lt;span class="err">(name&lt;/span> &lt;span class="err">of&lt;/span> &lt;span class="err">all&lt;/span> &lt;span class="err">the&lt;/span> &lt;span class="err">dependencies&lt;/span> &lt;span class="err">with&lt;/span> &lt;span class="err">space&lt;/span> &lt;span class="err">as&lt;/span> &lt;span class="err">the&lt;/span> &lt;span class="err">delimiter)&lt;/span>
+&lt;span class="err">Instead&lt;/span> &lt;span class="err">of&lt;/span> &lt;span class="err">writing&lt;/span> &lt;span class="err">each&lt;/span> &lt;span class="err">of&lt;/span> &lt;span class="err">the&lt;/span> &lt;span class="err">file&lt;/span> &lt;span class="err">names&lt;/span> &lt;span class="err">in&lt;/span> &lt;span class="err">the&lt;/span> &lt;span class="err">actions&lt;/span> &lt;span class="err">and&lt;/span> &lt;span class="err">the&lt;/span> &lt;span class="err">target,&lt;/span> &lt;span class="err">we&lt;/span> &lt;span class="err">can&lt;/span> &lt;span class="err">use&lt;/span> &lt;span class="err">shorthand&lt;/span> &lt;span class="err">notations&lt;/span> &lt;span class="err">based&lt;/span> &lt;span class="err">on&lt;/span> &lt;span class="err">the&lt;/span> &lt;span class="err">above,&lt;/span> &lt;span class="err">to&lt;/span> &lt;span class="err">write&lt;/span> &lt;span class="err">more&lt;/span> &lt;span class="err">generic&lt;/span> &lt;span class="err">Makefiles.&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="action-modifiers">action modifiers&lt;/h3>
+&lt;p>We can change the behaviour of the actions we use by prefixing certain action modifiers to the actions. Two important action modifiers are:&lt;/p>
+&lt;h4 id="--minus">- (minus)&lt;/h4>
+&lt;p>Prefixing &lt;code>-&lt;/code> to any action causes any error that occurs while executing the action to be ignored.&lt;/p>
+&lt;p>By default, execution of a Makefile stops when any command returns a non-zero (error) value.
+If an error occurs, a message is printed, with the status code of the command, and noting that the error has been ignored.
+Looking at the Makefile from our sample project: in the clean target, the rm target_bin command will produce an error if that file does not exist (this could happen if the project had never been compiled, or if make clean is run twice consecutively).
+To handle this, we can prefix the rm command with a minus, to ignore errors: -rm target_bin.&lt;/p>
+&lt;h4 id="-at">@ (at)&lt;/h4>
+&lt;p>&lt;code>@&lt;/code> suppresses the standard print-action-to-standard-output behaviour of make, for the action/command that is prefixed with @.
+For example, to echo a custom message to standard output, we want only the output of the echo command, and don’t want to print the echo command line itself. @echo Message will print “Message” without the echo command line being printed.&lt;/p>
+&lt;h4 id="phony">.PHONY&lt;/h4>
+&lt;p>Use PHONY to avoid file-target name conflicts.
+Remember the all and clean special targets in our Makefile?
+What happens when the project directory has files with the names all or clean?
+The conflicts will cause errors.
+Use the &lt;code>.PHONY&lt;/code> directive to specify which targets are not to be treated as files — for example: &lt;code>.PHONY: all clean&lt;/code>.&lt;/p>
+&lt;h3 id="其它">其它&lt;/h3>
+&lt;h4 id="dry-run">dry run&lt;/h4>
+&lt;p>Simulating make without actual execution.
+At times, maybe when developing the Makefile, we may want to trace the make execution (and view the logged messages) without actually running the actions, which is time consuming.
+Simply use &lt;code>make -n&lt;/code> to do a “dry run”.&lt;/p>
+&lt;h4 id="shell">shell&lt;/h4>
+&lt;p>Using the shell command output in a variable
+Sometimes we need to use the output from one command/action in other places in the Makefile — for example, checking versions/locations of installed libraries, or other files required for compilation.
+We can obtain the shell output using the shell command.
+For example, to return a list of files in the current directory into a variable, we would run: &lt;code>LS_OUT = $(shell ls)&lt;/code>.&lt;/p>
+&lt;h4 id="nested-makefiles">Nested Makefiles&lt;/h4>
+&lt;p>Nested Makefiles (which are Makefiles in one or more subdirectories that are also executed by running the make command in the parent directory) can be useful for building smaller projects as part of a larger project. To do this, we set up a target whose action changes directory to the subdirectory, and invokes make again:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-makefile" data-lang="makefile">&lt;span class="nf">subtargets&lt;/span>&lt;span class="o">:&lt;/span>
+&lt;span class="nb">cd&lt;/span> subdirectory &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="k">$(&lt;/span>MAKE&lt;span class="k">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Instead of running the make command, we used &lt;code>$(MAKE)&lt;/code>, an environment variable, to provide flexibility to include arguments.
+For example, if you were doing a “dry run” invocation: if we used the make command directly for the subdirectory, the simulation option (-n) would not be passed, and the commands in the subdirectory’s Makefile would actually be executed.
+To enable use of the -n argument, use the $(MAKE) variable.&lt;/p>
+&lt;h2 id="实践">实践&lt;/h2>
+&lt;p>在golang项目里的&lt;a class="link" href="https://github.com/datewu/project-abc/blob/master/Makefile" target="_blank" rel="noopener"
+>实践&lt;/a>：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-makefile" data-lang="makefile">&lt;span class="c"># Include variables from .envrc files
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="err">-include&lt;/span> &lt;span class="err">.envrc&lt;/span>
+&lt;span class="c"># ==================================================================================== #
+&lt;/span>&lt;span class="c"># HELPERS
+&lt;/span>&lt;span class="c"># ==================================================================================== #
+&lt;/span>&lt;span class="c">&lt;/span>
+&lt;span class="c">## help: print this help message
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">help&lt;/span>
+&lt;span class="nf">help&lt;/span>&lt;span class="o">:&lt;/span>
+@echo &lt;span class="s2">&amp;#34;\t##IMPORTANT##: please run &amp;#39;echo .envrc &amp;gt;&amp;gt; .gitignore&amp;#39; at very first time&amp;#34;&lt;/span>
+@echo &lt;span class="s1">&amp;#39;Usage:&amp;#39;&lt;/span>
+@sed -n &lt;span class="s1">&amp;#39;s/^##//p&amp;#39;&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">MAKEFILE_LIST&lt;/span>&lt;span class="si">}&lt;/span> &lt;span class="p">|&lt;/span> column -t -s &lt;span class="s1">&amp;#39;:&amp;#39;&lt;/span> &lt;span class="p">|&lt;/span> sed -e &lt;span class="s1">&amp;#39;s/^/ /&amp;#39;&lt;/span>
+&lt;span class="c"># Create the new confirm target.
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">confirm&lt;/span>
+&lt;span class="nf">confirm&lt;/span>&lt;span class="o">:&lt;/span>
+@echo -n &lt;span class="s1">&amp;#39;Are you sure? [y/N] &amp;#39;&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nb">read&lt;/span> ans &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="o">[&lt;/span> &lt;span class="nv">$$&lt;/span>&lt;span class="o">{&lt;/span>ans:-N&lt;span class="o">}&lt;/span> &lt;span class="o">=&lt;/span> y &lt;span class="o">]&lt;/span>
+&lt;span class="c"># ==================================================================================== #
+&lt;/span>&lt;span class="c"># DEVELOPMENT
+&lt;/span>&lt;span class="c"># ==================================================================================== #
+&lt;/span>&lt;span class="c">&lt;/span>
+&lt;span class="c">## run/main: run the cmd/main binary file
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">run&lt;/span>/&lt;span class="n">main&lt;/span>
+&lt;span class="nf">run/main&lt;/span>&lt;span class="o">:&lt;/span>
+go run ./cmd
+&lt;span class="c">## run/debug: debug app use dlv
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">run&lt;/span>/&lt;span class="n">debug&lt;/span>
+&lt;span class="nf">run/debug&lt;/span>&lt;span class="o">:&lt;/span>
+dlv debug ./cmd --headless --listen :4040
+&lt;span class="c">## run/test: runs go test with default values
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">run&lt;/span>/&lt;span class="n">test&lt;/span>
+&lt;span class="nf">run/test&lt;/span>&lt;span class="o">:&lt;/span>
+go &lt;span class="nb">test&lt;/span> -timeout 300s -v -count&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> -race ./...
+&lt;span class="c">## run/update: runs go get -u &amp;amp;&amp;amp; go mod tidy
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">run&lt;/span>/&lt;span class="n">update&lt;/span>
+&lt;span class="nf">run/update&lt;/span>&lt;span class="o">:&lt;/span>
+go get -u ./...
+go mod tidy
+&lt;span class="c">## db/psql: connection to the database using psql
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">db&lt;/span>/&lt;span class="n">psql&lt;/span>
+&lt;span class="nf">db/psql&lt;/span>&lt;span class="o">:&lt;/span>
+@psql &lt;span class="si">${&lt;/span>&lt;span class="nv">PG_DSN&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;span class="c">## db/generate use sqlc generated models and queries
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">db&lt;/span>/&lt;span class="n">generate&lt;/span>
+&lt;span class="nf">db/generate&lt;/span>&lt;span class="o">:&lt;/span>
+@echo &lt;span class="s1">&amp;#39;sqlc generate in internal/sqlc fold&amp;#39;&lt;/span>
+@cd internal/sqlc &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> sqlc generate &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nb">cd&lt;/span> ../..
+&lt;span class="c">## db/migrations/new name=$1: create a new database migration
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">db&lt;/span>/&lt;span class="n">migrations&lt;/span>/&lt;span class="n">new&lt;/span>
+&lt;span class="nf">db/migrations/new&lt;/span>&lt;span class="o">:&lt;/span>
+@echo &lt;span class="s1">&amp;#39;Creating migrate files for ${name}&amp;#39;&lt;/span>
+@migrate create -seq -ext&lt;span class="o">=&lt;/span>.sql -dir&lt;span class="o">=&lt;/span>./migrations &lt;span class="si">${&lt;/span>&lt;span class="nv">name&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;span class="c">## db/migrations/up: apply all up database migrations
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">db&lt;/span>/&lt;span class="n">migrations&lt;/span>/&lt;span class="n">up&lt;/span>
+&lt;span class="nf">db/migrations/up&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">confirm&lt;/span>
+@echo &lt;span class="s1">&amp;#39;Running up migrations...&amp;#39;&lt;/span>
+@migrate -path ./migrations -database &lt;span class="si">${&lt;/span>&lt;span class="nv">PG_DSN&lt;/span>&lt;span class="si">}&lt;/span> up
+&lt;span class="c"># ==================================================================================== #
+&lt;/span>&lt;span class="c"># QUALITY CONTROL
+&lt;/span>&lt;span class="c"># ==================================================================================== #
+&lt;/span>&lt;span class="c">&lt;/span>
+&lt;span class="c">## audit: tidy dependencies and format, vet and test all code
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">audit&lt;/span>
+&lt;span class="nf">audit&lt;/span>&lt;span class="o">:&lt;/span>
+@echo &lt;span class="s1">&amp;#39;Tidying and verifying module dependencies...&amp;#39;&lt;/span>
+go mod tidy
+go mod verify
+@echo &lt;span class="s1">&amp;#39;Formatting code...&amp;#39;&lt;/span>
+go fmt ./...
+@echo &lt;span class="s1">&amp;#39;Vetting code...&amp;#39;&lt;/span>
+go vet ./...
+&lt;span class="c1">#staticcheck ./... # go install honnef.co/go/tools/cmd/staticcheck@latest&lt;/span>
+@echo &lt;span class="s1">&amp;#39;Running tests...&amp;#39;&lt;/span>
+go &lt;span class="nb">test&lt;/span> -race -vet&lt;span class="o">=&lt;/span>off ./...
+&lt;span class="c">## vendor: tidy and vendor dependencies
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">vendor&lt;/span>
+&lt;span class="nf">vendor&lt;/span>&lt;span class="o">:&lt;/span>
+@echo &lt;span class="s1">&amp;#39;Tidying and verifying module dependencies...&amp;#39;&lt;/span>
+go mod tidy
+go mod verify
+@echo &lt;span class="s1">&amp;#39;Vendoring dependencies...&amp;#39;&lt;/span>
+go mod vendor
+&lt;span class="c"># ==================================================================================== #
+&lt;/span>&lt;span class="c"># BUILD
+&lt;/span>&lt;span class="c"># ==================================================================================== #
+&lt;/span>&lt;span class="c">&lt;/span>
+&lt;span class="c">#current_time = $(shell date --iso-8601=seconds)
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nv">current_time&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="k">$(&lt;/span>shell date -u +&lt;span class="s2">&amp;#34;%Y-%m-%dT%H:%M:%SZ&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>
+&lt;span class="nv">git_description&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="k">$(&lt;/span>shell git describe --always --dirty --tags --long&lt;span class="k">)&lt;/span>
+&lt;span class="nv">linker_flags&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;-s -X main.buildTime=${current_time} -X main.version=${git_description}&amp;#39;&lt;/span>
+&lt;span class="c">## build/api: build the cmd/api application
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">build&lt;/span>/&lt;span class="n">api&lt;/span>
+&lt;span class="nf">build/main&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">audit&lt;/span>
+@echo &lt;span class="s1">&amp;#39;Building cmd/...&amp;#39;&lt;/span>
+go build -ldflags&lt;span class="o">=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">linker_flags&lt;/span>&lt;span class="si">}&lt;/span> -o&lt;span class="o">=&lt;/span>./bin/cmd ./cmd
+&lt;span class="c1">#go tool dist list&lt;/span>
+&lt;span class="nv">GOOS&lt;/span>&lt;span class="o">=&lt;/span>linux &lt;span class="nv">GOARCH&lt;/span>&lt;span class="o">=&lt;/span>amd64 go build -ldflags&lt;span class="o">=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">linker_flags&lt;/span>&lt;span class="si">}&lt;/span> -o&lt;span class="o">=&lt;/span>./bin/linux_amd64/cmd ./cmd
+&lt;span class="c">## build/dlv-debug: build the application with dlv gcflags
+&lt;/span>&lt;span class="c">&lt;/span>&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">build&lt;/span>/&lt;span class="n">dlv&lt;/span>-&lt;span class="n">debug&lt;/span>
+&lt;span class="nf">build/dlv-debug&lt;/span>&lt;span class="o">:&lt;/span>
+@echo &lt;span class="s2">&amp;#34;Building for delve debug...&amp;#34;&lt;/span>
+@go build &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span> -ldflags &lt;span class="si">${&lt;/span>&lt;span class="nv">linker_flags&lt;/span>&lt;span class="si">}&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span> -ldflags&lt;span class="o">=&lt;/span>-compressdwarf&lt;span class="o">=&lt;/span>&lt;span class="nb">false&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span> -gcflags&lt;span class="o">=&lt;/span>&lt;span class="nv">all&lt;/span>&lt;span class="o">=&lt;/span>-d&lt;span class="o">=&lt;/span>checkptr &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span> -gcflags&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;all=-N -l&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span> -o ./bin/debug ./cmd
 &lt;/code>&lt;/pre>&lt;/div></description></item><item><title>事件驱动</title><link>https://tab.wutuofu.com/posts/shell-fifo/</link><pubDate>Wed, 27 Jun 2018 12:20:29 +0800</pubDate><guid>https://tab.wutuofu.com/posts/shell-fifo/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/shell-fifo/pm.png" alt="Featured image of post 事件驱动" />&lt;p>在shell脚本里使用&lt;code>mkfifo&lt;/code>命令创建&lt;code>named pipes&lt;/code>可以实现简单的事件驱动，
 避免poll（轮询）带来的时延（not real-time）和资源消耗的问题。&lt;/p>
 &lt;h2 id="mkfifo">mkfifo&lt;/h2>
