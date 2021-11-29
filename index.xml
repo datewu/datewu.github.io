@@ -1,4 +1,63 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>鬼画桃符</title><link>https://tab.wutuofu.com/</link><description>Recent content on 鬼画桃符</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 26 Nov 2021 11:33:15 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>fish shell</title><link>https://tab.wutuofu.com/posts/try-fish/</link><pubDate>Fri, 26 Nov 2021 11:33:15 +0800</pubDate><guid>https://tab.wutuofu.com/posts/try-fish/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/try-fish/fish.png" alt="Featured image of post fish shell" />&lt;p>今天在hacker news上闲逛，又看到有人推销&lt;code>fish&lt;/code>。心想马上就2022年了，不如换个shell耍耍。&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>鬼画桃符</title><link>https://tab.wutuofu.com/</link><description>Recent content on 鬼画桃符</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 29 Nov 2021 11:50:01 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title> 重新安装macport</title><link>https://tab.wutuofu.com/posts/reinstall-macport/</link><pubDate>Mon, 29 Nov 2021 11:50:01 +0800</pubDate><guid>https://tab.wutuofu.com/posts/reinstall-macport/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/reinstall-macport/sip.png" alt="Featured image of post  重新安装macport" />&lt;p>不知道为啥每次&lt;code>sudo port -v upgrade outdated &lt;/code>都会重新安装&lt;code>cargo-c&lt;/code>，
+进而会安装编译&lt;code>rust&lt;/code>。 编译&lt;code>rust&lt;/code>很费时间和CPU风扇。&lt;/p>
+&lt;p>所以我就卸载了&lt;code>rust&lt;/code>和一众依赖，后面特意又卸载了&lt;code>cargo-c&lt;/code>。但是每次&lt;code>upgrade outdated&lt;/code>
+&lt;code>cargo-c&lt;/code>又回来了，很是烦人。 google一圈后，决定重新安装&lt;code>macport&lt;/code>&lt;/p>
+&lt;h2 id="清理安装包">清理安装包&lt;/h2>
+&lt;p>尝试&lt;a class="link" href="https://superuser.com/questions/165652/how-can-i-clean-up-my-macports-installation" target="_blank" rel="noopener"
+>&lt;code>clean&lt;/code> 所有的&lt;/a>安装包：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">sudo port uninstall cargo-c
+sudo port -v selfupdate
+sudo port -f clean --all all
+sudo rm -rf /opt/local/var/macports/packages/*
+sudo rm -rf /opt/local/var/macports/distfiles/*
+sudo rm -rf /opt/local/var/macports/build/*
+port &lt;span class="nb">echo&lt;/span> leaves
+sudo port uninstall leaves
+sudo port -f uninstall inactive
+&lt;span class="c1">## SURPRISE! after upgrade, `cargo-c` come back.&lt;/span>
+sudo port upgrade outdated
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="卸载macport">卸载macport&lt;/h2>
+&lt;p>参考&lt;a class="link" href="https://guide.macports.org/chunked/installing.macports.uninstalling.html" target="_blank" rel="noopener"
+>官网协助&lt;/a>步骤：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">sudo port -fp uninstall installed
+sudo dscl . -delete /Users/macports
+sudo dscl . -delete /Groups/macports
+sudo rm -rf &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span> /opt/local &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span> /Applications/DarwinPorts &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span> /Applications/MacPorts &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span> /Library/LaunchDaemons/org.macports.* &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span> /Library/Receipts/DarwinPorts*.pkg &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span> /Library/Receipts/MacPorts*.pkg &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span> /Library/StartupItems/DarwinPortsStartup &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span> /Library/Tcl/darwinports1.0 &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span> /Library/Tcl/macports1.0 &lt;span class="se">\
+&lt;/span>&lt;span class="se">&lt;/span> ~/.macports
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>最后一步报错了：这三个&lt;code>/opt/local&lt;/code>, &lt;code>/opt/local/var/db&lt;/code>, &lt;code>/opt/local/var/db/postgres&lt;/code>
+目录无法删除。&lt;/p>
+&lt;p>&lt;code>sudo su &lt;/code>切换为root还是报权限不足。&lt;/p>
+&lt;h2 id="sip">SIP&lt;/h2>
+&lt;p>查了一下是&lt;a class="link" href="https://superuser.com/questions/1049689/which-folders-are-affected-by-system-integrity-protection" target="_blank" rel="noopener"
+>system integrity proction(SIP)&lt;/a>的原因&lt;/p>
+&lt;h3 id="查看sip">查看SIP&lt;/h3>
+&lt;h4 id="状态">状态&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">❯ csrutil status
+System Integrity Protection status: enabled.
+&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="查看用户httpsapplestackexchangecomquestions317576how-to-delete-macports-user-after-using-the-migration-assistant320714320714">查看&lt;a class="link" href="https://apple.stackexchange.com/questions/317576/how-to-delete-macports-user-after-using-the-migration-assistant/320714#320714" target="_blank" rel="noopener"
+>用户&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">dscl . list /Users &lt;span class="p">|&lt;/span> grep -v &lt;span class="s1">&amp;#39;^_&amp;#39;&lt;/span>
+daemon
+Guest
+postgres
+mixelpix
+nobody
+root
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="删除postgres">删除postgres&lt;/h3>
+&lt;p>可以看到上面有postgres用户，所以删除&lt;code>postgres&lt;/code>之后，就可以删除&lt;code>/opt/local&lt;/code>目录了：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">sudo dscl . -delete /Groups/postgres
+sudo dscl . -delete /Users/postgres
+sudo rm -rf /opt/local
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>fish shell</title><link>https://tab.wutuofu.com/posts/try-fish/</link><pubDate>Fri, 26 Nov 2021 11:33:15 +0800</pubDate><guid>https://tab.wutuofu.com/posts/try-fish/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/try-fish/fish.png" alt="Featured image of post fish shell" />&lt;p>今天在hacker news上闲逛，又看到有人推销&lt;code>fish&lt;/code>。心想马上就2022年了，不如换个shell耍耍。&lt;/p>
 &lt;p>&lt;figure
 class="gallery-image"
 style="
@@ -21,7 +80,7 @@ alt="fish shell topic on hackernews">
 &lt;p>安装fish&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">sudo port install fish
 sudo chpass -s /opt/local/bin/fish &lt;span class="si">${&lt;/span>&lt;span class="nv">USER&lt;/span>&lt;span class="si">}&lt;/span>
-cat
+cat /etc/shells
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>退出&lt;code>zsh&lt;/code>，重启&lt;code>terminal&lt;/code>&lt;/p>
 &lt;h2 id="安装插件">安装插件&lt;/h2>
 &lt;h3 id="oh-my-fish--fisher">oh-my-fish / fisher&lt;/h3>
