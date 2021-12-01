@@ -1,4 +1,39 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>鬼画桃符</title><link>https://tab.wutuofu.com/</link><description>Recent content on 鬼画桃符</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 29 Nov 2021 11:50:01 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title> 重新安装macport</title><link>https://tab.wutuofu.com/posts/reinstall-macport/</link><pubDate>Mon, 29 Nov 2021 11:50:01 +0800</pubDate><guid>https://tab.wutuofu.com/posts/reinstall-macport/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/reinstall-macport/sip.png" alt="Featured image of post  重新安装macport" />&lt;p>updated: 好像是因为我安装了&lt;code>ripgrep&lt;/code>所以会一直更新&lt;code>cargo-c&lt;/code>依赖。&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>鬼画桃符</title><link>https://tab.wutuofu.com/</link><description>Recent content on 鬼画桃符</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 01 Dec 2021 15:16:39 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>查看Wi-Fi密码</title><link>https://tab.wutuofu.com/posts/check-wifipassword/</link><pubDate>Wed, 01 Dec 2021 15:16:39 +0800</pubDate><guid>https://tab.wutuofu.com/posts/check-wifipassword/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/check-wifipassword/wifi-password.jpeg" alt="Featured image of post 查看Wi-Fi密码" />&lt;p>在苹果电脑上使用终端&lt;code>security&lt;/code>命令查看Wi-Fi密码：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">security find-generic-password -wa &lt;span class="s1">&amp;#39;your wifi-ssid&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 230;
+flex-basis: 554px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/check-wifipassword/wifi.png" data-size="868x376">
+&lt;img src="https://tab.wutuofu.com/posts/check-wifipassword/wifi.png"
+width="868"
+height="376"
+srcset="https://tab.wutuofu.com/posts/check-wifipassword/wifi_hu66e9221b77a6acb1198c7195748bfb4f_66710_480x0_resize_box_3.png 480w, https://tab.wutuofu.com/posts/check-wifipassword/wifi_hu66e9221b77a6acb1198c7195748bfb4f_66710_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="macos dialogue">
+&lt;/a>
+&lt;figcaption>macos dialogue&lt;/figcaption>
+&lt;/figure>
+在弹出的系统对话框中输入正确的用户名和密码，终端即可以看到Wi-Fi密码。&lt;/p>
+&lt;p>ps. 除了当前连接的Wi-Fi，系统所有保存过的Wi-Fi密码都可以通过&lt;code>security&lt;/code>命令查到。
+&lt;figure
+class="gallery-image"
+style="
+flex-grow: 128;
+flex-basis: 308px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/check-wifipassword/all-wifi.png" data-size="1302x1012">
+&lt;img src="https://tab.wutuofu.com/posts/check-wifipassword/all-wifi.png"
+width="1302"
+height="1012"
+srcset="https://tab.wutuofu.com/posts/check-wifipassword/all-wifi_hu1b8799fe9b8c9e0d590c4630ece7700f_262038_480x0_resize_box_3.png 480w, https://tab.wutuofu.com/posts/check-wifipassword/all-wifi_hu1b8799fe9b8c9e0d590c4630ece7700f_262038_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="macos all remember wifi list">
+&lt;/a>
+&lt;figcaption>macos all remember wifi list&lt;/figcaption>
+&lt;/figure>&lt;/p></description></item><item><title> 重新安装macport</title><link>https://tab.wutuofu.com/posts/reinstall-macport/</link><pubDate>Mon, 29 Nov 2021 11:50:01 +0800</pubDate><guid>https://tab.wutuofu.com/posts/reinstall-macport/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/reinstall-macport/sip.png" alt="Featured image of post  重新安装macport" />&lt;p>updated: 好像是因为我安装了&lt;code>ripgrep&lt;/code>所以会一直更新&lt;code>cargo-c&lt;/code>依赖。&lt;/p>
 &lt;p>不知道为啥每次&lt;code>sudo port -v upgrade outdated &lt;/code>都会重新安装&lt;code>cargo-c&lt;/code>，
 进而会安装编译&lt;code>rust&lt;/code>。 编译&lt;code>rust&lt;/code>很费时间和CPU风扇。&lt;/p>
 &lt;p>所以我就卸载了&lt;code>rust&lt;/code>和一众依赖，后面特意又卸载了&lt;code>cargo-c&lt;/code>。但是每次&lt;code>upgrade outdated&lt;/code>
