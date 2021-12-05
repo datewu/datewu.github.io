@@ -1,4 +1,30 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>鬼画桃符</title><link>https://tab.wutuofu.com/</link><description>Recent content on 鬼画桃符</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 01 Dec 2021 15:16:39 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>查看Wi-Fi密码</title><link>https://tab.wutuofu.com/posts/check-wifipassword/</link><pubDate>Wed, 01 Dec 2021 15:16:39 +0800</pubDate><guid>https://tab.wutuofu.com/posts/check-wifipassword/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/check-wifipassword/wifi-password.jpeg" alt="Featured image of post 查看Wi-Fi密码" />&lt;p>在苹果电脑上使用终端&lt;code>security&lt;/code>命令查看Wi-Fi密码：&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>鬼画桃符</title><link>https://tab.wutuofu.com/</link><description>Recent content on 鬼画桃符</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 05 Dec 2021 11:34:06 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>合并图片</title><link>https://tab.wutuofu.com/posts/append-jpeg/</link><pubDate>Sun, 05 Dec 2021 11:34:06 +0800</pubDate><guid>https://tab.wutuofu.com/posts/append-jpeg/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/append-jpeg/imagemagick.jpeg" alt="Featured image of post 合并图片" />&lt;p>填写某政府表格时候，需要把多个图片合并为一张图片。
+用&lt;code>Photoshop&lt;/code>应该很好解决，但是本地没有安装。于是网上查了一下用&lt;code>imageMagick&lt;/code>也可以解决。&lt;/p>
+&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 460;
+flex-basis: 1104px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/append-jpeg/append.png" data-size="870x189">
+&lt;img src="https://tab.wutuofu.com/posts/append-jpeg/append.png"
+width="870"
+height="189"
+srcset="https://tab.wutuofu.com/posts/append-jpeg/append_hu861701e1315ddf515ddd0b1e09a0a995_8283_480x0_resize_box_3.png 480w, https://tab.wutuofu.com/posts/append-jpeg/append_hu861701e1315ddf515ddd0b1e09a0a995_8283_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="append two picture ">
+&lt;/a>
+&lt;figcaption>append two picture&lt;/figcaption>
+&lt;/figure>&lt;/p>
+&lt;h3 id="meat">meat&lt;/h3>
+&lt;p>&lt;a class="link" href="https://superuser.com/questions/316132/appending-images-vertically-in-imagemagick/316189" target="_blank" rel="noopener"
+>Appending images vertically in ImageMagick&lt;/a>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="c1"># vertical stacking (top to bottom):&lt;/span>
+convert -append 1.jpeg 2.jpeg 3.jpeg out.jpg
+&lt;span class="c1"># horizontal stacking (left to right):&lt;/span>
+convert +append 1.jpg 2.jpg out.jpg
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="ps">ps&lt;/h3>
+&lt;p>另外这篇&lt;a class="link" href="https://tab.wutuofu.com/posts/gif-loop/" >循环播放gif图片&lt;/a>也用到了&lt;code>imageMagick&lt;/code>。&lt;/p></description></item><item><title>查看Wi-Fi密码</title><link>https://tab.wutuofu.com/posts/check-wifipassword/</link><pubDate>Wed, 01 Dec 2021 15:16:39 +0800</pubDate><guid>https://tab.wutuofu.com/posts/check-wifipassword/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/check-wifipassword/wifi-password.jpeg" alt="Featured image of post 查看Wi-Fi密码" />&lt;p>在苹果电脑上使用终端&lt;code>security&lt;/code>命令查看Wi-Fi密码：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">security find-generic-password -wa &lt;span class="s1">&amp;#39;your wifi-ssid&amp;#39;&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;figure
 class="gallery-image"
