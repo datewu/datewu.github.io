@@ -47,7 +47,7 @@ extended">
 </div>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
 <time class=article-time--reading>
-阅读时长: 2 分钟
+阅读时长: 3 分钟
 </time>
 </div>
 </footer>
@@ -116,12 +116,20 @@ Addr
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>cat /dev/null &gt; /etc/test.txt  
 </code></pre></div><p><strong>另外，本文读取文件的操作可用less命令替代，less命令速度会更快些</strong></p>
 <h3 id=awk>awk</h3>
-<p>awk可以算独立的一门编程语言，简单举个例子：截取路由器MAC地址后四位</p>
+<p>awk可以算独立的一门编程语言，举两个例子：</p>
+<ol>
+<li>截取路由器MAC地址后四位</li>
+</ol>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=k>$(</span>cat /sys/class/ieee80211/<span class=si>${</span><span class=nv>dev</span><span class=si>}</span>/macaddress<span class=k>)</span> <span class=p>|</span> awk -F <span class=s2>&#34;:&#34;</span> <span class=s1>&#39;{ print $5&#34;&#34;$6 }&#39;</span> <span class=p>|</span> tr a-z A-Z
 
 <span class=nb>echo</span> sd:3s:xf:0h:w4:n8 <span class=p>|</span> awk -F <span class=s2>&#34;:&#34;</span> <span class=s1>&#39;{ print $5&#34;&#34;$6 }&#39;</span> <span class=p>|</span> tr a-z A-Z
 W4N8
-</code></pre></div><ol>
+</code></pre></div><ol start=2>
+<li>对某一列求和</li>
+</ol>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>awk -F<span class=s1>&#39;,&#39;</span> <span class=s1>&#39;{sum+=$2;} END{print sum;}&#39;</span> file.txt
+</code></pre></div><h4 id=运行方式>运行方式</h4>
+<ol>
 <li>命令行方式</li>
 </ol>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>awk <span class=o>[</span>-F  field-separator<span class=o>]</span>  <span class=s1>&#39;commands&#39;</span>  input-file<span class=o>(</span>s<span class=o>)</span>
@@ -267,7 +275,11 @@ W4N8
 <ol>
 <li><a href=#cut>cut</a></li>
 <li><a href=#catless>cat/less</a></li>
-<li><a href=#awk>awk</a></li>
+<li><a href=#awk>awk</a>
+<ol>
+<li><a href=#运行方式>运行方式</a></li>
+</ol>
+</li>
 <li><a href=#tr>tr</a></li>
 </ol>
 </li>
