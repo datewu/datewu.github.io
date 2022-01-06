@@ -74,7 +74,8 @@ cat /etc/shells
 <span class=nb>fish </span>install <span class=na>--path</span><span class=o>=</span>~/.local/share/omf <span class=na>--config</span><span class=o>=</span>~/.config/omf
 
 
-<span class=nf>curl</span> <span class=na>-sL</span> https://git.io/fisher <span class=o>|</span> <span class=nb>source</span> <span class=o>&amp;&amp;</span> <span class=nf>fisher</span> install jorgebucaran/fisher
+<span class=c># 可能出现 https://git.io无法访问的问题
+</span><span class=c></span><span class=nf>curl</span> <span class=na>-sL</span> https://git.io/fisher <span class=o>|</span> <span class=nb>source</span> <span class=o>&amp;&amp;</span> <span class=nf>fisher</span> install jorgebucaran/fisher
 </code></pre></div><h3 id=autojump-j>autojump/ j</h3>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-fish data-lang=fish><span class=nf>sudo</span> <span class=nf>port</span> uninstall autojump
 
@@ -90,10 +91,10 @@ cat /etc/shells
 </span><span class=nb></span><span class=nf>nvm</span> install latest
 <span class=nf>nvm</span> list
 <span class=nf>nvm</span> <span class=na>--version</span>
-<span class=nf>nvm</span> use v17.<span class=m>1</span>.<span class=m>0</span> 
-  <span class=nf>Now</span> using Node v17.<span class=m>1</span>.<span class=m>0</span> <span class=o>(</span><span class=nf>npm</span> <span class=m>8</span>.<span class=m>1</span>.<span class=m>2</span><span class=o>)</span> ~/.local/share/nvm/v17.<span class=m>1</span>.<span class=m>0</span>/bin/node
-<span class=nf>node</span> <span class=na>--version</span>
-</code></pre></div><h3 id=fisher-plugins>fisher plugins</h3>
+<span class=c>#nvm use v17.1.0 
+</span><span class=c>#  Now using Node v17.1.0 (npm 8.1.2) ~/.local/share/nvm/v17.1.0/bin/node
+</span><span class=c>#node --version
+</span></code></pre></div><h3 id=fisher-plugins>fisher plugins</h3>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-fish data-lang=fish><span class=nf>fisher</span> install IlanCosman/tide@v5
 
 <span class=nf>fisher</span> install PatrickF1/fzf.<span class=nb>fish
@@ -132,6 +133,11 @@ cat /etc/shells
     <span class=c># alias docker_prune=&#34;docker rmi `docker images -f &#39;dangling=true&#39; -q`&#34;
 </span><span class=c></span>    <span class=c># alias docker_prune=&#34;docker system prune&#34;
 </span><span class=c></span>    <span class=nb>alias </span><span class=nv>chrome</span><span class=o>=</span><span class=s2>&#34;/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome&#34;</span>
+<span class=k>end</span>
+
+
+<span class=k>begin</span>
+    <span class=k>set</span> <span class=na>--universal</span> <span class=nv>nvm_default_version</span> v17.<span class=m>3</span>.<span class=m>0</span>
 <span class=k>end</span>
 </code></pre></div>
 </section>
@@ -204,7 +210,8 @@ cat /etc/shells
 <footer class=site-footer>
 <section class=copyright>
 &copy;
-2021 鬼画桃符
+2021 -
+2022 鬼画桃符
 </section>
 <section class=powerby>
 豆腐炒糖
