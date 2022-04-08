@@ -3579,7 +3579,125 @@ loading="lazy"
 alt="serach page">
 &lt;/a>
 &lt;figcaption>serach page&lt;/figcaption>
-&lt;/figure>&lt;/p></description></item><item><title>想写个cms</title><link>https://tab.wutuofu.com/posts/rails-cms/</link><pubDate>Mon, 23 Dec 2013 13:28:34 +0800</pubDate><guid>https://tab.wutuofu.com/posts/rails-cms/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/rails-cms/ror.jpeg" alt="Featured image of post 想写个cms" />&lt;p>&lt;code>updated at 2014/2/16 坑太大，挑战太多，挑战失败，放弃啦 :)&lt;/code>&lt;/p>
+&lt;/figure>&lt;/p></description></item><item><title>歪楼</title><link>https://tab.wutuofu.com/posts/wai-lou/</link><pubDate>Mon, 12 May 2014 16:05:52 +0800</pubDate><guid>https://tab.wutuofu.com/posts/wai-lou/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/wai-lou/wl.jpeg" alt="Featured image of post 歪楼" />&lt;p>从Firefox的查看元素&amp;gt;查看器入手，发现有搞头。然后又谷歌查阅了些资料，发现我想的方法对firefox浏览器的依赖性太强，最多也就能做成firefox的一个插件。&lt;/p>
+&lt;p>简要记下我原来的思路：&lt;/p>
+&lt;p>html源文档，用word打开的话，就可以自动去除所有的&lt;code>&amp;lt;tag&amp;gt;&lt;/code>，当然也可以用&lt;code>perl&lt;/code>写些正则表达式，所以搞到html源文档就有搞头。&lt;/p>
+&lt;p>百度文库啊，豆丁啊，刀客88啊，什么的，表面上好像把源文档藏的好好的，但是只要用firefox查看下元素，他们就怂了，穿什么色的内裤都看的一清二楚。&lt;/p>
+&lt;p>然后，成也萧何败也萧何，不想太依赖firefox。&lt;/p>
+&lt;p>所以，作罢。&lt;/p>
+&lt;p>不过也有些小收获，可以做些小的恶作剧。&lt;/p>
+&lt;p>比如下图一，和下图二的恶作剧：&lt;/p>
+&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 135;
+flex-basis: 324px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/wai-lou/quiz.jpeg" data-size="1188x880">
+&lt;img src="https://tab.wutuofu.com/posts/wai-lou/quiz.jpeg"
+width="1188"
+height="880"
+srcset="https://tab.wutuofu.com/posts/wai-lou/quiz_hu5bbe4659923f69bd65fdecb2cc7ea928_317155_480x0_resize_q75_box.jpeg 480w, https://tab.wutuofu.com/posts/wai-lou/quiz_hu5bbe4659923f69bd65fdecb2cc7ea928_317155_1024x0_resize_q75_box.jpeg 1024w"
+loading="lazy"
+alt="quiz">
+&lt;/a>
+&lt;figcaption>quiz&lt;/figcaption>
+&lt;/figure>&lt;/p>
+&lt;p>（图一，恶搞的是百度文库的每个考试试卷文档，还不算太歪）&lt;/p>
+&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 143;
+flex-basis: 345px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/wai-lou/weibo.png" data-size="1315x914">
+&lt;img src="https://tab.wutuofu.com/posts/wai-lou/weibo.png"
+width="1315"
+height="914"
+srcset="https://tab.wutuofu.com/posts/wai-lou/weibo_hu4e5c67c3889d5730d2eb73405719769d_344356_480x0_resize_box_3.png 480w, https://tab.wutuofu.com/posts/wai-lou/weibo_hu4e5c67c3889d5730d2eb73405719769d_344356_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="weibo">
+&lt;/a>
+&lt;figcaption>weibo&lt;/figcaption>
+&lt;/figure>
+（图二，恶搞的是文章。。。~~话说人家劈人家的腿与你何干？ ~~话说我没有节操又与他们劈不劈腿何干？）&lt;/p></description></item><item><title>雨好大</title><link>https://tab.wutuofu.com/posts/da-yu/</link><pubDate>Sat, 10 May 2014 16:21:02 +0800</pubDate><guid>https://tab.wutuofu.com/posts/da-yu/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/da-yu/rain.jpeg" alt="Featured image of post 雨好大" />&lt;p>接连下了一周的雨，早上醒来的时候感觉被子有点潮潮的。&lt;/p>
+&lt;p>听着外面的雨声，思索着要不要起床，忽然意识到明天要上班，于是又蒙头睡过。&lt;/p>
+&lt;p>又过了会，醒了，起床洗漱，刷牙的时候我喜欢听歌，洗脸的时候也喜欢听歌，洗澡的时候也是，还有洗头的时候。&lt;/p>
+&lt;p>感觉昨天晚餐还没有消化完全，所以就不急着吃早餐。四处晃了晃，下雨感觉干什么都没劲，打开电脑，然后是google.com.hk&lt;/p>
+&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 258;
+flex-basis: 620px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/da-yu/google.jpeg" data-size="491x190">
+&lt;img src="https://tab.wutuofu.com/posts/da-yu/google.jpeg"
+width="491"
+height="190"
+srcset="https://tab.wutuofu.com/posts/da-yu/google_hu2c86cfb65dd94ae6e174cce48badd167_30476_480x0_resize_q75_box.jpeg 480w, https://tab.wutuofu.com/posts/da-yu/google_hu2c86cfb65dd94ae6e174cce48badd167_30476_1024x0_resize_q75_box.jpeg 1024w"
+loading="lazy"
+alt="google doodles">
+&lt;/a>
+&lt;figcaption>google doodles&lt;/figcaption>
+&lt;/figure>&lt;/p>
+&lt;p>哦，今天是母亲节啊。
+思绪一下子被打开了好大个缺口，好多情感向我袭来，&lt;/p>
+&lt;p>眼看我就要被种种幸福的、委屈的、亲切的、美好的、懊悔的、恋恋不舍的，等等，回忆包围，&lt;/p>
+&lt;p>毕业一年多，漂泊在外的我突然发现我好无助，然后不知道为啥，这些回忆就突然间模糊烟消云散了。&lt;/p>
+&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 150;
+flex-basis: 360px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/da-yu/child.jpeg" data-size="510x340">
+&lt;img src="https://tab.wutuofu.com/posts/da-yu/child.jpeg"
+width="510"
+height="340"
+srcset="https://tab.wutuofu.com/posts/da-yu/child_hu63e49afffa9d0e6c669a2e1b584d896f_16050_480x0_resize_q75_box.jpeg 480w, https://tab.wutuofu.com/posts/da-yu/child_hu63e49afffa9d0e6c669a2e1b584d896f_16050_1024x0_resize_q75_box.jpeg 1024w"
+loading="lazy"
+alt="child">
+&lt;/a>
+&lt;figcaption>child&lt;/figcaption>
+&lt;/figure>&lt;/p>
+&lt;p>慢慢来吧，生活总会是想要的那样的。&lt;/p>
+&lt;p>下楼买早点去了，话说这把伞有点小了吧。&lt;/p>
+&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 133;
+flex-basis: 319px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/da-yu/umbrella.jpeg" data-size="205x154">
+&lt;img src="https://tab.wutuofu.com/posts/da-yu/umbrella.jpeg"
+width="205"
+height="154"
+srcset="https://tab.wutuofu.com/posts/da-yu/umbrella_huf7225b652dd15c5d6820a7be494daf60_5347_480x0_resize_q75_box.jpeg 480w, https://tab.wutuofu.com/posts/da-yu/umbrella_huf7225b652dd15c5d6820a7be494daf60_5347_1024x0_resize_q75_box.jpeg 1024w"
+loading="lazy"
+alt="umbrella">
+&lt;/a>
+&lt;figcaption>umbrella&lt;/figcaption>
+&lt;/figure>&lt;/p>
+&lt;p>撑着伞在雨里走着，想起刚来这工作的时候，和某个人一起打伞，还给了她50块钱，现在还没还给我。&lt;/p>
+&lt;p>Anyway ，HAPPY MOTHER&amp;rsquo;S DAY!
+&lt;figure
+class="gallery-image"
+style="
+flex-grow: 150;
+flex-basis: 360px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/da-yu/mother.jpeg" data-size="1600x1066">
+&lt;img src="https://tab.wutuofu.com/posts/da-yu/mother.jpeg"
+width="1600"
+height="1066"
+srcset="https://tab.wutuofu.com/posts/da-yu/mother_hu28623d733cda5e9e327544394c637f2c_217058_480x0_resize_q75_box.jpeg 480w, https://tab.wutuofu.com/posts/da-yu/mother_hu28623d733cda5e9e327544394c637f2c_217058_1024x0_resize_q75_box.jpeg 1024w"
+loading="lazy"
+alt="mother">
+&lt;/a>
+&lt;figcaption>mother&lt;/figcaption>
+&lt;/figure>&lt;/p></description></item><item><title>谢谢vpngate</title><link>https://tab.wutuofu.com/posts/try-vpngate/</link><pubDate>Fri, 09 May 2014 16:39:24 +0800</pubDate><guid>https://tab.wutuofu.com/posts/try-vpngate/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/try-vpngate/vpngate.jpeg" alt="Featured image of post 谢谢vpngate" />&lt;p>在天朝呆久了，有点迫害妄想症。用&lt;a class="link" href="https://www.vpngate.net" target="_blank" rel="noopener"
+>vpngate&lt;/a>出来转转看看，发现确实是我想多了。&lt;/p>
+&lt;p>anyway，谢谢vpngate，挺不错的vpn。&lt;/p></description></item><item><title>第七章FLOW3d铸造模具热循环分析</title><link>https://tab.wutuofu.com/posts/flow-3d/</link><pubDate>Thu, 08 May 2014 16:34:49 +0800</pubDate><guid>https://tab.wutuofu.com/posts/flow-3d/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/flow-3d/software_flow_science.jpeg" alt="Featured image of post 第七章FLOW3d铸造模具热循环分析" />&lt;p>文章已丢失 :(&lt;/p></description></item><item><title>想写个cms</title><link>https://tab.wutuofu.com/posts/rails-cms/</link><pubDate>Mon, 23 Dec 2013 13:28:34 +0800</pubDate><guid>https://tab.wutuofu.com/posts/rails-cms/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/rails-cms/ror.jpeg" alt="Featured image of post 想写个cms" />&lt;p>&lt;code>updated at 2014/2/16 坑太大，挑战太多，挑战失败，放弃啦 :)&lt;/code>&lt;/p>
 &lt;p>看完Ruby On Rails tutorial，感觉热血沸腾。
 来吧，少年，来写个CMS吧。&lt;/p>
 &lt;h2 id="model">model&lt;/h2>
