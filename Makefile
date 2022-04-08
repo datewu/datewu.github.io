@@ -2,6 +2,17 @@
 dev:
 	-@hugo server -D
 
+.PHONY: new
+new:
+	-@hugo new posts/$(t)/index.md
+
+.PHONY: mvpic
+mvpic:
+	-@mv ~/Downloads/*.jpg content/posts/$(t) 2> /dev/null
+	-@mv ~/Downloads/*.jpeg content/posts/$(t) 2> /dev/null
+	-@mv ~/Downloads/*.png content/posts/$(t) 2> /dev/null
+
+
 .PHONY: clean
 clean:
 	-@git submodule deinit -f .
