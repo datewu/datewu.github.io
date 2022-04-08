@@ -1323,7 +1323,115 @@ example, in bc, you can run the command obase=2; 240 to print the number 240 in 
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> - Calculate the result of an expression with sine and cosine using mathlib:
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> bc -l &lt;span class="o">&amp;lt;&amp;lt;&amp;lt;&lt;/span> &lt;span class="s2">&amp;#34;s(1) + c(1)&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>flannel vpc</title><link>https://tab.wutuofu.com/posts/tx-flannel/</link><pubDate>Wed, 08 Aug 2018 18:59:00 +0800</pubDate><guid>https://tab.wutuofu.com/posts/tx-flannel/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/tx-flannel/flannel-vpc.png" alt="Featured image of post flannel vpc" />&lt;p>update: flannel从v0.14.0(2021/05/27)开始已经支持&lt;a class="link" href="https://github.com/flannel-io/flannel/tree/master/backend/tencentvpc" target="_blank" rel="noopener"
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Pod生命周期和Liveness的区别</title><link>https://tab.wutuofu.com/posts/pod-life-live/</link><pubDate>Tue, 18 Sep 2018 23:33:25 +0800</pubDate><guid>https://tab.wutuofu.com/posts/pod-life-live/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/pod-life-live/hook.gif" alt="Featured image of post Pod生命周期和Liveness的区别" />&lt;p>今天测试给我反馈了一个pod问题，测试给出的 use case 描述如下：&lt;/p>
+&lt;p>配置一个nginx的web服务；&lt;/p>
+&lt;ol>
+&lt;li>在生命周期中选择http协议，端口配置80，路径配置/errorpath；&lt;/li>
+&lt;li>服务中pod能正常启动；&lt;/li>
+&lt;li>预期在pod的事件中应该有一个“FailedPostStartHook”错误信息。&lt;/li>
+&lt;li>测试人员发现，第4点的预期没有达到，pod 正常启动了，却没有 &lt;code>FailedPostStarHook&lt;/code>事件出现。&lt;/li>
+&lt;/ol>
+&lt;p>简单分析了一下，我发现是测试人员把pod的&lt;code>lifecycle&lt;/code>和 pod的&lt;code>liveness/readiness&lt;/code> 诺混淆了，从而写出了错的test case。&lt;/p>
+&lt;h2 id="lifecycle-handlers">Lifecycle handlers&lt;/h2>
+&lt;p>首先回顾下pod lifecycle的作用：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">kubectl explain pod.spec.containers.lifecycle.postStart
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">RESOURCE: postStart &amp;lt;Object&amp;gt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">DESCRIPTION:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> PostStart is called immediately after a container is created. If the
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> handler fails, the container is terminated and restarted according to its
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> restart policy. Other management of the container blocks &lt;span class="k">until&lt;/span> the hook
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> completes. More info: https://kubernetes.io/docs/concepts/containers/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> container-lifecycle-hooks/#container-hooks/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Handler defines a specific action that should be taken
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>简单翻译下就是说， &lt;code>kubernetes&lt;/code> 提供的pod start和exit的 lifecycle hooks 方便开发人员hooked到&lt;/p>
+&lt;p>下面两个生命周期：&lt;/p>
+&lt;ol>
+&lt;li>通知外部世界pod已经启动完成 (postStart)&lt;/li>
+&lt;li>pod优雅的退出 (preStop)&lt;/li>
+&lt;/ol>
+&lt;p>ps：&lt;code>init container&lt;/code>可以解决依赖问题，不要和postStart hooks混淆了哦。&lt;/p>
+&lt;h3 id="举例子">举例子&lt;/h3>
+&lt;p>当postStart hook的&lt;strong>handler&lt;/strong>发送http请求到指定的port和path时， 如果exit code 不为0时，&lt;/p>
+&lt;p>会触发 &lt;code>FailedPostStartHook&lt;/code> 事件，然后执行用户给定的hook/handler。&lt;/p>
+&lt;p>注意：lifecycle hooks不会理会http 自身的 response code健康与否，&lt;/p>
+&lt;p>只要&lt;strong>handler&lt;/strong> exit code 为0 pod就会正常启动，不触发任何事件。&lt;/p>
+&lt;p>可以配置一个错误的端口使产生&lt;code>FailedPostStartHook&lt;/code> event：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-yaml" data-lang="yaml">&lt;span class="line">&lt;span class="cl">&lt;span class="nt">apiVersion&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">v1&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">kind&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">Pod&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">metadata&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">lifecycle90&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">spec&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">containers&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">image&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">nginx:latest&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">ng&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">imagePullPolicy&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">Never&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">readinessProbe&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">httpGet&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">port&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="m">80&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">path&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">/&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">lifecycle&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">postStart&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">httpGet&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">port&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="m">80&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c">## change this to 8080 or 9090 to get the FailedPostStartHook event&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">path&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">/teststart&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">preStop&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">httpGet&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">port&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="m">80&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">path&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">/teststop&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="相关代码">相关代码&lt;/h3>
+&lt;p>talk is cheap.&lt;/p>
+&lt;p>&lt;code>handler&lt;/code>只关心&lt;a class="link" href="https://sourcegraph.com/github.com/kubernetes/kubernetes/-/blob/pkg/kubelet/lifecycle/handlers.go?L72" target="_blank" rel="noopener"
+>getHTTPRespBody&lt;/a> 获取body的过程是否有err产生， 并不关心http respond code。&lt;/p>
+&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 179;
+flex-basis: 430px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/pod-life-live/getBody.png" data-size="1488x830">
+&lt;img src="https://tab.wutuofu.com/posts/pod-life-live/getBody.png"
+width="1488"
+height="830"
+srcset="https://tab.wutuofu.com/posts/pod-life-live/getBody_hu1de47f0bc59d2d72f7f84f5247757181_215040_480x0_resize_box_3.png 480w, https://tab.wutuofu.com/posts/pod-life-live/getBody_hu1de47f0bc59d2d72f7f84f5247757181_215040_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="getHTTPRespBody">
+&lt;/a>
+&lt;figcaption>getHTTPRespBody&lt;/figcaption>
+&lt;/figure>&lt;/p>
+&lt;h2 id="livenessreadiness-probe">Liveness/readiness probe&lt;/h2>
+&lt;p>pod liveness/readiness &lt;strong>probe&lt;/strong> 则会检查 http code 是否为 &lt;code>2xx&lt;/code>来确定&lt;strong>probe&lt;/strong> 是否成功。&lt;/p>
+&lt;h3 id="相关代码-1">相关代码&lt;/h3>
+&lt;p>talk is cheap.&lt;/p>
+&lt;p>&lt;a class="link" href="https://sourcegraph.com/github.com/kubernetes/kubernetes/-/blob/pkg/kubelet/prober/prober.go?L183" target="_blank" rel="noopener"
+>runProbe&lt;/a> 调用&lt;a class="link" href="https://sourcegraph.com/github.com/kubernetes/kubernetes/-/blob/pkg/probe/http/http.go?L129" target="_blank" rel="noopener"
+>http.Probe&lt;/a>，&lt;code>DoHTTPProbe&lt;/code>会检查http response code。&lt;/p>
+&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 170;
+flex-basis: 408px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/pod-life-live/httpCode.png" data-size="1830x1076">
+&lt;img src="https://tab.wutuofu.com/posts/pod-life-live/httpCode.png"
+width="1830"
+height="1076"
+srcset="https://tab.wutuofu.com/posts/pod-life-live/httpCode_hu635bd497a36d20f21b0e9bb81ddae9bc_294012_480x0_resize_box_3.png 480w, https://tab.wutuofu.com/posts/pod-life-live/httpCode_hu635bd497a36d20f21b0e9bb81ddae9bc_294012_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="doHTTPProbe">
+&lt;/a>
+&lt;figcaption>doHTTPProbe&lt;/figcaption>
+&lt;/figure>&lt;/p>
+&lt;p>从源码可以清楚的看到， lifecyce 的&lt;strong>handler&lt;/strong> 只发送了http 请求，并没有检查 http response code,
+liveness/readiness 的&lt;strong>prober&lt;/strong> 则做了http response code 的检查。&lt;/p></description></item><item><title>flannel vpc</title><link>https://tab.wutuofu.com/posts/tx-flannel/</link><pubDate>Wed, 08 Aug 2018 18:59:00 +0800</pubDate><guid>https://tab.wutuofu.com/posts/tx-flannel/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/tx-flannel/flannel-vpc.png" alt="Featured image of post flannel vpc" />&lt;p>update: flannel从v0.14.0(2021/05/27)开始已经支持&lt;a class="link" href="https://github.com/flannel-io/flannel/tree/master/backend/tencentvpc" target="_blank" rel="noopener"
 >腾讯云的vpc backend&lt;/a>了。&lt;/p>
 &lt;p>客户需要在腾讯云上部署&lt;code>kubernetes&lt;/code>集群而且选用的网络插件是flannel，所以我们需要为&lt;code>flannel&lt;/code> 添加 腾讯云 vpc 的 backend 适配。&lt;/p>
 &lt;p>我大致看了下github上 &lt;a class="link" href="https://github.com/coreos/flannel/tree/master/backend" target="_blank" rel="noopener"
