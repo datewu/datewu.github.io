@@ -23,7 +23,7 @@ params:
     rssFullContent: true
 
     footer:
-        since: 2021
+        since: 2006
         customText: 豆腐炒糖
 
     dateFormat:
