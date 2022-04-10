@@ -12,7 +12,7 @@ pic:
 	-@mv ~/Downloads/*.jpeg content/posts/$(t) 2> /dev/null
 	-@mv ~/Downloads/*.png content/posts/$(t) 2> /dev/null
 	-@mv ~/Downloads/*.gif content/posts/$(t) 2> /dev/null
-
+	-@mv ~/Downloads/*.webp content/posts/$(t) 2> /dev/null
 
 .PHONY: clean
 clean:
