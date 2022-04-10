@@ -1431,7 +1431,46 @@ alt="doHTTPProbe">
 &lt;figcaption>doHTTPProbe&lt;/figcaption>
 &lt;/figure>&lt;/p>
 &lt;p>从源码可以清楚的看到， lifecyce 的&lt;strong>handler&lt;/strong> 只发送了http 请求，并没有检查 http response code,
-liveness/readiness 的&lt;strong>prober&lt;/strong> 则做了http response code 的检查。&lt;/p></description></item><item><title>替换k8s所有证书</title><link>https://tab.wutuofu.com/posts/k8s-certs/</link><pubDate>Fri, 10 Aug 2018 20:27:10 +0800</pubDate><guid>https://tab.wutuofu.com/posts/k8s-certs/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/k8s-certs/k8s.webp" alt="Featured image of post 替换k8s所有证书" />&lt;p>客户需要把kubernetes &lt;code>apiserver/etcd/kubelet/kubectl&lt;/code> 等所有的证书有效期修改为100年。&lt;/p>
+liveness/readiness 的&lt;strong>prober&lt;/strong> 则做了http response code 的检查。&lt;/p></description></item><item><title>收集容器syslog</title><link>https://tab.wutuofu.com/posts/pod-syslog/</link><pubDate>Mon, 03 Sep 2018 20:46:00 +0800</pubDate><guid>https://tab.wutuofu.com/posts/pod-syslog/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/pod-syslog/local-domain-socket.png" alt="Featured image of post 收集容器syslog" />&lt;p>有一个app 跑在pod里面，这个app 默认会输出自己的运行日志到syslogd，&lt;/p>
+&lt;p>请问如何让host主机上运行的syslogd日志收集器收集到上面app输出的运行日志呢？&lt;/p>
+&lt;h2 id="devlog">/dev/log&lt;/h2>
+&lt;p>答案：把 主机的 &lt;code>/dev/log&lt;/code>目录挂载到 pod 里面的 &lt;code>/dev/log&lt;/code>即可。&lt;/p>
+&lt;blockquote>
+&lt;p>Some of these messages need to be brought to a system administrator’s attention immediately. And it may not be just any system administrator – there may be a particular system administrator who deals with a particular kind of message. Other messages just need to be recorded for future reference if there is a problem. Still others may need to have information extracted from them by an automated process that generates monthly reports.&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>To deal with these messages, most Unix systems have a facility called &amp;ldquo;Syslog.&amp;rdquo; It is generally based on a daemon called “Syslogd” Syslogd listens for messages on a Unix domain socket named /dev/log.&lt;/p>
+&lt;/blockquote>
+&lt;p>参考&lt;a class="link" href="https://www.gnu.org/software/libc/manual/html_node/Overview-of-Syslog.html" target="_blank" rel="noopener"
+>syslog overview&lt;/a>&lt;/p>
+&lt;h3 id="mountpath">mountPath&lt;/h3>
+&lt;p>具体来说就在 pod 的yaml 定义中，添加 hostPath volume，然后挂载到pod里：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-yaml" data-lang="yaml">&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">syslog&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">mountPath&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">/dev/log&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">volumes&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">syslog&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">hostPath&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">path&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">/dev/log&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>在&lt;code>client-go&lt;/code>等sdk中这样写即可：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">apiv1&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Volume&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">Name&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s">&amp;#34;syslog&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">VolumeSource&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">apiv1&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">VolumeSource&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">HostPath&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">apiv1&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">HostPathVolumeSource&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">Path&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s">&amp;#34;/dev/log&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">Containers&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">[]&lt;/span>&lt;span class="nx">apiv1&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Container&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">apiv1&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Container&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">apiv1&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">VolumeMount&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">Name&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s">&amp;#34;syslog&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">MountPath&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s">&amp;#34;/dev/log&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>替换k8s所有证书</title><link>https://tab.wutuofu.com/posts/k8s-certs/</link><pubDate>Fri, 10 Aug 2018 20:27:10 +0800</pubDate><guid>https://tab.wutuofu.com/posts/k8s-certs/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/k8s-certs/k8s.webp" alt="Featured image of post 替换k8s所有证书" />&lt;p>客户需要把kubernetes &lt;code>apiserver/etcd/kubelet/kubectl&lt;/code> 等所有的证书有效期修改为100年。&lt;/p>
 &lt;p>很明显这是一个不合理的需求，不过客户说什么就是什么。&lt;/p>
 &lt;p>于是经几天的调试有了下面的这个 &lt;code>Makefile&lt;/code>批量生成所有(&lt;code>FILES&lt;/code>变量)的证书。&lt;/p>
 &lt;p>如果对makefile的语法不熟悉，可以看看&lt;a class="link" href="https://tab.wutuofu.com/posts/makefile-tutorial/" >Makefile简介&lt;/a>&lt;/p>
