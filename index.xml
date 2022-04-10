@@ -1431,7 +1431,151 @@ alt="doHTTPProbe">
 &lt;figcaption>doHTTPProbe&lt;/figcaption>
 &lt;/figure>&lt;/p>
 &lt;p>从源码可以清楚的看到， lifecyce 的&lt;strong>handler&lt;/strong> 只发送了http 请求，并没有检查 http response code,
-liveness/readiness 的&lt;strong>prober&lt;/strong> 则做了http response code 的检查。&lt;/p></description></item><item><title>flannel vpc</title><link>https://tab.wutuofu.com/posts/tx-flannel/</link><pubDate>Wed, 08 Aug 2018 18:59:00 +0800</pubDate><guid>https://tab.wutuofu.com/posts/tx-flannel/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/tx-flannel/flannel-vpc.png" alt="Featured image of post flannel vpc" />&lt;p>update: flannel从v0.14.0(2021/05/27)开始已经支持&lt;a class="link" href="https://github.com/flannel-io/flannel/tree/master/backend/tencentvpc" target="_blank" rel="noopener"
+liveness/readiness 的&lt;strong>prober&lt;/strong> 则做了http response code 的检查。&lt;/p></description></item><item><title>替换k8s所有证书</title><link>https://tab.wutuofu.com/posts/k8s-certs/</link><pubDate>Fri, 10 Aug 2018 20:27:10 +0800</pubDate><guid>https://tab.wutuofu.com/posts/k8s-certs/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/k8s-certs/k8s.webp" alt="Featured image of post 替换k8s所有证书" />&lt;p>客户需要把kubernetes &lt;code>apiserver/etcd/kubelet/kubectl&lt;/code> 等所有的证书有效期修改为100年。&lt;/p>
+&lt;p>很明显这是一个不合理的需求，不过客户说什么就是什么。&lt;/p>
+&lt;p>于是经几天的调试有了下面的这个 &lt;code>Makefile&lt;/code>批量生成所有(&lt;code>FILES&lt;/code>变量)的证书。&lt;/p>
+&lt;p>如果对makefile的语法不熟悉，可以看看&lt;a class="link" href="https://tab.wutuofu.com/posts/makefile-tutorial/" >Makefile简介&lt;/a>&lt;/p>
+&lt;h2 id="makefile">makefile&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-makefile" data-lang="makefile">&lt;span class="line">&lt;span class="cl">&lt;span class="nv">FILES&lt;/span> &lt;span class="o">=&lt;/span> ca.crt ca.key sa.key sa.pub front-proxy-ca.crt front-proxy-ca.key etcd_ca.crt etcd_ca.key
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">CONFS&lt;/span> &lt;span class="o">=&lt;/span> admin.conf controller-manager.conf kubelet.conf scheduler.conf
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">SELFS&lt;/span> &lt;span class="o">=&lt;/span> kubelet.crt.self kubelet.crt.key
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">#KEYs = ca.key front-proxy-ca.key etcd_ca.key sa.key
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">#CAs = ca.crt front-proxy-ca.crt etcd_ca.crt
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">#PUBs = sa.pub
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">## kubernetes will sign certificate
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">## automatically, so below
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">## csr/cert is for test purpose
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">#CSR = apiserver.csr apiserver-kubelet-client.csr
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">&lt;/span>&lt;span class="nv">CERT_KEYS&lt;/span> &lt;span class="o">=&lt;/span> apiserver.key apiserver-kubelet-client.key front-proxy-client.key
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">CERTS&lt;/span> &lt;span class="o">=&lt;/span> apiserver.cert apiserver-kubelet-client.cert front-proxy-client.cert
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c"># openssl genrsa -des3 -out rootCA.key 4096
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">&lt;/span>&lt;span class="nv">CMD_CREATE_PRIVATE_KEY&lt;/span> &lt;span class="o">=&lt;/span> openssl genrsa -out &lt;span class="nv">$@&lt;/span> &lt;span class="m">2048&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">CMD_CREATE_PUBLIC_KEY&lt;/span> &lt;span class="o">=&lt;/span> openssl rsa -in $&amp;lt; -pubout -out &lt;span class="nv">$@&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c"># openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 1024 -out rootCA.crt
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">&lt;/span>&lt;span class="nv">CMD_CREATE_CA&lt;/span> &lt;span class="o">=&lt;/span> openssl req -x509 -new -nodes -key $&amp;lt; -sha256 -days &lt;span class="m">36500&lt;/span> -out &lt;span class="nv">$@&lt;/span> -subj &lt;span class="s1">&amp;#39;/CN=kubernetes&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c"># openssl req -new -key mydomain.com.key -out mydomain.com.csr
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">&lt;/span>&lt;span class="nv">CMD_CREATE_CSR&lt;/span> &lt;span class="o">=&lt;/span> openssl req -new -key $&amp;lt; -out &lt;span class="nv">$@&lt;/span> -config &lt;span class="k">$(&lt;/span>word 2,$^&lt;span class="k">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c"># openssl x509 -req -in mydomain.com.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out mydomain.com.crt -days 500 -sha256
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">&lt;/span>&lt;span class="nv">CMD_SIGN_CERT&lt;/span> &lt;span class="o">=&lt;/span> openssl x509 -req -in $&amp;lt; -CA &lt;span class="k">$(&lt;/span>word 2,$^&lt;span class="k">)&lt;/span> -CAkey &lt;span class="k">$(&lt;/span>word 3,$^&lt;span class="k">)&lt;/span> -CAcreateserial -out &lt;span class="nv">$@&lt;/span> -days &lt;span class="m">36500&lt;/span> -sha256 -extfile &lt;span class="k">$(&lt;/span>word 4,$^&lt;span class="k">)&lt;/span> -extensions my_extensions
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c"># generata self sign certificate
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">&lt;/span>&lt;span class="nv">CMD_CREATE_CERT&lt;/span> &lt;span class="o">=&lt;/span> openssl req -x509 -new -nodes -key $&amp;lt; -sha256 -days &lt;span class="m">36500&lt;/span> -out &lt;span class="nv">$@&lt;/span> -subj &lt;span class="s1">&amp;#39;/CN=nodeXXX@timestamp1531732165&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">CMD_MSG&lt;/span> &lt;span class="o">=&lt;/span> @echo generating &lt;span class="nv">$@&lt;/span> ...
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">MASTER_IP&lt;/span> &lt;span class="o">:=&lt;/span> 192.168.1.200 &lt;span class="c1">## REMEMBER CHANGE ME&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nf">.PHONY&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="n">all&lt;/span> &lt;span class="n">clean&lt;/span> &lt;span class="n">check&lt;/span> &lt;span class="n">self_sign&lt;/span> &lt;span class="n">rename&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nf">all&lt;/span>&lt;span class="o">:&lt;/span> ${&lt;span class="n">FILES&lt;/span>} ${&lt;span class="n">CONFS&lt;/span>} ${&lt;span class="n">CERT_KEYS&lt;/span>} ${&lt;span class="n">CERTS&lt;/span>}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nf">clean&lt;/span>&lt;span class="o">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -rm &lt;span class="si">${&lt;/span>&lt;span class="nv">FILES&lt;/span>&lt;span class="si">}&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">CONFS&lt;/span>&lt;span class="si">}&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">CERT_KEYS&lt;/span>&lt;span class="si">}&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">CERTS&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nf">self_sign&lt;/span>&lt;span class="o">:&lt;/span> ${&lt;span class="n">SELFS&lt;/span>}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nf">check&lt;/span>&lt;span class="o">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> f in *.cert *.crt&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span> &lt;span class="nb">echo&lt;/span> &lt;span class="nv">$$&lt;/span>f&lt;span class="p">;&lt;/span> openssl x509 -noout -dates -in &lt;span class="nv">$$&lt;/span>f&lt;span class="p">;&lt;/span> &lt;span class="nb">echo&lt;/span> &lt;span class="s1">&amp;#39;===&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nf">rename&lt;/span>&lt;span class="o">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> f in *.cert&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span> &lt;span class="nb">echo&lt;/span> &lt;span class="nv">$$&lt;/span>f&lt;span class="p">;&lt;/span> mv &lt;span class="nv">$$&lt;/span>f &lt;span class="nv">$$&lt;/span>&lt;span class="o">{&lt;/span>f%.*&lt;span class="o">}&lt;/span>.crt&lt;span class="p">;&lt;/span> &lt;span class="nb">echo&lt;/span> &lt;span class="s1">&amp;#39;=====&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nf">%.key&lt;/span>&lt;span class="o">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="si">${&lt;/span>&lt;span class="nv">CMD_MSG&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="si">${&lt;/span>&lt;span class="nv">CMD_CREATE_PRIVATE_KEY&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nf">%.pub&lt;/span>&lt;span class="o">:&lt;/span> %.&lt;span class="n">key&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="si">${&lt;/span>&lt;span class="nv">CMD_MSG&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="si">${&lt;/span>&lt;span class="nv">CMD_CREATE_PUBLIC_KEY&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nf">%.self&lt;/span>&lt;span class="o">:&lt;/span> %.&lt;span class="n">key&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="si">${&lt;/span>&lt;span class="nv">CMD_MSG&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="si">${&lt;/span>&lt;span class="nv">CMD_CREATE_CERT&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nf">%.crt&lt;/span>&lt;span class="o">:&lt;/span> %.&lt;span class="n">key&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="si">${&lt;/span>&lt;span class="nv">CMD_MSG&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="si">${&lt;/span>&lt;span class="nv">CMD_CREATE_CA&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nf">%.csr&lt;/span>&lt;span class="o">:&lt;/span> %.&lt;span class="n">key&lt;/span> %.&lt;span class="n">csr&lt;/span>.&lt;span class="n">cnf&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="si">${&lt;/span>&lt;span class="nv">CMD_MSG&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="si">${&lt;/span>&lt;span class="nv">CMD_CREATE_CSR&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nf">%.cert&lt;/span>&lt;span class="o">:&lt;/span> %.&lt;span class="n">csr&lt;/span> &lt;span class="n">ca&lt;/span>.&lt;span class="n">crt&lt;/span> &lt;span class="n">ca&lt;/span>.&lt;span class="n">key&lt;/span> %.&lt;span class="n">csr&lt;/span>.&lt;span class="n">cnf&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">#%.cert: %.csr front-proxy-ca.crt front-proxy-ca.key %.csr.cnf
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">CMD_MSG&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="si">${&lt;/span>&lt;span class="nv">CMD_SIGN_CERT&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nf">%.conf&lt;/span>&lt;span class="o">:&lt;/span> %.&lt;span class="n">cert&lt;/span> %-&lt;span class="n">conf&lt;/span>.&lt;span class="n">sh&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> sh &lt;span class="k">$(&lt;/span>word 2,$^&lt;span class="k">)&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">MASTER_IP&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>上面的&lt;code>Makefile&lt;/code>还需要对应的&lt;code>csr&lt;/code>和 &lt;code>conffiles&lt;/code>。&lt;/p>
+&lt;h3 id="admincsrcnf">admin.csr.cnf&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">cat &lt;span class="s">&amp;lt;&amp;lt;EOF &amp;gt; admin.conf
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">apiVersion: v1
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">clusters:
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">- cluster:
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> certificate-authority-data: $(cat ca.crt | base64 | tr -d &amp;#39;\n&amp;#39;)
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> server: https://$1:6443
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> name: kubernetes
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">contexts:
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">- context:
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> cluster: kubernetes
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> user: kubernetes-admin
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> name: kubernetes-admin@kubernetes
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">current-context: kubernetes-admin@kubernetes
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">kind: Config
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">preferences: {}
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">users:
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">- name: kubernetes-admin
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> user:
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> client-certificate-data: $(cat admin.cert | base64 | tr -d &amp;#39;\n&amp;#39;)
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> client-key-data: $(cat admin.key | base64 | tr -d &amp;#39;\n&amp;#39;)
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">EOF&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="admin-confsh">admin-conf.sh&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-ini" data-lang="ini">&lt;span class="line">&lt;span class="cl">&lt;span class="k">[ req ]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">prompt&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">no&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">utf8&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">yes&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">distinguished_name&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">my_req_distinguished_name&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">req_extensions&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">my_extensions&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">[ my_req_distinguished_name ]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">C&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">dn&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">ST&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">lol&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">L&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">dota&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">O&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">system:masters # change this&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">CN&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">kubernetes-admin # change this&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">[ my_extensions ]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">basicConstraints&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">CA:FALSE&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">subjectKeyIdentifier&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">hash&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># subjectAltName=@my_subject_alt_names&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># &lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># [ my_subject_alt_names ]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># DNS.1 = *.oats.org&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># DNS.2 = *.oats.net&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># DNS.3 = *.oats.in&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># DNS.4 = oats.org&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># DNS.5 = oats.net&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># DNS.6 = oats.in&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="kubeadm">kubeadm&lt;/h2>
+&lt;p>安装k8s集群的时候，使用&lt;code>kubeadm phase certs&lt;/code>命令更新证书即可：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">kubeadm alpha phase certs all --config kubeadm-config.yaml
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubeadm alpha phase kubelet config write-to-disk --config kubeadm-config.yaml
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubeadm alpha phase kubelet write-env-file --config kubeadm-config.yaml
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubeadm alpha phase kubeconfig kubelet --config kubeadm-config.yaml
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubeadm alpha phase kubeconfig all --config kubeadm-config.yaml
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">## --experimental-cluster-signing-duration=187600h0m0s&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubeadm alpha phase controlplane all --config kubeadm-config.yaml
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">systemctl start kubelet
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubeadm alpha phase mark-master --config kubeadm-config.yaml
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">## kubeadm join 172.16.0.5:6443 --token xvrmo8.lk0ec7ifzn8mdflu2 --discovery-token-unsafe-skip-ca-verification&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>flannel vpc</title><link>https://tab.wutuofu.com/posts/tx-flannel/</link><pubDate>Wed, 08 Aug 2018 18:59:00 +0800</pubDate><guid>https://tab.wutuofu.com/posts/tx-flannel/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/tx-flannel/flannel-vpc.png" alt="Featured image of post flannel vpc" />&lt;p>update: flannel从v0.14.0(2021/05/27)开始已经支持&lt;a class="link" href="https://github.com/flannel-io/flannel/tree/master/backend/tencentvpc" target="_blank" rel="noopener"
 >腾讯云的vpc backend&lt;/a>了。&lt;/p>
 &lt;p>客户需要在腾讯云上部署&lt;code>kubernetes&lt;/code>集群而且选用的网络插件是flannel，所以我们需要为&lt;code>flannel&lt;/code> 添加 腾讯云 vpc 的 backend 适配。&lt;/p>
 &lt;p>我大致看了下github上 &lt;a class="link" href="https://github.com/coreos/flannel/tree/master/backend" target="_blank" rel="noopener"
