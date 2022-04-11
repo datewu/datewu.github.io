@@ -1,7 +1,8 @@
 ---
 title: "{{ replace .Name "-" " " | title }}"
-description: A brief guide to setup KaTeX
+description: a simple descirption to {{ title }}
 date: {{ .Date }}
+lastmod: {{ .Date }}
 tags: [
     "golang",
     "css",
