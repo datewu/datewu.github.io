@@ -1266,7 +1266,28 @@ alt="macos osascript notification">
 &lt;p>Block math:
 $$
 \varphi = 1+\frac{1} {1+\frac{1} {1+\frac{1} {1+\cdots} } }
-$$&lt;/p></description></item><item><title>bc语言</title><link>https://tab.wutuofu.com/posts/bc-language/</link><pubDate>Mon, 22 Oct 2018 18:16:25 +0800</pubDate><guid>https://tab.wutuofu.com/posts/bc-language/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/bc-language/calculator.jpeg" alt="Featured image of post bc语言" />&lt;h2 id="base">base&lt;/h2>
+$$&lt;/p></description></item><item><title>pod生命周期事件生成器</title><link>https://tab.wutuofu.com/posts/pleg-unhealth/</link><pubDate>Mon, 11 Feb 2019 10:33:42 +0800</pubDate><guid>https://tab.wutuofu.com/posts/pleg-unhealth/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/pleg-unhealth/reboot.jpeg" alt="Featured image of post pod生命周期事件生成器" />&lt;h2 id="pleg">PLEG&lt;/h2>
+&lt;p>不熟悉PLEG(Pod Lifecycle Event Generator)的同学，可以先看下这篇文章&lt;a class="link" href="https://developers.redhat.com/blog/2019/11/13/pod-lifecycle-event-generator-understanding-the-pleg-is-not-healthy-issue-in-kubernetes" target="_blank" rel="noopener"
+>What is PLEG?&lt;/a>。&lt;/p>
+&lt;p>这篇文章对pleg是什么和常见的&lt;code>unhealthy&lt;/code>问题有很详细的介绍。&lt;/p>
+&lt;h3 id="cni">cni&lt;/h3>
+&lt;p>当k8s的 cni 插件性能较差，node上的pod 数量较多（大于 80）的时候，我们常常会遇到PLEG出错的问题:&lt;/p>
+&lt;blockquote>
+&lt;p>PLEG is not healthy: pleg was last seen active 6m55.488150776s ago; threshold is 3m0s&lt;/p>
+&lt;/blockquote>
+&lt;p>调试&lt;a class="link" href="https://github.com/openstack/kuryr-kubernetes" target="_blank" rel="noopener"
+>kuryr&lt;/a> cni的时候，发现当openstack &lt;code>neutron&lt;/code>服务压力比较大的时候。&lt;/p>
+&lt;p>cni这边申请和释放 port的时延会相应的增加，导致虚拟机大量堆积无效的netns，&lt;/p>
+&lt;p>然后就会遇到由&lt;code>kueblet PLEG not healthy&lt;/code>引起的docker hang 住问题。&lt;/p>
+&lt;h2 id="docker">docker&lt;/h2>
+&lt;p>重启 docker 和 kueblet 可以暂时解决PLEG unhealthy。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">systemctl restart docker
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">systemctl restart kubelet
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># do NOT use `docker rm -vf`,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># which will kill running containers&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">docker rm -v &lt;span class="sb">`&lt;/span>docker ps -qa&lt;span class="sb">`&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>建议同时修改 &lt;a class="link" href="https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.1/troubleshoot/docker_pods_overload.html" target="_blank" rel="noopener"
+>kubelet 启动参数&lt;/a> &amp;ndash;housekeeping-interval=30s&lt;/p></description></item><item><title>bc语言</title><link>https://tab.wutuofu.com/posts/bc-language/</link><pubDate>Mon, 22 Oct 2018 18:16:25 +0800</pubDate><guid>https://tab.wutuofu.com/posts/bc-language/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/bc-language/calculator.jpeg" alt="Featured image of post bc语言" />&lt;h2 id="base">base&lt;/h2>
 &lt;p>通过修改&lt;code>ibase&lt;/code>和&lt;code>obase&lt;/code>可以实现各种进制的转化，比如十进制和二进制和十六进制之间的转换；&lt;/p>
 &lt;blockquote>
 &lt;p>If you aren’t familiar with conversion between decimal, binary, and hexadecimal formats, you can
