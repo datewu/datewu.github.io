@@ -1,6 +1,6 @@
 ---
 title: "{{ replace .Name "-" " " | title }}"
-description: a simple descirption to {{ title }}
+description: a simple descirption 
 date: {{ .Date }}
 lastmod: {{ .Date }}
 tags: [
