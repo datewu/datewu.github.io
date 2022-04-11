@@ -1,6 +1,6 @@
 ---
 author: Hugo Authors
-title: Math Typesetting
+title: 数学符号KaTeX
 date: 2019-03-08
 description: A brief guide to setup KaTeX
 image: katex.png
