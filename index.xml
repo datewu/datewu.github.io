@@ -1007,6 +1007,103 @@ alt="macos osascript notification">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">子模组 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>（https://github.com/datewu/hugo-theme-stack.git）未对路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span> 注册
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">子模组 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>（https://github.com/datewu/hugo-theme-stack.git）已对路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span> 注册
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">子模组路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>：检出 &lt;span class="s1">&amp;#39;aeb077874a7de9ce71304c990ad5cfdc72664f38&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>安装wireguard</title><link>https://tab.wutuofu.com/posts/try-wireguard/</link><pubDate>Mon, 06 Jan 2020 16:50:26 +0800</pubDate><guid>https://tab.wutuofu.com/posts/try-wireguard/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/try-wireguard/site-to-site-complex.svg" alt="Featured image of post 安装wireguard" />&lt;p>今天在hacker news上看到 wireguard macos client 发布了，决定试用一下。&lt;/p>
+&lt;p>和所有的vpn安装一样，wireguard的安装也是分两步，一是安装vpn server，二是安装 vpn的client。
+安装不分先后，配置先配置server，然后在配置client。&lt;/p>
+&lt;h2 id="服务端">服务端&lt;/h2>
+&lt;h3 id="安装">安装&lt;/h3>
+&lt;p>服务器为 RHEL 7.6 (Maipo)， 服务端的安装流程:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span>sudo -i
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># cat /etc/redhat-release&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Red Hat Enterprise Linux Server release 7.6 &lt;span class="o">(&lt;/span>Maipo&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># echo &amp;#34;net.ipv4.ip_forward = 1&amp;#34; &amp;gt;&amp;gt; /etc/sysctl.conf&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># sysctl -p&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">### install packages&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># curl -Lo /etc/yum.repos.d/wireguard.repo https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-7/jdoss-wireguard-epel-7.repo&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># yum install -y epel-release wireguard-dkms wireguard-tools&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># yum install -y epel-release&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># yum update -y&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># yum install -y epel-release wireguard-dkms wireguard-tools&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># init 6&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="配置">配置&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">### wireguard server conf&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># cat wg.conf&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>Interface&lt;span class="o">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">ListenPort&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="m">58855&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">PrivateKey&lt;/span> &lt;span class="o">=&lt;/span> private_key
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>Peer&lt;span class="o">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">PublicKey&lt;/span> &lt;span class="o">=&lt;/span> public_key_one
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#AllowedIPs = 0.0.0.0/0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">AllowedIPs&lt;/span> &lt;span class="o">=&lt;/span> 10.0.0.7/32
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>Peer&lt;span class="o">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">PublicKey&lt;/span> &lt;span class="o">=&lt;/span> public_key_two
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#AllowedIPs = 0.0.0.0/0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">AllowedIPs&lt;/span> &lt;span class="o">=&lt;/span> 10.0.0.9/32
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="启动wg0设备">启动wg0 设备&lt;/h3>
+&lt;p>记得加上&lt;code>iptables&lt;/code>设置：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">### start wg0 device&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># cat start-wireguard.sh&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ip l a dev wg0 &lt;span class="nb">type&lt;/span> wireguard
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ip a a dev wg0 10.0.0.1/24
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> wg setconf wg0 wg.conf
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ip l &lt;span class="nb">set&lt;/span> up dev wg0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> iptables -A FORWARD -i wg0 -j ACCEPT&lt;span class="p">;&lt;/span> iptables -A FORWARD -o wg0 -j ACCEPT&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="客户端">客户端&lt;/h2>
+&lt;h3 id="下载">下载&lt;/h3>
+&lt;p>在app store可以直接下载wireguard 客户端。&lt;/p>
+&lt;p>如果是中国大陆的app store， 则需要修改Apple ID的国家和地区才能下载wireguard客户端。&lt;/p>
+&lt;h3 id="配置-1">配置&lt;/h3>
+&lt;p>注意 &lt;code>[Peer]&lt;/code>的 Endpoint 和服务器端的&lt;code>[Interface]&lt;/code>对上（都是58855端口)：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-ini" data-lang="ini">&lt;span class="line">&lt;span class="cl">&lt;span class="k">[Interface]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">PrivateKey&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">private_key&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">ListenPort&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">54123&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">Address&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">10.0.0.9/32&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">DNS&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">8.8.8.8, 1.1.1.1, 1.0.0.1, 8.8.4.4&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">[Peer]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">PublicKey&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">server_public_key&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">AllowedIPs&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">0.0.0.0/0, ::/0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">Endpoint&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">server_address:58855&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">PersistentKeepalive&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">30&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="折腾调试">折腾调试&lt;/h2>
+&lt;p>安装完成后，可能会遇到vpn不通的问题，可以安装下面介绍的 
+&lt;code>udp&lt;/code> port troubleshoot方法调试调试：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># nc on client to scan, and tcpdump on server side&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">### client side&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">➜ ~ nc -vz -u server &lt;span class="m">58885&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">## the -z option to perform a scan instead of attempting to initiate a connection.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">### server side&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># yum install tcpdump&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># tcpdump -i eth0 udp port 58855 -vv -X&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="后记">后记&lt;/h2>
+&lt;p>体验一天，大体说来，wireguard比shadowsocks 速度快上6到8倍。&lt;/p>
+&lt;h3 id="kernel-update">kernel update&lt;/h3>
+&lt;p>当我们对主机执行升级Linux kernel操作之后，需要重新load wireguard mod，否则 &lt;code>ip link add ...&lt;/code>wg0的时候会报错。&lt;/p>
+&lt;p>这个时候 删除旧的 dkms mod， 然后add新的wireguard mod即可：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">dkms status
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ls /var/lib/dkms/wireguard/0.0.20191206/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ls -alh /var/lib/dkms/wireguard/0.0.20191206/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ls -alh /var/lib/dkms/wireguard/0.0.20200105/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">rm -rf /var/lib/dkms/wireguard/0.0.20191206
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ls -alh /var/lib/dkms/wireguard/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">rm -rf /var/lib/dkms/wireguard/kernel-4.18.0-80.11.2.el8_0.x86_64-x86_64
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">dkms status
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">dkms add -m wireguard/0.0.20200105
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">dkms status
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">vi /etc/wireguard/wg0.conf
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">wg-quick up /etc/wireguard/wg0.conf
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>挂载硬盘</title><link>https://tab.wutuofu.com/posts/load-disk/</link><pubDate>Fri, 18 Oct 2019 10:03:07 +0800</pubDate><guid>https://tab.wutuofu.com/posts/load-disk/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/load-disk/disk.jpeg" alt="Featured image of post 挂载硬盘" />&lt;h2 id="lsblk">lsblk&lt;/h2>
 &lt;p>首先使用&lt;code>lsblk&lt;/code>查看当前系统硬盘挂载的情况&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@dev-7 ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># lsblk&lt;/span>
