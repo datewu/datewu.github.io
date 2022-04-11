@@ -1265,7 +1265,146 @@ alt="macos osascript notification">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">--eviction-hard&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">memory.available&amp;lt;500Mi,nodefs.available&amp;lt;10%&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>修改完配置文件后，执行&lt;code>kubeadm init&lt;/code>可以看到 &lt;code>pod-infra-contrainer-image&lt;/code>配置生效了。&lt;/p>
 &lt;p>参考&lt;a class="link" href="https://www.digitalocean.com/community/tutorials/understanding-systemd-units-and-unit-files" target="_blank" rel="noopener"
->systemd config&lt;/a>&lt;/p></description></item><item><title>Macvlan路由规则</title><link>https://tab.wutuofu.com/posts/macvlan-route/</link><pubDate>Mon, 11 Mar 2019 11:33:48 +0800</pubDate><guid>https://tab.wutuofu.com/posts/macvlan-route/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/macvlan-route/Macvlan-network-with-traffic-flows.png" alt="Featured image of post Macvlan路由规则" />&lt;p>对macvlan 不熟悉的同学，可以先看下这篇&lt;a class="link" href="https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking/#macvlan" target="_blank" rel="noopener"
+>systemd config&lt;/a>&lt;/p></description></item><item><title>Neutron小记</title><link>https://tab.wutuofu.com/posts/neutron-port/</link><pubDate>Sun, 21 Apr 2019 18:39:27 +0800</pubDate><guid>https://tab.wutuofu.com/posts/neutron-port/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/neutron-port/Neutron-Networking-CompNet-v1.png" alt="Featured image of post Neutron小记" />&lt;p>前段时间的花了很多功夫对接k8s和openstack的kuryr-kubernetes网路组件。
+学到了很多openstack的知识，今天抽出时间来整理下。&lt;/p>
+&lt;h2 id="client">client&lt;/h2>
+&lt;p>首先是 install openstack-cli neutron client：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span>&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># cat /etc/redhat-release&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Red Hat Enterprise Linux Server release 7.5 &lt;span class="o">(&lt;/span>Maipo&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#### add openstack yum repo source&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># vi /etc/yum.repos.d/openstack.repo&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># yum install -y python2-openstackclient openstack-neutron&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu shells&lt;span class="o">]&lt;/span>&lt;span class="c1"># cat source&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">export&lt;/span> &lt;span class="nv">OS_PROJECT_DOMAIN_NAME&lt;/span>&lt;span class="o">=&lt;/span>default
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">export&lt;/span> &lt;span class="nv">OS_USER_DOMAIN_NAME&lt;/span>&lt;span class="o">=&lt;/span>default
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">export&lt;/span> &lt;span class="nv">OS_PROJECT_NAME&lt;/span>&lt;span class="o">=&lt;/span>your_project_name
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">export&lt;/span> &lt;span class="nv">OS_USERNAME&lt;/span>&lt;span class="o">=&lt;/span>your_use_name
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">export&lt;/span> &lt;span class="nv">OS_PASSWORD&lt;/span>&lt;span class="o">=&lt;/span>your_pwd
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">export&lt;/span> &lt;span class="nv">OS_AUTH_URL&lt;/span>&lt;span class="o">=&lt;/span>http://10.8.1.3:35357/v3
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">export&lt;/span> &lt;span class="nv">OS_IDENTITY_API_VERSION&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">3&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">export&lt;/span> &lt;span class="nv">OS_IMAGE_API_VERSION&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">2&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="vip">vip&lt;/h3>
+&lt;p>我们来创建一个&lt;code>virtual IP&lt;/code>验证上一步配置的openstack source对不对 ：&lt;/p>
+&lt;ol>
+&lt;li>创建 vip 对应的port;&lt;/li>
+&lt;li>把 上一步创建好的port加入到 vm ip对应port 的 &lt;code>allow-address-pairs&lt;/code> 属性中;&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu shells&lt;span class="o">]&lt;/span>&lt;span class="c1"># cat vip.sh&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">. ./source
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">network&lt;/span>&lt;span class="o">=&lt;/span>your_network_id
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">### i&amp;#39;ve comment out the create Port operation&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#subnet=you_subnet_id&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#for i in {62..64}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#do&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># echo $i&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># neutron port-create --fixed-ip subnet_id=$subnet,ip_address=10.0.1.$i --device-owner &amp;#39;Virtual IP&amp;#39; --no-security-groups --name &amp;#39;Virtual IP&amp;#39; $network&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#done&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># openstack port list | grep -E &amp;#39;10.0.1.6(2|3|4)&amp;#39; | cut -d &amp;#39;|&amp;#39; -f 4,5&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#p1=mac_address=fa:16:3e:aa:6b:68,ip_address=&amp;#39;10.0.1.64&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#p2=mac_address=fa:16:3e:1d:11:2d,ip_address=&amp;#39;10.0.1.62&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#p3=mac_address=fa:16:3e:b8:47:f9,ip_address=&amp;#39;10.0.1.63&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">p1&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">ip_address&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;10.0.1.64&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">p2&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">ip_address&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;10.0.1.62&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">p3&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">ip_address&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;10.0.1.63&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">p4&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">ip_address&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;10.0.1.80&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#for p in `neutron port-list --device-owner compute:nova -f value | grep -E &amp;#39;10.0.1.5(1|2|3)&amp;#39; | cut -d &amp;#39; &amp;#39; -f 1 `;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">for&lt;/span> p in &lt;span class="sb">`&lt;/span>neutron port-list --device-owner compute:nova -f value &lt;span class="p">|&lt;/span> grep -E &lt;span class="s1">&amp;#39;10.0.1&amp;#39;&lt;/span> &lt;span class="p">|&lt;/span> cut -d &lt;span class="s1">&amp;#39; &amp;#39;&lt;/span> -f &lt;span class="m">1&lt;/span> &lt;span class="sb">`&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="nv">$p&lt;/span> &lt;span class="nv">$p1&lt;/span> &lt;span class="nv">$p2&lt;/span> &lt;span class="nv">$p3&lt;/span> &lt;span class="nv">$p4&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">### must NOT set virtual ip Port macaddress&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">### leave it empty to use host port macaddress&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> neutron port-update &lt;span class="nv">$p&lt;/span> --allowed-address-pair &lt;span class="nv">$p1&lt;/span> --allowed-address-pair &lt;span class="nv">$p2&lt;/span> --allowed-address-pair &lt;span class="nv">$p3&lt;/span> --allowed-address-pair &lt;span class="nv">$p4&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="create-port">create port&lt;/h3>
+&lt;p>申请创建&lt;code>port&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu shells&lt;span class="o">]&lt;/span>&lt;span class="c1"># cat create-port.sh&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#!/bin/bash&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">. ./source
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">network&lt;/span>&lt;span class="o">=&lt;/span>your_network_id
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">subnet&lt;/span>&lt;span class="o">=&lt;/span>your_subnetwork_id
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">function&lt;/span> setup
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">#i=$1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">#ip_addr=10.0.1.$((i+1))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;going to create ip ...&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">#neutron port-create --fixed-ip subnet_id=$subnet,ip_address=$ip_addr --device-owner &amp;#39;compute:kuryr&amp;#39; --no-security-groups --name &amp;#39;concurrent load test IP&amp;#39; $network&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> neutron port-create &lt;span class="nv">subnet_id&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">$subnet&lt;/span> --device-owner &lt;span class="s1">&amp;#39;compute:kuryr&amp;#39;&lt;/span> --no-security-groups --name &lt;span class="s1">&amp;#39;concurrent load test IP lll&amp;#39;&lt;/span> &lt;span class="nv">$network&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">for&lt;/span> i in &lt;span class="sb">`&lt;/span>seq &lt;span class="nv">$1&lt;/span>&lt;span class="sb">`&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">time&lt;/span> setup &lt;span class="nv">$i&lt;/span> &lt;span class="p">&amp;amp;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="update-allow-address-pairs">update allow-address-pairs&lt;/h3>
+&lt;p>批量update allow-address-pairs:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu shells&lt;span class="o">]&lt;/span>&lt;span class="c1"># cat allow-address-pairs-load-test.sh&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">. ./source
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">vm_port&lt;/span>&lt;span class="o">=&lt;/span>vm_port_id
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">function&lt;/span> setup
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">i&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">$1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">mac&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>&lt;span class="nb">echo&lt;/span> $&lt;span class="o">[&lt;/span>RANDOM%10&lt;span class="o">]&lt;/span>$&lt;span class="o">[&lt;/span>RANDOM%10&lt;span class="o">]&lt;/span>:$&lt;span class="o">[&lt;/span>RANDOM%10&lt;span class="o">]&lt;/span>$&lt;span class="o">[&lt;/span>RANDOM%10&lt;span class="o">]&lt;/span>:$&lt;span class="o">[&lt;/span>RANDOM%10&lt;span class="o">]&lt;/span>$&lt;span class="o">[&lt;/span>RANDOM%10&lt;span class="o">]&lt;/span>&lt;span class="k">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">ip_addr&lt;/span>&lt;span class="o">=&lt;/span>10.0.1.&lt;span class="k">$((&lt;/span>i+1&lt;span class="k">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">param&lt;/span>&lt;span class="o">+=&lt;/span>&lt;span class="s2">&amp;#34; --allowed-address-pair ip_address=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">ip_addr&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">,mac_address=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">mac&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#echo $vm_port $param&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">neutron port-update &lt;span class="nv">$vm_port&lt;/span> &lt;span class="nv">$param&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> starting
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">for&lt;/span> i in &lt;span class="sb">`&lt;/span>seq &lt;span class="nv">$1&lt;/span>&lt;span class="sb">`&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span> &lt;span class="c1">## for i in `jot $1`; do&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$i&lt;/span>&lt;span class="s2">...&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">time&lt;/span> setup &lt;span class="nv">$i&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="delete-port--allowed-address-pairs">delete port &amp;amp; allowed-address-pairs&lt;/h3>
+&lt;p>清理 Port 和 Port allowed-address-pairs&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span>. ./source
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#neutron port-list --device-owner compute:kuryr&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">neutron port-delete &lt;span class="sb">`&lt;/span>neutron port-list --device-owner compute:kuryr -c id -f value&lt;span class="sb">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">neutron port-list --device-owner compute:nova &lt;span class="p">|&lt;/span> grep 10.0.1 &lt;span class="p">|&lt;/span> grep -vE &lt;span class="s1">&amp;#39;10.0.1.5(1|2|3)&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">for&lt;/span> p in &lt;span class="sb">`&lt;/span>neutron port-list --device-owner compute:nova -f value &lt;span class="p">|&lt;/span> grep 10.0.1 &lt;span class="p">|&lt;/span> cut -d &lt;span class="s1">&amp;#39; &amp;#39;&lt;/span> -f &lt;span class="m">1&lt;/span> &lt;span class="sb">`&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span> neutron port-update &lt;span class="nv">$p&lt;/span> --allowed-address-pairs &lt;span class="nv">action&lt;/span>&lt;span class="o">=&lt;/span>clear &lt;span class="p">;&lt;/span> &lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="trunk-port">trunk port&lt;/h3>
+&lt;p>创建trunk 子port&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="k">for&lt;/span> i in &lt;span class="sb">`&lt;/span>openstack port list &lt;span class="p">|&lt;/span> grep ACTIVE &lt;span class="p">|&lt;/span>grep -vE &lt;span class="s1">&amp;#39;(22.1.104|1.106|132|117|129)&amp;#39;&lt;/span> &lt;span class="p">|&lt;/span> awk &lt;span class="s1">&amp;#39;{print $2}&amp;#39;&lt;/span>&lt;span class="sb">`&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">do&lt;/span> openstack network trunk &lt;span class="nb">unset&lt;/span> --subport &lt;span class="nv">$i&lt;/span> trunktest&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> i in &lt;span class="sb">`&lt;/span>openstack port list &lt;span class="p">|&lt;/span> grep DOWN &lt;span class="p">|&lt;/span> awk &lt;span class="s1">&amp;#39;{print $2}&amp;#39;&lt;/span>&lt;span class="sb">`&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">do&lt;/span> openstack port delete &lt;span class="nv">$i&lt;/span> &lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">############################################&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">openstack network create —share —external —provider-physical-network provider —provider-network-type vlan —provider-segment &lt;span class="m">162&lt;/span> podlan162 —transparent-vlan
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">openstack subnet create —no-dhcp —subnet-range 172.23.0.0/16 —gateway 172.23.0.254 —network podlan162 —allocation-pool &lt;span class="nv">start&lt;/span>&lt;span class="o">=&lt;/span>172.23.1.101,end&lt;span class="o">=&lt;/span>172.23.1.201 —dns-nameserver 114.114.114.114 jyvlan162sub2
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">openstack port create —network podlan162 —fixed-ip &lt;span class="nv">subnet&lt;/span>&lt;span class="o">=&lt;/span>jyvlan162sub2,ip-address&lt;span class="o">=&lt;/span>172.23.1.129 —project admin v162port
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># openstack trunk 端口加入&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">openstack network trunk create —parent-port v162port trunktest
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">openstack network create —share —external —provider-physical-network provider —provider-network-type vlan —provider-segment &lt;span class="m">163&lt;/span> podlan163 —transparent-vlan
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">openstack subnet create —no-dhcp —subnet-range 172.24.0.0/16 —gateway 172.24.0.254 —network podlan163 —allocation-pool &lt;span class="nv">start&lt;/span>&lt;span class="o">=&lt;/span>172.24.1.101,end&lt;span class="o">=&lt;/span>172.24.1.201 —dns-nameserver 114.114.114.114 jyvlan164sub2
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">openstack port create —network podlan163 —fixed-ip &lt;span class="nv">subnet&lt;/span>&lt;span class="o">=&lt;/span>jyvlan164sub2,ip-address&lt;span class="o">=&lt;/span>172.24.1.129 —project admin v163port
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">openstack network trunk &lt;span class="nb">set&lt;/span> trunktest —subport &lt;span class="nv">port&lt;/span>&lt;span class="o">=&lt;/span>v163port,segmentation-type&lt;span class="o">=&lt;/span>vlan,segmentation-id&lt;span class="o">=&lt;/span>&lt;span class="m">163&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 测试子网，测试163 tag&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">sudo ip link add link eth0 name eth0.163 &lt;span class="nb">type&lt;/span> vlan id &lt;span class="m">163&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">sudo ip link &lt;span class="nb">set&lt;/span> dev eth0.163 address fa:16:3e:26:a8:08
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">sudo ip link &lt;span class="nb">set&lt;/span> dev eth0.163 up
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Macvlan路由规则</title><link>https://tab.wutuofu.com/posts/macvlan-route/</link><pubDate>Mon, 11 Mar 2019 11:33:48 +0800</pubDate><guid>https://tab.wutuofu.com/posts/macvlan-route/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/macvlan-route/Macvlan-network-with-traffic-flows.png" alt="Featured image of post Macvlan路由规则" />&lt;p>对macvlan 不熟悉的同学，可以先看下这篇&lt;a class="link" href="https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking/#macvlan" target="_blank" rel="noopener"
 >macvlan virtual network简介&lt;/a>&lt;/p>
 &lt;p>默认情况下Linux kernel会阻止(drop)宿主机（host eth0）虚拟出来的 macvlan network（&lt;code>bridge mode&lt;/code>） 和宿主机host eth0）之间网络数据包。&lt;/p>
 &lt;p>调试了一段时间后，我们发现了可以通过路由表来绕过这个限制。
