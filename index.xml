@@ -1105,7 +1105,70 @@ alt="macos osascript notification">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> └─vg00-app 253:4 &lt;span class="m">0&lt;/span> 29G &lt;span class="m">0&lt;/span> lvm /app
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">vdb 252:16 &lt;span class="m">0&lt;/span> 300G &lt;span class="m">0&lt;/span> disk
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@cnsz92vl14311 ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># &lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Macvlan路由规则</title><link>https://tab.wutuofu.com/posts/macvlan-route/</link><pubDate>Mon, 11 Mar 2019 11:33:48 +0800</pubDate><guid>https://tab.wutuofu.com/posts/macvlan-route/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/macvlan-route/Macvlan-network-with-traffic-flows.png" alt="Featured image of post Macvlan路由规则" />&lt;p>对macvlan 不熟悉的同学，可以先看下这篇&lt;a class="link" href="https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking/#macvlan" target="_blank" rel="noopener"
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Systemd配置问题</title><link>https://tab.wutuofu.com/posts/systemd-conf/</link><pubDate>Sat, 11 May 2019 16:02:39 +0800</pubDate><guid>https://tab.wutuofu.com/posts/systemd-conf/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/systemd-conf/Systemd_components.svg" alt="Featured image of post Systemd配置问题" />&lt;h2 id="问题">问题&lt;/h2>
+&lt;p>用 kubeadm 部署 kubernetes 集群，启动kubelet服务后，kubelet daemon 会认为 &lt;code>/etc/sysconfig/kubelet&lt;/code>内容的优先级更高，&lt;/p>
+&lt;p>覆盖&lt;code>KUBELET_EXTRA_ARGS&lt;/code>环境变量&lt;code>--pod-infra-container-image&lt;/code>的配置内容。&lt;/p>
+&lt;h3 id="分析">分析&lt;/h3>
+&lt;h4 id="kubeletservice文件">kubelet.service文件&lt;/h4>
+&lt;p>首先查看&lt;code>/etc/systemd/system/kubelet.service&lt;/code>文件:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-ini" data-lang="ini">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># cat /etc/systemd/system/kubelet.service&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">[Unit]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">Description&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">kubelet: The Kubernetes Node Agent&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">Documentation&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">https://kubernetes.io/docs/&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">[Service]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">ExecStart&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">/usr/bin/kubelet&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">Restart&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">always&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">StartLimitInterval&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">RestartSec&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">10&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">[Install]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">WantedBy&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">multi-user.target&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意第5行的ExecStart指令为&lt;code>/usr/bin/kubelet&lt;/code>&lt;/p>
+&lt;h4 id="kubeletserviced-目录">kubelet.service.d 目录&lt;/h4>
+&lt;p>然后查看kubelet服务的配置目录&lt;code>/etc/systemd/system/kubelet.service.d/&lt;/code>，注意
+&lt;code>kubeadm&lt;/code>会在这里创建一个10-kubeadm.conf文件来配置&lt;code>kubelet&lt;/code>启动方式（参数）。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-ini" data-lang="ini">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># cat /etc/systemd/system/kubelet.service.d/10-kubeadm.conf&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Note: This dropin only works with kubeadm and kubelet v1.11+&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">[Service]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">Environment&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">Environment&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># This is a file that &amp;#34;kubeadm init&amp;#34; and &amp;#34;kubeadm join&amp;#34; generates at runtime, populating the KUBELET_KUBEADM_ARGS variable dynamically&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">EnvironmentFile&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">-/var/lib/kubelet/kubeadm-flags.env&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># This is a file that the user can use for overrides of the kubelet args as a last resort. Preferably, the user should use&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># the .NodeRegistration.KubeletExtraArgs object in the configuration files instead. KUBELET_EXTRA_ARGS should be sourced from this file.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">EnvironmentFile&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">-/etc/sysconfig/kubelet&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">ExecStart&lt;/span>&lt;span class="o">=&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">ExecStart&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>配置文件的load的顺序是以字母顺序排列的， 如果我们也在这里创建了kubelet的配置文件，比如20-my-kubelet.conf，&lt;code>10-*&lt;/code>会先被读取，&lt;code>20-*&lt;/code>其次。&lt;/p>
+&lt;p>注意&lt;code>10-kubeadm.conf&lt;/code>文件的倒数第二行&lt;code>ExecStart=空行&lt;/code>，这一行等效于&lt;code>kubeadm&lt;/code>覆盖了上面&lt;a class="link" href="#kubeletservice%e6%96%87%e4%bb%b6" >kubelet.service&lt;/a> 的ExecStart指令！&lt;/p>
+&lt;h3 id="结论">结论&lt;/h3>
+&lt;p>&lt;code>[Service]&lt;/code>覆盖和充值特性。&lt;/p>
+&lt;p>ExecStart参数特性：如果已经设置&lt;code>ExecStart&lt;/code>指令参数， 后续ExecStart指令会叠加所有的参数，顺序apply所有指令。&lt;/p>
+&lt;p>如果想要清空前面的&lt;code>ExecStart&lt;/code>指令，则需要写一行空的&lt;code>ExecStart=&lt;/code>,然后写新的ExecStart=&amp;hellip;&amp;hellip;指令。&lt;/p>
+&lt;p>同理&lt;code>KUBELET_EXTRA_ARGS&lt;/code>也会有覆盖和清空的语法。&lt;/p>
+&lt;p>目前我们&lt;code>/etc/systemd/system/kubelet.service.d/20-my-kubelet.conf&lt;/code>文件是这样的：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-ini" data-lang="ini">&lt;span class="line">&lt;span class="cl">&lt;span class="k">[Service]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">Environment&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;KUBELET_EXTRA_ARGS=--pod-infra-container-image=172.20.8.4/library/pause:3.1 --feature-gates=LocalStorageCapacityIsolation=true \&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">--kube-reserved-cgroup&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">/kubepods.slice --kube-reserved=cpu=500m,memory=500Mi,ephemeral-storage=1Gi \&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">--system-reserved-cgroup&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">/system.slice --system-reserved=cpu=500m,memory=500Mi,ephemeral-storage=1Gi \&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">--eviction-hard&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">memory.available&amp;lt;500Mi,nodefs.available&amp;lt;10%&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>表面上看 &lt;code>20-my-kubelet.conf&lt;/code>追加了&lt;code>KUBELET_EXTRA_ARGS&lt;/code>环境变量，应该是成功的配置了&lt;code>--pod-infra-container-image&lt;/code>参数，&lt;/p>
+&lt;p>但是在&lt;code>10-kubeadm.conf&lt;/code>文件里已经定义&lt;code>EnvironmentFile=-/etc/sysconfig/kubelet&lt;/code>，然后
+在&lt;code>/etc/sysconfig/kubelet&lt;/code>里有一句&lt;code>KUBELET_EXTRA_ARGS=&lt;/code>，等于号后面无值，清空了&lt;code>KUBELET_EXTRA_ARGS&lt;/code>环境变量。&lt;/p>
+&lt;h2 id="解决方案">解决方案&lt;/h2>
+&lt;p>删除20-my-kubelet.conf文件，直接在/etc/systemconf/kubelet中定义KUBELET_EXTRA_ARGS参数定义：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-ini" data-lang="ini">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># cat /etc/systemconf/kubelet&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#KUBELET_EXTRA_ARGS=&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">KUBELET_EXTRA_ARGS&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">--pod-infra-container-image=192.168.9.20/library/pause:3.1 --feature-gates=LocalStorageCapacityIsolation=true \&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">--kube-reserved-cgroup&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">/kubepods.slice --kube-reserved=cpu=500m,memory=500Mi,ephemeral-storage=1Gi \&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">--system-reserved-cgroup&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">/system.slice --system-reserved=cpu=500m,memory=500Mi,ephemeral-storage=1Gi \&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">--eviction-hard&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">memory.available&amp;lt;500Mi,nodefs.available&amp;lt;10%&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>修改完配置文件后，执行&lt;code>kubeadm init&lt;/code>可以看到 &lt;code>pod-infra-contrainer-image&lt;/code>配置生效了。&lt;/p>
+&lt;p>参考&lt;a class="link" href="https://www.digitalocean.com/community/tutorials/understanding-systemd-units-and-unit-files" target="_blank" rel="noopener"
+>systemd config&lt;/a>&lt;/p></description></item><item><title>Macvlan路由规则</title><link>https://tab.wutuofu.com/posts/macvlan-route/</link><pubDate>Mon, 11 Mar 2019 11:33:48 +0800</pubDate><guid>https://tab.wutuofu.com/posts/macvlan-route/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/macvlan-route/Macvlan-network-with-traffic-flows.png" alt="Featured image of post Macvlan路由规则" />&lt;p>对macvlan 不熟悉的同学，可以先看下这篇&lt;a class="link" href="https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking/#macvlan" target="_blank" rel="noopener"
 >macvlan virtual network简介&lt;/a>&lt;/p>
 &lt;p>默认情况下Linux kernel会阻止(drop)宿主机（host eth0）虚拟出来的 macvlan network（&lt;code>bridge mode&lt;/code>） 和宿主机host eth0）之间网络数据包。&lt;/p>
 &lt;p>调试了一段时间后，我们发现了可以通过路由表来绕过这个限制。
