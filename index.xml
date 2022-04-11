@@ -1105,7 +1105,7 @@ alt="macos osascript notification">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> └─vg00-app 253:4 &lt;span class="m">0&lt;/span> 29G &lt;span class="m">0&lt;/span> lvm /app
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">vdb 252:16 &lt;span class="m">0&lt;/span> 300G &lt;span class="m">0&lt;/span> disk
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@cnsz92vl14311 ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># &lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Markdown Syntax Guide</title><link>https://tab.wutuofu.com/posts/markdown-syntax/</link><pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate><guid>https://tab.wutuofu.com/posts/markdown-syntax/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/markdown-syntax/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg" alt="Featured image of post Markdown Syntax Guide" />&lt;p>This article offers a sample of basic Markdown syntax that can be used in Hugo content files, also it shows whether basic HTML elements are decorated with CSS in a Hugo theme.&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Markdown语法指南</title><link>https://tab.wutuofu.com/posts/markdown-syntax/</link><pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate><guid>https://tab.wutuofu.com/posts/markdown-syntax/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/markdown-syntax/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg" alt="Featured image of post Markdown语法指南" />&lt;p>This article offers a sample of basic Markdown syntax that can be used in Hugo content files, also it shows whether basic HTML elements are decorated with CSS in a Hugo theme.&lt;/p>
 &lt;h2 id="headings">Headings&lt;/h2>
 &lt;p>The following HTML &lt;code>&amp;lt;h1&amp;gt;&lt;/code>—&lt;code>&amp;lt;h6&amp;gt;&lt;/code> elements represent six levels of section headings. &lt;code>&amp;lt;h1&amp;gt;&lt;/code> is the highest section level while &lt;code>&amp;lt;h6&amp;gt;&lt;/code> is the lowest.&lt;/p>
 &lt;h1 id="h1">H1&lt;/h1>
@@ -1244,7 +1244,7 @@ alt="macos osascript notification">
 >talk&lt;/a> during Gopherfest, November 18, 2015.&amp;#160;&lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
 &lt;/li>
 &lt;/ol>
-&lt;/section></description></item><item><title>Math Typesetting</title><link>https://tab.wutuofu.com/posts/math-typesetting/</link><pubDate>Fri, 08 Mar 2019 00:00:00 +0000</pubDate><guid>https://tab.wutuofu.com/posts/math-typesetting/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/math-typesetting/katex.png" alt="Featured image of post Math Typesetting" />&lt;p>Mathematical notation in a Hugo project can be enabled by using third party JavaScript libraries.&lt;/p>
+&lt;/section></description></item><item><title>数学符号KaTeX</title><link>https://tab.wutuofu.com/posts/math-typesetting/</link><pubDate>Fri, 08 Mar 2019 00:00:00 +0000</pubDate><guid>https://tab.wutuofu.com/posts/math-typesetting/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/math-typesetting/katex.png" alt="Featured image of post 数学符号KaTeX" />&lt;p>Mathematical notation in a Hugo project can be enabled by using third party JavaScript libraries.&lt;/p>
 &lt;p>In this example we will be using &lt;a class="link" href="https://katex.org/" target="_blank" rel="noopener"
 >KaTeX&lt;/a>&lt;/p>
 &lt;ul>
@@ -1266,7 +1266,34 @@ alt="macos osascript notification">
 &lt;p>Block math:
 $$
 \varphi = 1+\frac{1} {1+\frac{1} {1+\frac{1} {1+\cdots} } }
-$$&lt;/p></description></item><item><title>pod生命周期事件生成器</title><link>https://tab.wutuofu.com/posts/pleg-unhealth/</link><pubDate>Mon, 11 Feb 2019 10:33:42 +0800</pubDate><guid>https://tab.wutuofu.com/posts/pleg-unhealth/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/pleg-unhealth/reboot.jpeg" alt="Featured image of post pod生命周期事件生成器" />&lt;h2 id="pleg">PLEG&lt;/h2>
+$$&lt;/p></description></item><item><title>无法创建macvlan设备</title><link>https://tab.wutuofu.com/posts/macvlan-busy/</link><pubDate>Thu, 07 Mar 2019 11:17:49 +0800</pubDate><guid>https://tab.wutuofu.com/posts/macvlan-busy/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/macvlan-busy/maxresdefault.jpeg" alt="Featured image of post 无法创建macvlan设备" />&lt;p>最近给客户调试 macvlan network时，遇到了&lt;code>Linux kernel&lt;/code> 报错
+&lt;code>SIOCSIFFKAGS: Device or resource busy.&lt;/code> 无法创建网络device。&lt;/p>
+&lt;p>结果长时间的debug分析，
+发现问题是高并发压测 创建和释放&lt;code>macvlan device&lt;/code>的时候，设备的&lt;code>mac address&lt;/code>出现了重复。&lt;/p>
+&lt;p>ps：这个问题只出现在 &lt;code>macvlan&lt;/code>network 的设备中。&lt;/p>
+&lt;p>可以用下面的shell脚本来复现macvlan &lt;code>Device or resource busy&lt;/code>的错误：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span>&lt;span class="k">function&lt;/span> setup
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">i&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">$1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ip l a m&lt;span class="nv">$i&lt;/span> address 00:40:2F:4D:5E:6F link eth0 &lt;span class="nb">type&lt;/span> macvlan mode bridge
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ip netns add ns&lt;span class="nv">$i&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ip l &lt;span class="nb">set&lt;/span> m&lt;span class="nv">$i&lt;/span> netns ns&lt;span class="nv">$i&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> sleep &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ip netns &lt;span class="nb">exec&lt;/span> ns&lt;span class="nv">$i&lt;/span> ifconfig m&lt;span class="nv">$i&lt;/span> 10.0.0.&lt;span class="k">$((&lt;/span>i+1&lt;span class="k">))&lt;/span>/24 up
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="nv">$?&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> cleaning up
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ip -all netns d
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> creating netsnses
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">for&lt;/span> i in &lt;span class="sb">`&lt;/span>seq &lt;span class="nv">$1&lt;/span>&lt;span class="sb">`&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="nv">$i&lt;/span>....
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">#setup $i &amp;amp;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> setup &lt;span class="nv">$i&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果把 macvlan 类型改为 dummy (上面脚本第5行 type macvlan 改为 type &lt;code>dummy&lt;/code>) ，即使 MAC address 重复也不会引发kernel 报错。&lt;/p></description></item><item><title>pod生命周期事件生成器</title><link>https://tab.wutuofu.com/posts/pleg-unhealth/</link><pubDate>Mon, 11 Feb 2019 10:33:42 +0800</pubDate><guid>https://tab.wutuofu.com/posts/pleg-unhealth/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/pleg-unhealth/reboot.jpeg" alt="Featured image of post pod生命周期事件生成器" />&lt;h2 id="pleg">PLEG&lt;/h2>
 &lt;p>不熟悉PLEG(Pod Lifecycle Event Generator)的同学，可以先看下这篇文章&lt;a class="link" href="https://developers.redhat.com/blog/2019/11/13/pod-lifecycle-event-generator-understanding-the-pleg-is-not-healthy-issue-in-kubernetes" target="_blank" rel="noopener"
 >What is PLEG?&lt;/a>。&lt;/p>
 &lt;p>这篇文章对pleg是什么和常见的&lt;code>unhealthy&lt;/code>问题有很详细的介绍。&lt;/p>
