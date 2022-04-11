@@ -1431,7 +1431,54 @@ alt="doHTTPProbe">
 &lt;figcaption>doHTTPProbe&lt;/figcaption>
 &lt;/figure>&lt;/p>
 &lt;p>从源码可以清楚的看到， lifecyce 的&lt;strong>handler&lt;/strong> 只发送了http 请求，并没有检查 http response code,
-liveness/readiness 的&lt;strong>prober&lt;/strong> 则做了http response code 的检查。&lt;/p></description></item><item><title>子目录父目录</title><link>https://tab.wutuofu.com/posts/path-overlap/</link><pubDate>Mon, 10 Sep 2018 21:20:33 +0800</pubDate><guid>https://tab.wutuofu.com/posts/path-overlap/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/path-overlap/Half-overlapping-paths-of-AB.png" alt="Featured image of post 子目录父目录" />&lt;p>最近开发的遇到一个需求是在判断 两个目录是否相互包含。&lt;/p>
+liveness/readiness 的&lt;strong>prober&lt;/strong> 则做了http response code 的检查。&lt;/p></description></item><item><title>VPC模式</title><link>https://tab.wutuofu.com/posts/flannel-vpc/</link><pubDate>Tue, 11 Sep 2018 10:07:04 +0800</pubDate><guid>https://tab.wutuofu.com/posts/flannel-vpc/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/flannel-vpc/flannel-vpc-mode.png" alt="Featured image of post VPC模式" />&lt;p>之前写了一篇post &lt;a class="link" href="https://tab.wutuofu.com/posts/tx-flannel/" >适配腾讯云backend&lt;/a> 的文章，从代码的角度简单记录了flannel
+&lt;code>vpc backend&lt;/code>实现过程。&lt;/p>
+&lt;p>这篇文章是对前面文章的补充，全局鸟瞰描绘了flannel &lt;code>vpc backend&lt;/code>网络数据包的流动过程。&lt;/p>
+&lt;p>总体来看&lt;code>vpc&lt;/code> 和 &lt;code>host-gw&lt;/code> 模式是很类似的，理解&lt;code>host-gateway&lt;/code>模式 对理解&lt;code>vpc&lt;/code> 模式很有帮助。&lt;/p>
+&lt;h2 id="host-gw">host gw&lt;/h2>
+&lt;p>host gateway 模式：&lt;/p>
+&lt;blockquote>
+&lt;p>host-gw adds route table entries on hosts, so that host know how to traffic container network packets.&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>This works on L2, because it only concerns hosts, switches and containers. switches does not care IP and route, hosts know containers exists, and how to route to them, containers just send and receive data.&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>If hosts are at different networks, L3 is introduced, and routers are involved. routers have no idea that containers exists, and any containers packet will be dropped, making communication impossible.&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>Of course, you can add route table entries on routers, but that is out of control flannel.&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="l2">L2&lt;/h3>
+&lt;p>为什么host-gw模式下，二层网络一定要打通:&lt;/p>
+&lt;p>stackoverflow 上面已经有&lt;a class="link" href="https://stackoverflow.com/questions/45293321/why-host-gw-of-flannel-requires-direct-layer2-connectivity-between-hosts" target="_blank" rel="noopener"
+>很好的回答&lt;/a>，我摘抄过来：&lt;/p>
+&lt;p>host-gw adds route table entires on each host. And the entries are as following:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-s" data-lang="s">&lt;span class="line">&lt;span class="cl">&lt;span class="n">Destination&lt;/span> &lt;span class="n">Gateway&lt;/span> &lt;span class="n">Genmask&lt;/span> &lt;span class="n">Flags&lt;/span> &lt;span class="n">Metric&lt;/span> &lt;span class="n">Ref&lt;/span> &lt;span class="n">Use&lt;/span> &lt;span class="n">Iface&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="m">0.0.0.0&lt;/span> &lt;span class="m">10.110.110.1&lt;/span> &lt;span class="m">0.0.0.0&lt;/span> &lt;span class="n">UG&lt;/span> &lt;span class="m">100&lt;/span> &lt;span class="m">0&lt;/span> &lt;span class="m">0&lt;/span> &lt;span class="n">eth0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="m">10.100.14.0&lt;/span> &lt;span class="m">10.110.110.21&lt;/span> &lt;span class="m">255.255.255.0&lt;/span> &lt;span class="n">UG&lt;/span> &lt;span class="m">0&lt;/span> &lt;span class="m">0&lt;/span> &lt;span class="m">0&lt;/span> &lt;span class="n">eth0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="m">10.100.38.0&lt;/span> &lt;span class="m">0.0.0.0&lt;/span> &lt;span class="m">255.255.255.0&lt;/span> &lt;span class="n">U&lt;/span> &lt;span class="m">0&lt;/span> &lt;span class="m">0&lt;/span> &lt;span class="m">0&lt;/span> &lt;span class="n">docker0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="m">10.110.110.0&lt;/span> &lt;span class="m">0.0.0.0&lt;/span> &lt;span class="m">255.255.255.0&lt;/span> &lt;span class="n">U&lt;/span> &lt;span class="m">100&lt;/span> &lt;span class="m">0&lt;/span> &lt;span class="m">0&lt;/span> &lt;span class="n">eth0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="m">169.254.169.254&lt;/span> &lt;span class="m">10.110.110.1&lt;/span> &lt;span class="m">255.255.255.255&lt;/span> &lt;span class="n">UGH&lt;/span> &lt;span class="m">100&lt;/span> &lt;span class="m">0&lt;/span> &lt;span class="m">0&lt;/span> &lt;span class="n">eth0&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>The most import item is the value of Gateway(10.110.110.21).&lt;/p>
+&lt;/blockquote>
+&lt;p>The route table will change the destination mac address to the mac_address of node(10.110.110.21) which is connected L2 directly to 10.110.110.22(current node).&lt;/p>
+&lt;p>If not L2 connected, the packet can not be delivered to nodes(next-hop)&lt;/p>
+&lt;h2 id="vpc">vpc&lt;/h2>
+&lt;h3 id="数据包">数据包&lt;/h3>
+&lt;p>&lt;code>vpc backend&lt;/code>模式下网络数据包的流动过程如下：&lt;/p>
+&lt;ol>
+&lt;li>Flanneld 在每个node 节点创建一个 cni0 的网桥bridge设备，node里面的pod之间的通信走cni0网桥；&lt;/li>
+&lt;li>Node 和 在本机上的pod 通信通过node的route table 转发到cni0；&lt;/li>
+&lt;li>vpc backend适配器调用vpc sdk在vpc网络中维护了一个vpc route table；&lt;/li>
+&lt;li>Node 和其它node里面的pod通信，是先通过 vpc route table 找到 pod 子网 所对应node，然后再通过这个node把网络流量转发到pod；&lt;/li>
+&lt;li>跨node 的pod 通信通过这个route table找到pod网段所在的node，然后载通过 node 节点上的route table 转发到对应node 上cni0设备上然后找到对应的pod；&lt;/li>
+&lt;li>VPC上的普通vm(即，该vm不是k8s node)和 k8s pod之间的通信与 上面第4，5点 通信是一样的。&lt;/li>
+&lt;/ol>
+&lt;h3 id="l2区别">L2区别&lt;/h3>
+&lt;p>host-gw mode 因为是在node 节点上 添加的 route 规则，所以所有的节点要二层switch打通，否则 下一跳(next-hop)跳不过去，没人帮忙转发二层数据包(frame)。&lt;/p>
+&lt;p>vpc backend mode 因为是在云厂商提供的外部router上添加的 route 规则，对vm做到了无感知，所以 vm之间无需打通 二层 switch。&lt;/p></description></item><item><title>子目录父目录</title><link>https://tab.wutuofu.com/posts/path-overlap/</link><pubDate>Mon, 10 Sep 2018 21:20:33 +0800</pubDate><guid>https://tab.wutuofu.com/posts/path-overlap/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/path-overlap/Half-overlapping-paths-of-AB.png" alt="Featured image of post 子目录父目录" />&lt;p>最近开发的遇到一个需求是在判断 两个目录是否相互包含。&lt;/p>
 &lt;p>想着用正则表达式或者递归去解决，捣鼓一段时间后发现总有些edge case 不能cover到，&lt;/p>
 &lt;p>后来发现用 python 的pathlib 可以很好的解决。&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">pathlib&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">Path&lt;/span>
