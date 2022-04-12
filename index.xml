@@ -1202,7 +1202,44 @@ alt="macos osascript notification">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> └─vg00-app 253:4 &lt;span class="m">0&lt;/span> 29G &lt;span class="m">0&lt;/span> lvm /app
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">vdb 252:16 &lt;span class="m">0&lt;/span> 300G &lt;span class="m">0&lt;/span> disk
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@cnsz92vl14311 ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># &lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>细说kubeconfig</title><link>https://tab.wutuofu.com/posts/explain-kubeconfig/</link><pubDate>Sun, 11 Aug 2019 22:09:21 +0800</pubDate><guid>https://tab.wutuofu.com/posts/explain-kubeconfig/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/explain-kubeconfig/kubeconfig.png" alt="Featured image of post 细说kubeconfig" />&lt;p>今天准备管理某一个kubernetes 集群时发现master主机22端口因为管理的需要被禁用了，无法登陆服务器。&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>证书问题</title><link>https://tab.wutuofu.com/posts/container-ca/</link><pubDate>Thu, 12 Sep 2019 10:11:32 +0800</pubDate><guid>https://tab.wutuofu.com/posts/container-ca/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/container-ca/common-ca.png" alt="Featured image of post 证书问题" />&lt;p>&lt;code>docker run&lt;/code>调试某个container报如下所示&lt;code>x509&lt;/code>证书错误，一开始怀疑是容器网络（&lt;code>--network host&lt;/code>) 的问题 :&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>wutuofu@dev-3 ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># docker run --network host datewu/controller:v0.0.2&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">{&lt;/span>&lt;span class="s2">&amp;#34;level&amp;#34;&lt;/span>:&lt;span class="s2">&amp;#34;panic&amp;#34;&lt;/span>,&lt;span class="s2">&amp;#34;error&amp;#34;&lt;/span>:&lt;span class="s2">&amp;#34;Get https://google.com: x509: certificate signed by unknown authority&amp;#34;&lt;/span>,&lt;span class="s2">&amp;#34;time&amp;#34;&lt;/span>:1555498448,&lt;span class="s2">&amp;#34;message&amp;#34;&lt;/span>:&lt;span class="s2">&amp;#34;get max item failed&amp;#34;&lt;/span>&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">panic: get max item failed
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">goroutine &lt;span class="m">26&lt;/span> &lt;span class="o">[&lt;/span>running&lt;span class="o">]&lt;/span>:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">github.com/rs/zerolog.&lt;span class="o">(&lt;/span>*Logger&lt;span class="o">)&lt;/span>.Panic.func1&lt;span class="o">(&lt;/span>0x7773e9, 0x13&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> /Users/wutuofu/go/pkg/mod/github.com/rs/zerolog@v1.13.0/log.go:307 +0x4f
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">github.com/rs/zerolog.&lt;span class="o">(&lt;/span>*Event&lt;span class="o">)&lt;/span>.msg&lt;span class="o">(&lt;/span>0xc00012e8a0, 0x7773e9, 0x13&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> /Users/wutuofu/go/pkg/mod/github.com/rs/zerolog@v1.13.0/event.go:141 +0x1c1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">github.com/rs/zerolog.&lt;span class="o">(&lt;/span>*Event&lt;span class="o">)&lt;/span>.Msg&lt;span class="o">(&lt;/span>...&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> /Users/wutuofu/go/pkg/mod/github.com/rs/zerolog@v1.13.0/event.go:105
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">main.catchUp&lt;span class="o">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> /Users/wutuofu/github/controller/work.go:69 +0x326
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">main.populate&lt;span class="o">(&lt;/span>0xc000114000&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> /Users/wutuofu/github/controller/worker.go:10 +0x26
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">created by main.initWork
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> /Users/wutuofu/github/controller/work.go:84 +0x7f
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>错误信息大概是说 client 不能识别google的https 证书， 可能是base image &lt;code>alpine&lt;/code>的问题。&lt;/p>
+&lt;p>将&lt;code>base image&lt;/code>改为 &lt;code>scratch&lt;/code> ，结果还是会报&lt;code>x509&lt;/code>错。&lt;/p>
+&lt;h2 id="解决方案">解决方案&lt;/h2>
+&lt;p>给 &lt;code>alpine&lt;/code>镜像 &lt;a class="link" href="https://support.circleci.com/hc/en-us/articles/360016505753-Resolve-Certificate-Signed-By-Unknown-Authority-error-in-Alpine-images" target="_blank" rel="noopener"
+>加上ca-certificates&lt;/a>解决了问题:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span class="line">&lt;span class="cl">&lt;span class="k">FROM&lt;/span>&lt;span class="s"> alpine&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="c"># add Common CA certificates PEM files&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">RUN&lt;/span> apk --no-cache add ca-certificates&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="c"># ....&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="c"># docker build -t datewu/alpine-ca .&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>以后用到&lt;code>alpine&lt;/code>的Dockerfile 直接 &lt;code>FROM datewu/alpine-ca&lt;/code> 问题解决啦😄&lt;/p>
+&lt;blockquote>
+&lt;p>总结一下：当容器里的进程访问外部tls server时，如果容器内没有配置Common CA certificates，客户端就会出现无法识别server证书的问题。&lt;/p>
+&lt;/blockquote>
+&lt;p>ps:
+今天在写字楼二楼快餐店吃晚饭的时候，遇到两个建筑工人，50-60岁的样子，像是夫妻。&lt;/p>
+&lt;p>两个人一起打才吃了10块钱：一人一个素菜，豆芽菜和黑油白。&lt;/p>
+&lt;p>pps：快餐店下午的汤是免费的，所以他们一人又拿了一碗汤，&lt;/p>
+&lt;p>回想起今天我过早才就吃了10块钱，嗟乎唏嘘。&lt;/p></description></item><item><title>细说kubeconfig</title><link>https://tab.wutuofu.com/posts/explain-kubeconfig/</link><pubDate>Sun, 11 Aug 2019 22:09:21 +0800</pubDate><guid>https://tab.wutuofu.com/posts/explain-kubeconfig/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/explain-kubeconfig/kubeconfig.png" alt="Featured image of post 细说kubeconfig" />&lt;p>今天准备管理某一个kubernetes 集群时发现master主机22端口因为管理的需要被禁用了，无法登陆服务器。&lt;/p>
 &lt;p>问了一下运维人员，原来是基于安全原因，公司决定禁用所有服务器的&lt;code>root ssh&lt;/code>登陆权限，&lt;/p>
 &lt;p>平时我都是ssh 登陆到master node，在服务器上直接使用kubectl命令 查看/部署/debug deployment/service等资源，&lt;/p>
 &lt;p>现在只好修改下本地 kubeconfig 文件，用自己本地的 &lt;code>kubectl&lt;/code> 管理/操作kubernetes集群。&lt;/p>
