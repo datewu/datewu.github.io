@@ -1007,7 +1007,49 @@ alt="macos osascript notification">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">子模组 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>（https://github.com/datewu/hugo-theme-stack.git）未对路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span> 注册
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">子模组 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>（https://github.com/datewu/hugo-theme-stack.git）已对路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span> 注册
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">子模组路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>：检出 &lt;span class="s1">&amp;#39;aeb077874a7de9ce71304c990ad5cfdc72664f38&amp;#39;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>准确的分页</title><link>https://tab.wutuofu.com/posts/pagination-wf/</link><pubDate>Mon, 02 Mar 2020 11:00:52 +0800</pubDate><guid>https://tab.wutuofu.com/posts/pagination-wf/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/pagination-wf/available-paginations.png" alt="Featured image of post 准确的分页" />&lt;p>昨天同事调试前端页面分页功能时， 发现了一个分页的问题。&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>SSH代理（Agent）</title><link>https://tab.wutuofu.com/posts/ssh-agent/</link><pubDate>Sun, 12 Apr 2020 11:34:44 +0800</pubDate><guid>https://tab.wutuofu.com/posts/ssh-agent/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/ssh-agent/ssh-agent-typical.png" alt="Featured image of post SSH代理（Agent）" />&lt;h2 id="问题">问题&lt;/h2>
+&lt;p>已知本地local可以ssh到server A和B，&lt;/p>
+&lt;p>问如何从server A ssh到server B，以及如何在server A 和B之间使用scp互传文件 ？&lt;/p>
+&lt;h2 id="解决方案">解决方案&lt;/h2>
+&lt;p>配置&lt;code>ssh_config&lt;/code>然后使用 &lt;code>ssh-add&lt;/code>命令指定使用ssh agent可以很安全和高效的解决上面的两个问题。&lt;/p>
+&lt;h3 id="配置ssh_config">配置ssh_config&lt;/h3>
+&lt;p>注意看注释，下面脚本所有的操作和配置都是在 本地local上执行的:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl"> vi .ssh/config &lt;span class="c1">## 修改配置 添加forward agent&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">HOST server-A
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> HostName 1.2.3.4
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> User root
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> IdentityFile ~/.ssh/serverA
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ForwardAgent yes &lt;span class="c1"># 现在 serverA可以和local本机的agent通信啦&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">HOST server-B
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> HostName 6.7.8.9
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> User root
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> IdentityFile ~/.ssh/serverB
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ForwardAgent yes &lt;span class="c1"># 现在 serverB可以和local本机的ssh agent 通信啦&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rg Forward /etc/ssh/ssh_config &lt;span class="c1">## 检查全局的forwordagent配置有没有被覆盖&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$SSH_AUTH_SOCK&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="c1">## 查看本地ssh agent是否在运行&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ssh-add -L &lt;span class="c1">## 查看/操作/删除 ssh agent hold的keys&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ssh-add -K li
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ssh-add -K ~/.ssh/serverA &lt;span class="c1">## 给agent serverA 密钥，使得serverB 可以“使用” 这个密钥&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ssh-add -K ~/.ssh/serverB &lt;span class="c1">## 给agent serverB密钥，使得serverA可以“使用”这个密钥&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ssh-add -K ~/.ssh/github &lt;span class="c1">## 给阿根廷 github密钥，使得serverA， serverB都可以ssh github，方便测试&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ssh-add -L
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="验证github">验证github&lt;/h3>
+&lt;p>也是在本机local操作，以&lt;a class="link" href="https://developer.github.com/v3/guides/using-ssh-agent-forwarding/#troubleshooting-ssh-agent-forwarding" target="_blank" rel="noopener"
+>github&lt;/a>作为测试目标：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">ssh -T git@github.com &lt;span class="c1">## 本地基准测试&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ssh serverA &lt;span class="c1">## 测试serverA &lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ssh -T git@github.com &lt;span class="c1">## 测试/验证&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="小结">小结&lt;/h2>
+&lt;p>注意看注释，注意&lt;code>ForwardAgent&lt;/code>配置应用到哪个server上了。&lt;/p>
+&lt;p>当 server 可以和local本机的agent通信的时候，就表示 server 好像拥有了local本地的private keys了。&lt;/p>
+&lt;p>具体说： 当server A 的 ForwardAgent 开启时， server A就可以直接ssh到server B了，&lt;/p>
+&lt;p>如果这个时候 server B 的ForwordAgent没有开启，server B是不可以ssh 到server A的&lt;/p></description></item><item><title>准确的分页</title><link>https://tab.wutuofu.com/posts/pagination-wf/</link><pubDate>Mon, 02 Mar 2020 11:00:52 +0800</pubDate><guid>https://tab.wutuofu.com/posts/pagination-wf/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/pagination-wf/available-paginations.png" alt="Featured image of post 准确的分页" />&lt;p>昨天同事调试前端页面分页功能时， 发现了一个分页的问题。&lt;/p>
 &lt;p>问题简要描述如下：&lt;/p>
 &lt;p>前端选择一些过滤条件（a&amp;amp;&amp;amp;b&amp;amp;&amp;amp;c||d &amp;hellip;）向后端请求数据，过一会发现用同样的过滤条件去查询，数据变少了，前端看上去第一页和最后一页是一样的。&lt;/p>
 &lt;p>初步怀疑是分页出了问题。&lt;/p>
