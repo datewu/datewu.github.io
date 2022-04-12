@@ -1630,7 +1630,25 @@ alt="macos osascript notification">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意：应该先 &lt;code>resp.Body.Close()&lt;/code> 掉，然后重新填充reader。&lt;/p>
-&lt;p>因为新的&lt;code>Response.Body.Close()&lt;/code>是 &lt;code>no-op&lt;/code>操作，不会去close 之前的Body，可能会造成资源泄漏。&lt;/p></description></item><item><title>Macvlan路由规则</title><link>https://tab.wutuofu.com/posts/macvlan-route/</link><pubDate>Mon, 11 Mar 2019 11:33:48 +0800</pubDate><guid>https://tab.wutuofu.com/posts/macvlan-route/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/macvlan-route/Macvlan-network-with-traffic-flows.png" alt="Featured image of post Macvlan路由规则" />&lt;p>对macvlan 不熟悉的同学，可以先看下这篇&lt;a class="link" href="https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking/#macvlan" target="_blank" rel="noopener"
+&lt;p>因为新的&lt;code>Response.Body.Close()&lt;/code>是 &lt;code>no-op&lt;/code>操作，不会去close 之前的Body，可能会造成资源泄漏。&lt;/p></description></item><item><title>Mysql Autocommit问题</title><link>https://tab.wutuofu.com/posts/mysql-autocommit/</link><pubDate>Fri, 12 Apr 2019 10:37:04 +0800</pubDate><guid>https://tab.wutuofu.com/posts/mysql-autocommit/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/mysql-autocommit/Start-ad-hoc-Transaction.jpeg" alt="Featured image of post Mysql Autocommit问题" />&lt;p>客户反馈我们的产品有个很奇怪的问题。&lt;/p>
+&lt;p>添加完商品后，可以看到商品，但是一刷新页面，刚才添加的商品就消失啦。&lt;/p>
+&lt;p>以前没碰到过，一直都用的好好的为什么今天就不行了呢？&lt;/p>
+&lt;h2 id="分析问题">分析问题&lt;/h2>
+&lt;p>既然一刷新即消失了，就证明没有写入到数据库。&lt;/p>
+&lt;p>没写入到数据库是什么原因呢？ API 也没有报错呀？&lt;/p>
+&lt;p>更加奇怪的是，有的页面有这个问题，有的没有这个问题。&lt;/p>
+&lt;p>后端的API 有的是golang写的，有的是Java写的。&lt;/p>
+&lt;p>&lt;code>golang&lt;/code> orm对mysql 数据库的写操作存在上面说的刷新就丢失的问题，&lt;code>Java&lt;/code>的orm对mysql的写操作没有问题。&lt;/p>
+&lt;p>这是为什么呢？&lt;/p>
+&lt;h2 id="dba"> DBA&lt;/h2>
+&lt;p>排查了很久发现原来是客户那边的DBA把 mysql的 &lt;code>session autocommit&lt;/code>的配置关闭啦。&lt;/p>
+&lt;p>&lt;a class="link" href="https://dev.mysql.com/doc/refman/5.6/en/innodb-autocommit-commit-rollback.html" target="_blank" rel="noopener"
+>autocommit&lt;/a>&lt;/p>
+&lt;p>翻了下文档，确定　&lt;code>Java&lt;/code>的orm框架会忽略mysql server的配置默认自己commit，&lt;code>golang&lt;/code>的orm则没有这个优化（也许是有但我们没有启用？）。&lt;/p>
+&lt;p>所以会出现 java的后端是正常的，golang的后端写不了mysql。
+　&lt;/p>
+&lt;h2 id="解决方案">解决方案&lt;/h2>
+&lt;p>客户DBA开启&lt;code>autocommit&lt;/code>配置项后，产品业务恢复正常。&lt;/p></description></item><item><title>Macvlan路由规则</title><link>https://tab.wutuofu.com/posts/macvlan-route/</link><pubDate>Mon, 11 Mar 2019 11:33:48 +0800</pubDate><guid>https://tab.wutuofu.com/posts/macvlan-route/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/macvlan-route/Macvlan-network-with-traffic-flows.png" alt="Featured image of post Macvlan路由规则" />&lt;p>对macvlan 不熟悉的同学，可以先看下这篇&lt;a class="link" href="https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking/#macvlan" target="_blank" rel="noopener"
 >macvlan virtual network简介&lt;/a>&lt;/p>
 &lt;p>默认情况下Linux kernel会阻止(drop)宿主机（host eth0）虚拟出来的 macvlan network（&lt;code>bridge mode&lt;/code>） 和宿主机host eth0）之间网络数据包。&lt;/p>
 &lt;p>调试了一段时间后，我们发现了可以通过路由表来绕过这个限制。
