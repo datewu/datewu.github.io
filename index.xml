@@ -1255,7 +1255,134 @@ throughout this tutorial&lt;/p>
 &lt;p>注意看注释，注意&lt;code>ForwardAgent&lt;/code>配置应用到哪个server上了。&lt;/p>
 &lt;p>当 server 可以和local本机的agent通信的时候，就表示 server 好像拥有了local本地的private keys了。&lt;/p>
 &lt;p>具体说： 当server A 的 ForwardAgent 开启时， server A就可以直接ssh到server B了，&lt;/p>
-&lt;p>如果这个时候 server B 的ForwordAgent没有开启，server B是不可以ssh 到server A的&lt;/p></description></item><item><title>准确的分页</title><link>https://tab.wutuofu.com/posts/pagination-wf/</link><pubDate>Mon, 02 Mar 2020 11:00:52 +0800</pubDate><guid>https://tab.wutuofu.com/posts/pagination-wf/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/pagination-wf/available-paginations.png" alt="Featured image of post 准确的分页" />&lt;p>昨天同事调试前端页面分页功能时， 发现了一个分页的问题。&lt;/p>
+&lt;p>如果这个时候 server B 的ForwordAgent没有开启，server B是不可以ssh 到server A的&lt;/p></description></item><item><title>容器PID</title><link>https://tab.wutuofu.com/posts/container-pid/</link><pubDate>Fri, 13 Mar 2020 22:43:32 +0800</pubDate><guid>https://tab.wutuofu.com/posts/container-pid/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/container-pid/the-matrix.jpeg" alt="Featured image of post 容器PID" />&lt;p>架构部的同事问了我两个问题:&lt;/p>
+&lt;ol>
+&lt;li>宿主机上有个进程很耗 cpu，怎么判断它是不是某个容器的进程;&lt;/li>
+&lt;li>如果它是跑在容器里，怎么查到是哪个容器(container id);&lt;/li>
+&lt;/ol>
+&lt;h2 id="解决方案">解决方案&lt;/h2>
+&lt;p>有两种方法来解决上面两个问题：&lt;/p>
+&lt;h3 id="cgroup">cgroup&lt;/h3>
+&lt;p>通过查看pid的cgroup是否含有 &lt;code>slice&lt;/code>信息来判断是否是容器进程:&lt;/p>
+&lt;h4 id="主机进程-cgroup">主机进程 cgroup&lt;/h4>
+&lt;p>直接运行在宿主机主的进程的cgroup是没有&lt;code>slice&lt;/code>信息的：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># cat /proc/1/cgroup&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">11:perf_event:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">10:memory:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">9:devices:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">8:cpuacct,cpu:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">7:cpuset:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">6:hugetlb:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">5:blkio:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">4:net_prio,net_cls:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">3:freezer:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2:pids:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">1:name&lt;span class="o">=&lt;/span>systemd:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># cat /proc/19/cgroup&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">11:perf_event:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">10:memory:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">9:devices:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">8:cpuacct,cpu:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">7:cpuset:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">6:hugetlb:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">5:blkio:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">4:net_prio,net_cls:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">3:freezer:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2:pids:/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">1:name&lt;span class="o">=&lt;/span>systemd:/
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="k8s-pod进程-cgroup">k8s pod进程 cgroup&lt;/h4>
+&lt;p>在宿主机上看跑在容器进程的cgroup是可以看到&lt;code>slice&lt;/code>信息的：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># cat /proc/20397/cgroup&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">11:perf_event:/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod6d62265d_cd4d_4807_8d2f_386714d5bbdc.slice/docker-c44a782ba5482052e66dc3f5ed3811e2a699db09b6715e26102d582a51ac52cc.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">10:memory:/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod6d62265d_cd4d_4807_8d2f_386714d5bbdc.slice/docker-c44a782ba5482052e66dc3f5ed3811e2a699db09b6715e26102d582a51ac52cc.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">9:devices:/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod6d62265d_cd4d_4807_8d2f_386714d5bbdc.slice/docker-c44a782ba5482052e66dc3f5ed3811e2a699db09b6715e26102d582a51ac52cc.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">8:cpuacct,cpu:/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod6d62265d_cd4d_4807_8d2f_386714d5bbdc.slice/docker-c44a782ba5482052e66dc3f5ed3811e2a699db09b6715e26102d582a51ac52cc.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">7:cpuset:/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod6d62265d_cd4d_4807_8d2f_386714d5bbdc.slice/docker-c44a782ba5482052e66dc3f5ed3811e2a699db09b6715e26102d582a51ac52cc.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">6:hugetlb:/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod6d62265d_cd4d_4807_8d2f_386714d5bbdc.slice/docker-c44a782ba5482052e66dc3f5ed3811e2a699db09b6715e26102d582a51ac52cc.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">5:blkio:/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod6d62265d_cd4d_4807_8d2f_386714d5bbdc.slice/docker-c44a782ba5482052e66dc3f5ed3811e2a699db09b6715e26102d582a51ac52cc.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">4:net_prio,net_cls:/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod6d62265d_cd4d_4807_8d2f_386714d5bbdc.slice/docker-c44a782ba5482052e66dc3f5ed3811e2a699db09b6715e26102d582a51ac52cc.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">3:freezer:/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod6d62265d_cd4d_4807_8d2f_386714d5bbdc.slice/docker-c44a782ba5482052e66dc3f5ed3811e2a699db09b6715e26102d582a51ac52cc.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2:pids:/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod6d62265d_cd4d_4807_8d2f_386714d5bbdc.slice/docker-c44a782ba5482052e66dc3f5ed3811e2a699db09b6715e26102d582a51ac52cc.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">1:name&lt;span class="o">=&lt;/span>systemd:/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod6d62265d_cd4d_4807_8d2f_386714d5bbdc.slice/docker-c44a782ba5482052e66dc3f5ed3811e2a699db09b6715e26102d582a51ac52cc.scope
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>从上面的输出可以看到 pid &lt;code>20397&lt;/code>是 kubernets pod拉起来的进程， 而且&lt;code>pod ID&lt;/code> 是：
+&lt;code>6d62265d_cd4d_4807_8d2f_386714d5bbdc&lt;/code>, 对应的 &lt;code>contariner ID&lt;/code> 是
+&lt;code>c44a782ba5482052e66dc3f5ed3811e2a699db09b6715e26102d582a51ac52cc&lt;/code>&lt;/p>
+&lt;h4 id="docker-container进程-cgroup">docker container进程 cgroup&lt;/h4>
+&lt;p>docker containre 和 k8s 一样，也会设置cgroup slice：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># docker run --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=super123456secret -d mysql:5.7.28&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Unable to find image &lt;span class="s1">&amp;#39;mysql:5.7.28&amp;#39;&lt;/span> locally
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">5.7.28: Pulling from library/mysql
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">804555ee0376: Pull &lt;span class="nb">complete&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">c53bab458734: Pull &lt;span class="nb">complete&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ca9d72777f90: Pull &lt;span class="nb">complete&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2d7aad6cb96e: Pull &lt;span class="nb">complete&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">8d6ca35c7908: Pull &lt;span class="nb">complete&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">6ddae009e760: Pull &lt;span class="nb">complete&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">327ae67bbe7b: Pull &lt;span class="nb">complete&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">31f1f8385b27: Pull &lt;span class="nb">complete&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">a5a3ad97e819: Pull &lt;span class="nb">complete&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">48bede7828ac: Pull &lt;span class="nb">complete&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">380afa2e6973: Pull &lt;span class="nb">complete&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Digest: sha256:b38555e593300df225daea22aeb104eed79fc80d2f064fde1e16e1804d00d0fc
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Status: Downloaded newer image &lt;span class="k">for&lt;/span> mysql:5.7.28
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">771aa2fdc8cae66a0cb05a4585beff44a69f0f1c5b2a21fd159cbeea0a86d633
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># ps aux | grep mysql&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">polkitd &lt;span class="m">23855&lt;/span> 3.0 1.1 &lt;span class="m">1007636&lt;/span> &lt;span class="m">190588&lt;/span> ? Ssl 09:39 0:00 mysqld
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">root &lt;span class="m">24176&lt;/span> 0.0 0.0 &lt;span class="m">112724&lt;/span> &lt;span class="m">984&lt;/span> pts/0 S+ 09:39 0:00 grep --color&lt;span class="o">=&lt;/span>auto mysql
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># cat /proc/23855/cgroup&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">11:perf_event:/system.slice/docker-771aa2fdc8cae66a0cb05a4585beff44a69f0f1c5b2a21fd159cbeea0a86d633.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">10:memory:/system.slice/docker-771aa2fdc8cae66a0cb05a4585beff44a69f0f1c5b2a21fd159cbeea0a86d633.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">9:devices:/system.slice/docker-771aa2fdc8cae66a0cb05a4585beff44a69f0f1c5b2a21fd159cbeea0a86d633.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">8:cpuacct,cpu:/system.slice/docker-771aa2fdc8cae66a0cb05a4585beff44a69f0f1c5b2a21fd159cbeea0a86d633.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">7:cpuset:/system.slice/docker-771aa2fdc8cae66a0cb05a4585beff44a69f0f1c5b2a21fd159cbeea0a86d633.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">6:hugetlb:/system.slice/docker-771aa2fdc8cae66a0cb05a4585beff44a69f0f1c5b2a21fd159cbeea0a86d633.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">5:blkio:/system.slice/docker-771aa2fdc8cae66a0cb05a4585beff44a69f0f1c5b2a21fd159cbeea0a86d633.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">4:net_prio,net_cls:/system.slice/docker-771aa2fdc8cae66a0cb05a4585beff44a69f0f1c5b2a21fd159cbeea0a86d633.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">3:freezer:/system.slice/docker-771aa2fdc8cae66a0cb05a4585beff44a69f0f1c5b2a21fd159cbeea0a86d633.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2:pids:/system.slice/docker-771aa2fdc8cae66a0cb05a4585beff44a69f0f1c5b2a21fd159cbeea0a86d633.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">1:name&lt;span class="o">=&lt;/span>systemd:/system.slice/docker-771aa2fdc8cae66a0cb05a4585beff44a69f0f1c5b2a21fd159cbeea0a86d633.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># docker ps | grep 771aa2fdc&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">771aa2fdc8ca mysql:5.7.28 &lt;span class="s2">&amp;#34;docker-entrypoint.s…&amp;#34;&lt;/span> &lt;span class="m">58&lt;/span> seconds ago Up &lt;span class="m">57&lt;/span> seconds 0.0.0.0:3306-&amp;gt;3306/tcp, 33060/tcp mysql
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>从上面bash脚本的输出可以清楚的看到，cgroup配置的&lt;code>container ID&lt;/code> 和 docker ps 命令输出的 &lt;code>container ID&lt;/code>是一样的，都是 &lt;code>771aa2fdc8ca&lt;/code>&lt;/p>
+&lt;h3 id="ppid">ppid&lt;/h3>
+&lt;p>下面两种方法和docker强相关，不推荐。&lt;/p>
+&lt;h4 id="pstree">pstree&lt;/h4>
+&lt;p>老老实实的一步步排查主机上所有的container ppid：
+用 &lt;code>pstree&lt;/code>命令查看宿主机上的进程树，看&lt;code>&amp;lt;pid&amp;gt;&lt;/code> 是不是&lt;code>docker-current&lt;/code>创建的子进程;&lt;/p>
+&lt;h4 id="docker-inspect">docker inspect&lt;/h4>
+&lt;p>使用&lt;code>docker inspect&lt;/code>命令查询所有容器的pid，然后做过滤，找到该进程对应的容器名，id，容器的详细信息中，包含了它在宿主机上的进程号。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">docker inspect -f &lt;span class="s2">&amp;#34;{{.Id}} {{.State.Pid}} {{.Config.Hostname}}&amp;#34;&lt;/span> &lt;span class="k">$(&lt;/span>docker ps -q&lt;span class="k">)&lt;/span> &lt;span class="p">|&lt;/span> grep &amp;lt;pid&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="发散思维">发散思维&lt;/h2>
+&lt;h3 id="matrix">MATRIX&lt;/h3>
+&lt;p>那么进程自己如何判断自己是否在container中呢？&lt;/p>
+&lt;p>答案很简单，如果 &lt;code>pid 1&lt;/code> 的cgroup有slice信息，说明进程现在在容器中，否则则说明不在容器里。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@wutuofu ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># kubectl exec -it binary-controller-7dfd4bbd6f-6hsvd sh&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">/ &lt;span class="c1"># ps&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">PID USER TIME COMMAND
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">1&lt;/span> root 0:30 /binary-controller -kubeconfig&lt;span class="o">=&lt;/span>inCluster -mode&lt;span class="o">=&lt;/span>prodution
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">196&lt;/span> root 0:00 sh
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">202&lt;/span> root 0:00 ps
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">/ &lt;span class="c1"># cat /proc/1/cgroup &lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">11:hugetlb:/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod482f0a01_7b3e_48cd_adb6_61c9097b43a4.slice/docker-b3079dba7a1cf909631c2f9e8ad38cc7f193e6ba8fe649d4d6f590a7d11b0509.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">10:pids:/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod482f0a01_7b3e_48cd_adb6_61c9097b43a4.slice/docker-b3079dba7a1cf909631c2f9e8ad38cc7f193e6ba8fe649d4d6f590a7d11b0509.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">9:perf_event:/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod482f0a01_7b3e_48cd_adb6_61c9097b43a4.slice/docker-b3079dba7a1cf909631c2f9e8ad38cc7f193e6ba8fe649d4d6f590a7d11b0509.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">8:freezer:/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod482f0a01_7b3e_48cd_adb6_61c9097b43a4.slice/docker-b3079dba7a1cf909631c2f9e8ad38cc7f193e6ba8fe649d4d6f590a7d11b0509.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">7:memory:/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod482f0a01_7b3e_48cd_adb6_61c9097b43a4.slice/docker-b3079dba7a1cf909631c2f9e8ad38cc7f193e6ba8fe649d4d6f590a7d11b0509.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">6:net_prio,net_cls:/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod482f0a01_7b3e_48cd_adb6_61c9097b43a4.slice/docker-b3079dba7a1cf909631c2f9e8ad38cc7f193e6ba8fe649d4d6f590a7d11b0509.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">5:blkio:/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod482f0a01_7b3e_48cd_adb6_61c9097b43a4.slice/docker-b3079dba7a1cf909631c2f9e8ad38cc7f193e6ba8fe649d4d6f590a7d11b0509.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">4:cpuacct,cpu:/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod482f0a01_7b3e_48cd_adb6_61c9097b43a4.slice/docker-b3079dba7a1cf909631c2f9e8ad38cc7f193e6ba8fe649d4d6f590a7d11b0509.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">3:devices:/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod482f0a01_7b3e_48cd_adb6_61c9097b43a4.slice/docker-b3079dba7a1cf909631c2f9e8ad38cc7f193e6ba8fe649d4d6f590a7d11b0509.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2:cpuset:/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod482f0a01_7b3e_48cd_adb6_61c9097b43a4.slice/docker-b3079dba7a1cf909631c2f9e8ad38cc7f193e6ba8fe649d4d6f590a7d11b0509.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">1:name&lt;span class="o">=&lt;/span>systemd:/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod482f0a01_7b3e_48cd_adb6_61c9097b43a4.slice/docker-b3079dba7a1cf909631c2f9e8ad38cc7f193e6ba8fe649d4d6f590a7d11b0509.scope
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">## OH NO, I&amp;#39;M IN THE MATRIX&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>准确的分页</title><link>https://tab.wutuofu.com/posts/pagination-wf/</link><pubDate>Mon, 02 Mar 2020 11:00:52 +0800</pubDate><guid>https://tab.wutuofu.com/posts/pagination-wf/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/pagination-wf/available-paginations.png" alt="Featured image of post 准确的分页" />&lt;p>昨天同事调试前端页面分页功能时， 发现了一个分页的问题。&lt;/p>
 &lt;p>问题简要描述如下：&lt;/p>
 &lt;p>前端选择一些过滤条件（a&amp;amp;&amp;amp;b&amp;amp;&amp;amp;c||d &amp;hellip;）向后端请求数据，过一会发现用同样的过滤条件去查询，数据变少了，前端看上去第一页和最后一页是一样的。&lt;/p>
 &lt;p>初步怀疑是分页出了问题。&lt;/p>
