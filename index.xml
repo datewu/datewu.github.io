@@ -1081,7 +1081,72 @@ alt="macos osascript notification">
 &lt;p>保存为&lt;code>set-dns.sh&lt;/code>文件，再加上可执行权限即可：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">➜ ~ chmod +x set-dns.sh
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">➜ ~ ./set-dns.sh
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>TCP/IP教程</title><link>https://tab.wutuofu.com/posts/tcp-ip-tutorial/</link><pubDate>Mon, 13 Apr 2020 22:25:56 +0800</pubDate><guid>https://tab.wutuofu.com/posts/tcp-ip-tutorial/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/tcp-ip-tutorial/The-logical-mapping-between-OSI-basic-reference-model-and-the-TCP-IP-stack.png" alt="Featured image of post TCP/IP教程" />&lt;p>本文不定期更新 :)&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>socat工具</title><link>https://tab.wutuofu.com/posts/socat-usage/</link><pubDate>Tue, 14 Apr 2020 09:50:07 +0800</pubDate><guid>https://tab.wutuofu.com/posts/socat-usage/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/socat-usage/socat.jpeg" alt="Featured image of post socat工具" />&lt;p>众所周知kubenetest的端口转发功能&lt;a class="link" href="https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/#forward-a-local-port-to-a-port-on-the-pod" target="_blank" rel="noopener"
+>kubectl port-forward&lt;/a>非常实用，可以提高开发人员的debug效率。&lt;/p>
+&lt;p>其实&lt;code>kubectl port-forward&lt;/code>的底层脏活累活都是&lt;code>socat&lt;/code>命令在做，&lt;code>kubectl&lt;/code>只能算是一个代理商。&lt;/p>
+&lt;h2 id="socat">socat&lt;/h2>
+&lt;h3 id="端口转发">端口转发&lt;/h3>
+&lt;p>&lt;code>socat tcp-listen:58812,reuseaddr,fork tcp:localhost:8000&lt;/code>把58812端口的流量转发到 8000上。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">bash-5.1# python3 -m http.server &lt;span class="p">&amp;amp;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">bash-5.1# socat tcp-listen:58812,reuseaddr,fork tcp:localhost:8000 &lt;span class="p">&amp;amp;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">bash-5.1# curl -I localhost:58812
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">HTTP/1.0 &lt;span class="m">200&lt;/span> OK
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Server: SimpleHTTP/0.6 Python/3.10.3
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Date: Thu, &lt;span class="m">14&lt;/span> Apr &lt;span class="m">2022&lt;/span> 03:19:15 GMT
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Content-type: text/html&lt;span class="p">;&lt;/span> &lt;span class="nv">charset&lt;/span>&lt;span class="o">=&lt;/span>utf-8
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Content-Length: &lt;span class="m">336&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>从而使得原来无法访问的 &lt;code>localhost:8000&lt;/code>端口的服务，现在可以通过&lt;code>*:58812&lt;/code>访问到了。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">bash-5.1# netstat -nlp
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Active Internet connections &lt;span class="o">(&lt;/span>only servers&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Proto Recv-Q Send-Q Local Address Foreign Address State PID/Program name
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">tcp &lt;span class="m">0&lt;/span> &lt;span class="m">0&lt;/span> 0.0.0.0:58812 0.0.0.0:* LISTEN 10/socat
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">tcp &lt;span class="m">0&lt;/span> &lt;span class="m">0&lt;/span> 0.0.0.0:8000 0.0.0.0:* LISTEN 31/python3
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Active UNIX domain sockets &lt;span class="o">(&lt;/span>only servers&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Proto RefCnt Flags Type State I-Node PID/Program name Path
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="其他">其他&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">➜ ~ tldr socat
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">socat
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Multipurpose relay &lt;span class="o">(&lt;/span>SOcket CAT&lt;span class="o">)&lt;/span>.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">- Listen to a port, &lt;span class="nb">wait&lt;/span> &lt;span class="k">for&lt;/span> an incoming connection and transfer data to STDIO:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> socat - TCP-LISTEN:8080,fork
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">- Create a connection to a host and port, transfer data in STDIO to connected host:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> socat - TCP4:www.example.com:80
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">- Forward incoming data of a &lt;span class="nb">local&lt;/span> port to another host and port:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> socat TCP-LISTEN:80,fork TCP4:www.example.com:80
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="语法">语法&lt;/h2>
+&lt;p>&lt;a class="link" href="https://linux.die.net/man/1/socat" target="_blank" rel="noopener"
+>man 手册&lt;/a>&lt;/p>
+&lt;blockquote>
+&lt;p>Socat is a command line based utility that establishes two bidirectional byte streams and transfers data between them. Because the streams can be constructed from a large set of different types of data sinks and sources (see address types), and because lots of address options may be applied to the streams, socat can be used for many different purposes.&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>Filan is a utility that prints information about its active file descriptors to stdout. It has been written for debugging socat, but might be useful for other purposes too. Use the -h option to find more infos.&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>Procan is a utility that prints information about process parameters to stdout. It has been written to better understand some UNIX process properties and for debugging socat, but might be useful for other purposes too.&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>The life cycle of a socat instance typically consists of four phases.&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>In the init phase, the command line options are parsed and logging is initialized.&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>During the open phase, socat opens the first address and afterwards the second address. These steps are usually blocking; thus, especially for complex address types like socks, connection requests or authentication dialogs must be completed before the next step is started.&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>In the transfer phase, socat watches both streamscq read and write file descriptors via CWselect() , and, when data is available on one side and can be written to the other side, socat reads it, performs newline character conversions if required, and writes the data to the write file descriptor of the other stream, then continues waiting for more data in both directions.&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>When one of the streams effectively reaches EOF, the closing phase begins. Socat transfers the EOF condition to the other stream, i.e. tries to shutdown only its write stream, giving it a chance to terminate gracefully. For a defined time socat continues to transfer data in the other direction, but then closes all remaining channels and terminates.&lt;/p>
+&lt;/blockquote></description></item><item><title>TCP/IP教程</title><link>https://tab.wutuofu.com/posts/tcp-ip-tutorial/</link><pubDate>Mon, 13 Apr 2020 22:25:56 +0800</pubDate><guid>https://tab.wutuofu.com/posts/tcp-ip-tutorial/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/tcp-ip-tutorial/The-logical-mapping-between-OSI-basic-reference-model-and-the-TCP-IP-stack.png" alt="Featured image of post TCP/IP教程" />&lt;p>本文不定期更新 :)&lt;/p>
 &lt;p>上个礼拜逛&lt;a class="link" href="https://news.ycombinator.com/" target="_blank" rel="noopener"
 >Hacker News&lt;/a>看到推荐了一份写于1991年介绍TCP/IP协议的文章&lt;a class="link" href="https://tools.ietf.org/html/rfc1180" target="_blank" rel="noopener"
 >A TCP/IP Tutorial&lt;/a>。&lt;/p>
