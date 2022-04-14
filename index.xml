@@ -1007,6 +1007,58 @@ alt="macos osascript notification">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">子模组 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>（https://github.com/datewu/hugo-theme-stack.git）未对路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span> 注册
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">子模组 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>（https://github.com/datewu/hugo-theme-stack.git）已对路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span> 注册
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">子模组路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>：检出 &lt;span class="s1">&amp;#39;aeb077874a7de9ce71304c990ad5cfdc72664f38&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>更换brew源</title><link>https://tab.wutuofu.com/posts/brew-repo/</link><pubDate>Fri, 14 Aug 2020 11:33:00 +0800</pubDate><guid>https://tab.wutuofu.com/posts/brew-repo/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/brew-repo/homebrew-social-card.png" alt="Featured image of post 更换brew源" />&lt;p>国内网络环境日益恶劣，执行&lt;code>brew update/upgrade&lt;/code>花费的时间够我泡好一壶普洱茶。&lt;/p>
+&lt;p>不过好景不长，谁能想到那么大的普洱茶饼，日积月累一点点的被我喝完了。&lt;/p>
+&lt;p>哎，怀恋普洱茶呀。 没了普洱茶，我决定换了brew的官方源，给自己节约节约生命。&lt;/p>
+&lt;h2 id="解决方案">解决方案&lt;/h2>
+&lt;p>挑挑拣拣一圈之后，我决定使用清华大学开源软件镜像站]的brew源。&lt;/p>
+&lt;p>按照&lt;a class="link" href="https://mirrors.tuna.tsinghua.edu.cn/help/homebrew/" target="_blank" rel="noopener"
+>官网的&lt;/a>指引很快就换好了repo，效果很好。&lt;/p>
+&lt;p>和&lt;a class="link" href="https://tab.wutuofu.com/posts/macos-dns/" >设置macos DNS servers&lt;/a>一样我也整理了个shell脚本：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#!/usr/local/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span>set_qh&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> git -C &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>brew --repo&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> git -C &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>brew --repo homebrew/core&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> git -C &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>brew --repo homebrew/cask&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> brew update
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># revocer&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">recover&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> git -C &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>brew --repo&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> remote set-url origin https://github.com/Homebrew/brew.git
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> git -C &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>brew --repo homebrew/core&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> remote set-url origin https://github.com/Homebrew/homebrew-core.git
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> git -C &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>brew --repo homebrew/cask&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> remote set-url origin https://github.com/Homebrew/homebrew-cask.git
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> brew update
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">a&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="s2">&amp;#34;check&amp;#34;&lt;/span>&lt;span class="si">}&lt;/span> &lt;span class="c1"># default to check&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[&lt;/span> &lt;span class="nv">$a&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;r&amp;#34;&lt;/span> &lt;span class="o">]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> recover
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[&lt;/span> &lt;span class="nv">$a&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;set&amp;#34;&lt;/span> &lt;span class="o">]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> set_qh
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[&lt;/span> &lt;span class="nv">$a&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;check&amp;#34;&lt;/span> &lt;span class="o">]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;goping to EXPORT HOMEBREW_BOTTLE_DOMAIN&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">export&lt;/span> &lt;span class="nv">HOMEBREW_BOTTLE_DOMAIN&lt;/span>&lt;span class="o">=&lt;/span>https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="nv">$HOMEBREW_BOTTLE_DOMAIN&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> brew config &lt;span class="p">|&lt;/span> grep ORIGIN
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> brew update
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> brew upgrade
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> brew cleanup
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="nv">$a&lt;/span> successed!
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>上面的bash脚本支持3个参数 &lt;code>check&lt;/code>,&lt;code>set&lt;/code>和 &lt;code>recover&lt;/code>，默认使用 &lt;code>check&lt;/code>参数。&lt;/p>
+&lt;p>保存为&lt;code>set-brew-repo.sh&lt;/code>文件，再加上可执行权限即可：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">➜ ~ chmod +x set-brew-repo.sh
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">➜ ~ ./set-brew-repo.sh
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>设置dns</title><link>https://tab.wutuofu.com/posts/macos-dns/</link><pubDate>Wed, 10 Jun 2020 22:20:03 +0800</pubDate><guid>https://tab.wutuofu.com/posts/macos-dns/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/macos-dns/dns-resolver.png" alt="Featured image of post 设置dns" />&lt;p>众所周知，修改&lt;a class="link" href="https://en.wikipedia.org/wiki/Resolv.conf" target="_blank" rel="noopener"
 >&lt;code>/etc/resolv.conf&lt;/code>&lt;/a>配置文件可以配置Linux的dns 解析服务器。&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>root@VM-8-3-centos ~&lt;span class="o">]&lt;/span>&lt;span class="c1"># cat /etc/resolv.conf &lt;/span>
