@@ -1,4 +1,22 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>鬼画桃符</title><link>https://tab.wutuofu.com/</link><description>Recent content on 鬼画桃符</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 15 Apr 2022 10:23:31 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>css Position</title><link>https://tab.wutuofu.com/posts/css-position/</link><pubDate>Fri, 15 Apr 2022 10:23:31 +0800</pubDate><guid>https://tab.wutuofu.com/posts/css-position/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/css-position/css-position-all.png" alt="Featured image of post css Position" />&lt;h2 id="问题">问题&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>鬼画桃符</title><link>https://tab.wutuofu.com/</link><description>Recent content on 鬼画桃符</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 11 May 2022 14:19:55 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>mysql空磁盘挂卷问题</title><link>https://tab.wutuofu.com/posts/lost-found/</link><pubDate>Wed, 11 May 2022 14:19:55 +0800</pubDate><guid>https://tab.wutuofu.com/posts/lost-found/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/lost-found/lostfoundmysql.png" alt="Featured image of post mysql空磁盘挂卷问题" />&lt;p>今天在tke上部署mysql pod，以为很简单。结果发现pod一直crash，查看日志发现是挂卷的问题：
+&lt;code>[ERROR] --initialize specified but the data directory has files in it. Aborting.&lt;/code>&lt;/p>
+&lt;p>解决办法很简单，给mysql加上启动参数&lt;code>--ignore-db-dir=lost+found&lt;/code>即可。&lt;/p>
+&lt;p>&lt;a class="link" href="https://stackoverflow.com/a/66297627" target="_blank" rel="noopener"
+>mysql 5.7&lt;/a>&lt;/p>
+&lt;h3 id="k8s">k8s&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-yaml" data-lang="yaml">&lt;span class="line">&lt;span class="cl">&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">mysql-master&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">image&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">mysql:5.7&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">args&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="s2">&amp;#34;--ignore-db-dir=lost+found&amp;#34;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="docker-compose">docker compose&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-yaml" data-lang="yaml">&lt;span class="line">&lt;span class="cl">&lt;span class="nt">version&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s1">&amp;#39;3&amp;#39;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">services&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">mysql-master&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">image&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">mysql:5.7&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">command&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">[&lt;/span>--&lt;span class="l">ignore-db-dir=lost+found]&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">environment&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">MYSQL_ROOT_PASSWORD=root&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>css Position</title><link>https://tab.wutuofu.com/posts/css-position/</link><pubDate>Fri, 15 Apr 2022 10:23:31 +0800</pubDate><guid>https://tab.wutuofu.com/posts/css-position/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/css-position/css-position-all.png" alt="Featured image of post css Position" />&lt;h2 id="问题">问题&lt;/h2>
 &lt;p>&lt;figure
 class="gallery-image"
 style="
@@ -2584,15 +2602,15 @@ throughout this tutorial&lt;/p>
 &lt;p>X&lt;!-- raw HTML omitted -->n&lt;!-- raw HTML omitted --> + Y&lt;!-- raw HTML omitted -->n&lt;!-- raw HTML omitted --> = Z&lt;!-- raw HTML omitted -->n&lt;!-- raw HTML omitted -->&lt;/p>
 &lt;p>Press &lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->CTRL&lt;!-- raw HTML omitted -->+&lt;!-- raw HTML omitted -->ALT&lt;!-- raw HTML omitted -->+&lt;!-- raw HTML omitted -->Delete&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted --> to end the session.&lt;/p>
 &lt;p>Most &lt;!-- raw HTML omitted -->salamanders&lt;!-- raw HTML omitted --> are nocturnal, and hunt for insects, worms, and other small creatures.&lt;/p>
-&lt;section class="footnotes" role="doc-endnotes">
+&lt;div class="footnotes" role="doc-endnotes">
 &lt;hr>
 &lt;ol>
-&lt;li id="fn:1" role="doc-endnote">
+&lt;li id="fn:1">
 &lt;p>The above quote is excerpted from Rob Pike&amp;rsquo;s &lt;a class="link" href="https://www.youtube.com/watch?v=PAAkCSZUG1c" target="_blank" rel="noopener"
 >talk&lt;/a> during Gopherfest, November 18, 2015.&amp;#160;&lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
 &lt;/li>
 &lt;/ol>
-&lt;/section></description></item><item><title>数学符号KaTeX</title><link>https://tab.wutuofu.com/posts/math-typesetting/</link><pubDate>Fri, 08 Mar 2019 00:00:00 +0000</pubDate><guid>https://tab.wutuofu.com/posts/math-typesetting/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/math-typesetting/katex.png" alt="Featured image of post 数学符号KaTeX" />&lt;p>Mathematical notation in a Hugo project can be enabled by using third party JavaScript libraries.&lt;/p>
+&lt;/div></description></item><item><title>数学符号KaTeX</title><link>https://tab.wutuofu.com/posts/math-typesetting/</link><pubDate>Fri, 08 Mar 2019 00:00:00 +0000</pubDate><guid>https://tab.wutuofu.com/posts/math-typesetting/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/math-typesetting/katex.png" alt="Featured image of post 数学符号KaTeX" />&lt;p>Mathematical notation in a Hugo project can be enabled by using third party JavaScript libraries.&lt;/p>
 &lt;p>In this example we will be using &lt;a class="link" href="https://katex.org/" target="_blank" rel="noopener"
 >KaTeX&lt;/a>&lt;/p>
 &lt;ul>
