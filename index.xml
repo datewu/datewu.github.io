@@ -1430,7 +1430,17 @@ alt="macos osascript notification">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;babel-plugin-prismjs&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s2">&amp;#34;^2.0.1&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>调试golang测试</title><link>https://tab.wutuofu.com/posts/go-test/</link><pubDate>Wed, 14 Oct 2020 18:38:01 +0800</pubDate><guid>https://tab.wutuofu.com/posts/go-test/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/go-test/ta_moderationworkflow.png" alt="Featured image of post 调试golang测试" />&lt;p>调试某个go test程序的时候，需要实现&lt;code>confirm/approve&lt;/code>功能:&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>顺丰包裹</title><link>https://tab.wutuofu.com/posts/sf-sz/</link><pubDate>Sat, 20 Mar 2021 17:11:26 +0800</pubDate><guid>https://tab.wutuofu.com/posts/sf-sz/</guid><description>&lt;img src="https://tab.wutuofu.com/changeme.jpeg" alt="Featured image of post 顺丰包裹" />&lt;p>快从深圳回老家了，东西丢的差不多了，剩下的东西直接顺丰寄回家。&lt;/p>
+&lt;p>一共寄了3次顺丰包裹。&lt;/p>
+&lt;p>前两次的那个工作人员，6块钱一个纸箱，而且按照体积算。&lt;/p>
+&lt;p>第一次算了69kg：4个包裹，288+21元，&lt;/p>
+&lt;p>第二次算了51kg： 3个包裹加一个小包裹 216 + 21元。&lt;/p>
+&lt;p>第三次换了个工作人员算了38kg：两个纸箱和我自己煤气灶的纸箱不算 173 + 21元。&lt;/p>
+&lt;p>第一次算了4个纸箱 4 * 6 = 24 块，第二次算了3个纸箱 3 * 6 = 18 元， 第三次没有收纸箱的钱。&lt;/p>
+&lt;p>算下来，寄的越重越省钱。&lt;/p>
+&lt;h3 id="update">update&lt;/h3>
+&lt;p>今天（3月31号）寄了最后一次快递，33kg。两个纸箱，一大一小，再加一个帐篷的包。一共 148 +12 = 169元。&lt;/p>
+&lt;p>纸箱没有收费。&lt;/p></description></item><item><title>调试golang测试</title><link>https://tab.wutuofu.com/posts/go-test/</link><pubDate>Wed, 14 Oct 2020 18:38:01 +0800</pubDate><guid>https://tab.wutuofu.com/posts/go-test/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/go-test/ta_moderationworkflow.png" alt="Featured image of post 调试golang测试" />&lt;p>调试某个go test程序的时候，需要实现&lt;code>confirm/approve&lt;/code>功能:&lt;/p>
 &lt;blockquote>
 &lt;p>测试完&lt;code>testCase1&lt;/code>之后（或者说是某个断点），用户输入&lt;code>yes&lt;/code>，执行下一个&lt;code>case&lt;/code>，输入&lt;code>no&lt;/code>， 则退出整个测试。&lt;/p>
 &lt;/blockquote>
