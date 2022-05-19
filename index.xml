@@ -1741,7 +1741,8 @@ throughout this tutorial&lt;/p>
 &lt;p>注意第5点&lt;code>send_user&lt;/code>命令是为了更好的用户交互，主要是给用户一下提示信息/反馈信息。&lt;/p>
 &lt;p>最后注意：&lt;code>send &amp;quot;$pwd\r&amp;quot;&lt;/code>语句的&lt;a class="link" href="https://tab.wutuofu.com/posts/carrier-return/" >转以符&lt;/a>是 &lt;code>\r&lt;/code> 而不是&lt;code>\r\n&lt;/code>。&lt;/p>
 &lt;h2 id="详细语法">详细语法&lt;/h2>
-&lt;p>&lt;code>expect&lt;/code>详细的语法和参数解释参考[Expect examples and tips]&lt;/p>
+&lt;p>&lt;code>expect&lt;/code>详细的语法和参数解释参考&lt;a class="link" href="https://www.pantz.org/software/expect/expect_examples_and_tips.html" target="_blank" rel="noopener"
+>Expect examples and tips&lt;/a>&lt;/p>
 &lt;blockquote>
 &lt;p>Expect is an automation and testing tool used to automate a process that receives interactive commands. If you can connect to any machine using ssh, telnet, ftp, etc then you can automate the process with an expect script. This works even with local programs where you would have to interact with a script or program on the command line.&lt;/p>
 &lt;/blockquote></description></item><item><title>容器PID</title><link>https://tab.wutuofu.com/posts/container-pid/</link><pubDate>Fri, 13 Mar 2020 22:43:32 +0800</pubDate><guid>https://tab.wutuofu.com/posts/container-pid/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/container-pid/the-matrix.jpeg" alt="Featured image of post 容器PID" />&lt;p>架构部的同事问了我两个问题:&lt;/p>
