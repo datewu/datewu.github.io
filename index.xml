@@ -1686,7 +1686,65 @@ throughout this tutorial&lt;/p>
 &lt;p>注意看注释，注意&lt;code>ForwardAgent&lt;/code>配置应用到哪个server上了。&lt;/p>
 &lt;p>当 server 可以和local本机的agent通信的时候，就表示 server 好像拥有了local本地的private keys了。&lt;/p>
 &lt;p>具体说： 当server A 的 ForwardAgent 开启时， server A就可以直接ssh到server B了，&lt;/p>
-&lt;p>如果这个时候 server B 的ForwordAgent没有开启，server B是不可以ssh 到server A的&lt;/p></description></item><item><title>容器PID</title><link>https://tab.wutuofu.com/posts/container-pid/</link><pubDate>Fri, 13 Mar 2020 22:43:32 +0800</pubDate><guid>https://tab.wutuofu.com/posts/container-pid/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/container-pid/the-matrix.jpeg" alt="Featured image of post 容器PID" />&lt;p>架构部的同事问了我两个问题:&lt;/p>
+&lt;p>如果这个时候 server B 的ForwordAgent没有开启，server B是不可以ssh 到server A的&lt;/p></description></item><item><title>Expect自动化工具简介</title><link>https://tab.wutuofu.com/posts/expect-interactive/</link><pubDate>Thu, 19 Mar 2020 16:07:45 +0800</pubDate><guid>https://tab.wutuofu.com/posts/expect-interactive/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/expect-interactive/automate.jpeg" alt="Featured image of post Expect自动化工具简介" />&lt;p>公司服务器使用了两层跳板机，外面的一台我们管它叫 &lt;code>server A&lt;/code>， 另外一台 叫它 &lt;code>server B&lt;/code>。&lt;/p>
+&lt;p>虽然我不知道这种双保险给公司带来了多少安全感，但是我知道我的运维效率降低了差不多90%吧 :&amp;gt;。&lt;/p>
+&lt;p>&lt;code>server A&lt;/code>被直接暴露在公网上， 我们不能使用 &lt;code>ssh key&lt;/code> 只能使用 &lt;code>password&lt;/code>认证&lt;code>ssh&lt;/code>。&lt;/p>
+&lt;p>这还不算完，&lt;code>server A&lt;/code>每3小时改一次自己的&lt;code>root&lt;/code>密码。&lt;/p>
+&lt;p>后面的&lt;code>server B&lt;/code>跳板机器的自我安全感就强多了，&lt;code>server B&lt;/code>可以直接免密使用&lt;code>ssh key&lt;/code>登陆所有的内网服务器，而且允许&lt;code>server A&lt;/code>免密登陆到自己。&lt;/p>
+&lt;p>我决得这样两次登录很浪费时间，于是写了个脚本从外网一次性登陆到&lt;code>server B&lt;/code>服务器上。&lt;/p>
+&lt;h2 id="expect-脚本">expect 脚本&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#!/usr/bin/expect -f
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># for anyone not familar with expect&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># should read this awesome post&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># https://www.pantz.org/software/expect/expect_examples_and_tips.html&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> timeout &lt;span class="m">15&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">### CHANGE pwd every 3h&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> &lt;span class="nb">pwd&lt;/span> &lt;span class="s2">&amp;#34;mySuperSecretpwd123&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> nested_ssh &lt;span class="s2">&amp;#34;ssh server_B&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">## for debug&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># log_user 0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># exp_internal 1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">send_user &lt;span class="s2">&amp;#34;going to connected to server A\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">spawn ssh -q -o &lt;span class="nv">StrictHostKeyChecking&lt;/span>&lt;span class="o">=&lt;/span>no server_A
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">expect &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> timeout &lt;span class="o">{&lt;/span> send_user &lt;span class="s2">&amp;#34;\ntimeout Failed to get password prompt, is VPN on?\n&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="nb">exit&lt;/span> &lt;span class="m">1&lt;/span> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> eof &lt;span class="o">{&lt;/span> send_user &lt;span class="s2">&amp;#34;\nSSH failure for server A\n&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="nb">exit&lt;/span> &lt;span class="m">1&lt;/span> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;*assword:&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">send &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$pwd&lt;/span>&lt;span class="s2">\r&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">expect &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> timeout &lt;span class="o">{&lt;/span>send_user &lt;span class="s2">&amp;#34;\nSSH failure for server B\n&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="nb">exit&lt;/span> &lt;span class="m">1&lt;/span> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;Last login:*&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">send &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$nested_ssh&lt;/span>&lt;span class="s2">\r&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">interact
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="基本语法">基本语法&lt;/h3>
+&lt;p>简单说下基本流程如下：&lt;/p>
+&lt;ol>
+&lt;li>set: 设置变量；&lt;/li>
+&lt;li>spawn: 给对象一个进程空间，让对象可以运行起来&lt;/li>
+&lt;li>expect: 模拟用户等待，&lt;strong>期待&lt;/strong>对象输出字符串；&lt;/li>
+&lt;li>send: 模拟用户输入，给对象发送字符串；&lt;/li>
+&lt;li>send_user: 提示用户;&lt;/li>
+&lt;li>interact: 用户直接和对象通信，expect不再在中间传话了。&lt;/li>
+&lt;/ol>
+&lt;p>因为&lt;code>expect&lt;/code>语法继承自&lt;code>Tcl&lt;/code>，所以变量赋值/初始化的方式和 &lt;code>Bash&lt;/code>不同，需要使用&lt;code>set&lt;/code>关键字。&lt;/p>
+&lt;p>注意第5点&lt;code>send_user&lt;/code>命令是为了更好的用户交互，主要是给用户一下提示信息/反馈信息。&lt;/p>
+&lt;p>最后注意：&lt;code>send &amp;quot;$pwd\r&amp;quot;&lt;/code>语句的&lt;a class="link" href="https://tab.wutuofu.com/posts/carrier-return/" >转以符&lt;/a>是 &lt;code>\r&lt;/code> 而不是&lt;code>\r\n&lt;/code>。&lt;/p>
+&lt;h2 id="详细语法">详细语法&lt;/h2>
+&lt;p>&lt;code>expect&lt;/code>详细的语法和参数解释参考[Expect examples and tips]&lt;/p>
+&lt;blockquote>
+&lt;p>Expect is an automation and testing tool used to automate a process that receives interactive commands. If you can connect to any machine using ssh, telnet, ftp, etc then you can automate the process with an expect script. This works even with local programs where you would have to interact with a script or program on the command line.&lt;/p>
+&lt;/blockquote></description></item><item><title>容器PID</title><link>https://tab.wutuofu.com/posts/container-pid/</link><pubDate>Fri, 13 Mar 2020 22:43:32 +0800</pubDate><guid>https://tab.wutuofu.com/posts/container-pid/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/container-pid/the-matrix.jpeg" alt="Featured image of post 容器PID" />&lt;p>架构部的同事问了我两个问题:&lt;/p>
 &lt;ol>
 &lt;li>宿主机上有个进程很耗 cpu，怎么判断它是不是某个容器的进程;&lt;/li>
 &lt;li>如果它是跑在容器里，怎么查到是哪个容器(container id);&lt;/li>
