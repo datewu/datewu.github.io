@@ -1249,7 +1249,36 @@ alt="macos osascript notification">
 &lt;p>To enable key-repeating, execute the following in your Terminal, log out and back in, and then restart VS Code:&lt;/p>
 &lt;/blockquote>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool &lt;span class="nb">false&lt;/span> &lt;span class="c1"># Enable key-repeating for vs code&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>自研</title><link>https://tab.wutuofu.com/posts/zi-yan/</link><pubDate>Wed, 31 Mar 2021 17:24:52 +0800</pubDate><guid>https://tab.wutuofu.com/posts/zi-yan/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/zi-yan/open-source.png" alt="Featured image of post 自研" />&lt;p>同事问我，把企业的&lt;code>harbor&lt;/code>镜像仓库服务暴露到公网之后，有人暴力登陆怎么办？&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>快慢指针</title><link>https://tab.wutuofu.com/posts/two-points/</link><pubDate>Mon, 19 Apr 2021 19:56:53 +0800</pubDate><guid>https://tab.wutuofu.com/posts/two-points/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/two-points/Image-3.gif" alt="Featured image of post 快慢指针" />&lt;p>4月份腾讯面试的时候被问到如何在空间复杂度为O（1）前提下检查连表是否为闭环：&lt;/p>
+&lt;p>当时没想出来，面试官提醒用快慢指针也没写出来。&lt;/p>
+&lt;p>回到家里想了下，其实当时已经想出来了，没敢写出来:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-golang" data-lang="golang">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">circular&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">head&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">ListNode&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="kt">bool&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">slow&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">fast&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">head&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">head&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="nx">fast&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nx">fast&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Next&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">slow&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">slow&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Next&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fast&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">fast&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Next&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Next&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">slow&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="nx">fast&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="kc">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="kc">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 133;
+flex-basis: 320px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/two-points/fast-slow-points.jpeg" data-size="960x720">
+&lt;img src="https://tab.wutuofu.com/posts/two-points/fast-slow-points.jpeg"
+width="960"
+height="720"
+srcset="https://tab.wutuofu.com/posts/two-points/fast-slow-points_hub5c5dabfad933cb82a6562cb6d3de6a5_42941_480x0_resize_q75_box.jpeg 480w, https://tab.wutuofu.com/posts/two-points/fast-slow-points_hub5c5dabfad933cb82a6562cb6d3de6a5_42941_1024x0_resize_q75_box.jpeg 1024w"
+loading="lazy"
+alt="Floyd’s slow and fast pointers approach">
+&lt;/a>
+&lt;figcaption>Floyd’s slow and fast pointers approach&lt;/figcaption>
+&lt;/figure>&lt;/p></description></item><item><title>自研</title><link>https://tab.wutuofu.com/posts/zi-yan/</link><pubDate>Wed, 31 Mar 2021 17:24:52 +0800</pubDate><guid>https://tab.wutuofu.com/posts/zi-yan/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/zi-yan/open-source.png" alt="Featured image of post 自研" />&lt;p>同事问我，把企业的&lt;code>harbor&lt;/code>镜像仓库服务暴露到公网之后，有人暴力登陆怎么办？&lt;/p>
 &lt;p>harbor默认是没有captcha的，google了很久也没看到。&lt;/p>
 &lt;p>咋办呢？&lt;/p>
 &lt;p>所以还是自研的产品好哦，随随便便就可以加个手机验证码。&lt;/p>
