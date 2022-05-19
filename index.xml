@@ -1226,6 +1226,15 @@ alt="macos osascript notification">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">子模组 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>（https://github.com/datewu/hugo-theme-stack.git）未对路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span> 注册
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">子模组 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>（https://github.com/datewu/hugo-theme-stack.git）已对路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span> 注册
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">子模组路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>：检出 &lt;span class="s1">&amp;#39;aeb077874a7de9ce71304c990ad5cfdc72664f38&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>vscode按键调整</title><link>https://tab.wutuofu.com/posts/vscode-hold/</link><pubDate>Sun, 09 May 2021 19:25:25 +0800</pubDate><guid>https://tab.wutuofu.com/posts/vscode-hold/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/vscode-hold/vim-jkhl.png" alt="Featured image of post vscode按键调整" />&lt;p>今天发现&lt;code>vscodevim&lt;/code>插件不能连续输入方向键&lt;code>j&lt;/code>， 以为是插件的问题，关闭了插件。&lt;/p>
+&lt;p>发现在&lt;code>vscode&lt;/code>里按住&lt;code>j&lt;/code>不放，编辑器并不会连续输入&lt;code>j&lt;/code>。&lt;/p>
+&lt;p>需要调整系统的&lt;code>dafaults&lt;/code>关闭&lt;code>PressAndHold&lt;/code>选项：&lt;/p>
+&lt;p>&lt;a class="link" href="https://github.com/VSCodeVim/Vim/blob/master/README.md#mac" target="_blank" rel="noopener"
+>enable key-repeating&lt;/a>&lt;/p>
+&lt;blockquote>
+&lt;p>To enable key-repeating, execute the following in your Terminal, log out and back in, and then restart VS Code:&lt;/p>
+&lt;/blockquote>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool &lt;span class="nb">false&lt;/span> &lt;span class="c1"># Enable key-repeating for vs code&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>自研</title><link>https://tab.wutuofu.com/posts/zi-yan/</link><pubDate>Wed, 31 Mar 2021 17:24:52 +0800</pubDate><guid>https://tab.wutuofu.com/posts/zi-yan/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/zi-yan/open-source.png" alt="Featured image of post 自研" />&lt;p>同事问我，把企业的&lt;code>harbor&lt;/code>镜像仓库服务暴露到公网之后，有人暴力登陆怎么办？&lt;/p>
 &lt;p>harbor默认是没有captcha的，google了很久也没看到。&lt;/p>
 &lt;p>咋办呢？&lt;/p>
