@@ -9,7 +9,7 @@ tags: [
 categories: [
     "生活",
 ]
-image: changeme.jpeg
+image: sf.jpeg
 draft: false
 ---
 
