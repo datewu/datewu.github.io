@@ -1447,7 +1447,84 @@ alt="macos osascript notification">
 &lt;p>保存为&lt;code>set-dns.sh&lt;/code>文件，再加上可执行权限即可：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">➜ ~ chmod +x set-dns.sh
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">➜ ~ ./set-dns.sh
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>socat工具</title><link>https://tab.wutuofu.com/posts/socat-usage/</link><pubDate>Tue, 14 Apr 2020 09:50:07 +0800</pubDate><guid>https://tab.wutuofu.com/posts/socat-usage/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/socat-usage/socat.jpeg" alt="Featured image of post socat工具" />&lt;p>众所周知kubenetest的端口转发功能&lt;a class="link" href="https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/#forward-a-local-port-to-a-port-on-the-pod" target="_blank" rel="noopener"
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>tcl入门</title><link>https://tab.wutuofu.com/posts/tcl-101/</link><pubDate>Tue, 19 May 2020 16:41:43 +0800</pubDate><guid>https://tab.wutuofu.com/posts/tcl-101/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/tcl-101/tcl-tk.jpeg" alt="Featured image of post tcl入门" />&lt;p>使用了一段时间&lt;a class="link" href="https://tab.wutuofu.com/posts/expect-interactive/" >Expect自动化工具简介&lt;/a>里面的&lt;code>expect&lt;/code>脚本，发现少了一些功能：&lt;/p>
+&lt;ol>
+&lt;li>怎么给&lt;code>expect&lt;/code>脚本传参数呢？&lt;/li>
+&lt;li>&lt;code>expect&lt;/code>怎么调用 &lt;code>bash/sh&lt;/code>外部命令呢？&lt;/li>
+&lt;li>&lt;code>expect&lt;/code>怎么操作字符串呢？&lt;/li>
+&lt;/ol>
+&lt;h2 id="tcl">tcl&lt;/h2>
+&lt;p>前面的文章&lt;a class="link" href="https://tab.wutuofu.com/posts/expect-interactive/" >Expect命令&lt;/a>里面提到过，expect 使用的是&lt;code>Tcl/tk&lt;/code>的语法。&lt;/p>
+&lt;p>所以 大家Google 一下 &lt;code>tcl tutorial&lt;/code>就可以解决上面三个问题了。&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;a class="link" href="https://wiki.tcl-lang.org/page/argv" target="_blank" rel="noopener"
+>tcl argc argc&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;a class="link" href="https://zetcode.com/lang/tcl/" target="_blank" rel="noopener"
+>Tcl tutorial&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;a class="link" href="https://www.tcl.tk/man/tcl8.4/TclCmd/regexp.htm" target="_blank" rel="noopener"
+>Tcl regexp&lt;/a>&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="new-expect-script">new expect script&lt;/h3>
+&lt;p>结合上面的3篇教程我把上篇文章自动化ssh 登陆的脚本优化如下:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#!/usr/bin/expect -f
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># for anyone not familar with expect&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># should read this awesome article&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># https://www.pantz.org/software/expect/expect_examples_and_tips.html&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">{&lt;/span> &lt;span class="nv">$argc&lt;/span> !&lt;span class="o">=&lt;/span> 1&lt;span class="o">}&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> puts &lt;span class="s2">&amp;#34;must set one argument for server_A host ip&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> puts &lt;span class="s2">&amp;#34;./login.tcl 1.1.2.2&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">exit&lt;/span> &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> timeout &lt;span class="m">15&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#set info [gets stdin]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> info &lt;span class="o">[&lt;/span>&lt;span class="nb">exec&lt;/span> privateRESTfullAPI2GetPwd -host &lt;span class="nv">$argv&lt;/span>&lt;span class="o">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> result &lt;span class="o">[&lt;/span>regexp &lt;span class="o">{&lt;/span>&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="o">([&lt;/span>^&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="o">]&lt;/span>*&lt;span class="o">)&lt;/span>&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="o">[&lt;/span>^&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="o">]&lt;/span>*&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="o">([&lt;/span>^&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="o">]&lt;/span>*&lt;span class="o">)&lt;/span>&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="o">[&lt;/span>^&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="o">]&lt;/span>*&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="o">([&lt;/span>^&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="o">]&lt;/span>*&lt;span class="o">)&lt;/span>&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="o">}&lt;/span> &lt;span class="nv">$info&lt;/span> match host pw1 pw2&lt;span class="o">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">send_user &lt;span class="s2">&amp;#34;going to connected to server_A\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">spawn ssh -q -o &lt;span class="nv">StrictHostKeyChecking&lt;/span>&lt;span class="o">=&lt;/span>no nobody@host
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">expect &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> timeout &lt;span class="o">{&lt;/span> send_user &lt;span class="s2">&amp;#34;\ntimeout Failed to get password prompt, is VPN on?\n&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="nb">exit&lt;/span> &lt;span class="m">1&lt;/span> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> eof &lt;span class="o">{&lt;/span> send_user &lt;span class="s2">&amp;#34;\nSSH failure for server_A\n&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="nb">exit&lt;/span> &lt;span class="m">1&lt;/span> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;*assword:&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">send &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$pwd1&lt;/span>&lt;span class="s2">\r&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">expect &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> timeout &lt;span class="o">{&lt;/span>send_user &lt;span class="s2">&amp;#34;\nSSH failure for server_B\n&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="nb">exit&lt;/span> &lt;span class="m">1&lt;/span> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;Last login:*&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">send &lt;span class="s2">&amp;#34;su -\r&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">expect &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> eof &lt;span class="o">{&lt;/span> send_user &lt;span class="s2">&amp;#34;\nSSH failure check your password \n&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="nb">exit&lt;/span> &lt;span class="m">1&lt;/span> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;密码&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">send &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$pw2&lt;/span>&lt;span class="s2">\r&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">interact
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>简单解释上面的脚本：&lt;/p>
+&lt;ol>
+&lt;li>$argc 命令行参数的个数； $argv 命令行参数（不含命令本身）;&lt;/li>
+&lt;li>&lt;code>puts&lt;/code> 相当于 bash 的 &lt;code>echo&lt;/code>命令 ;&lt;/li>
+&lt;li>&lt;code>exec&lt;/code> 相当于 bash的 &lt;code>$()&lt;/code>;&lt;/li>
+&lt;li>privateRESTfullAPI2GetPwd -host $argv 是我本地的一个用来查询主机密码的工具，返回值的格式为：&lt;code>Passworod of &amp;quot;1.1.1.1&amp;quot; are &amp;quot;pwd for noby&amp;quot; and &amp;quot;pwd for root&amp;quot;&lt;/code>&lt;/li>
+&lt;li>正则表达式 &lt;code> {\&amp;quot;([^\&amp;quot;]*)\&amp;quot;[^\&amp;quot;]*\&amp;quot;([^\&amp;quot;]*)\&amp;quot;[^\&amp;quot;]*\&amp;quot;([^\&amp;quot;]*)\&amp;quot;}&lt;/code>用来提取上面&lt;code>privateAPI2GetPwd&lt;/code>返回值中3个 双引号中的内容， 即： host, pwd1, pwd2&lt;/li>
+&lt;li>命令&lt;code>set result [regexp {...第五条..} $info match host pw1 pw2]&lt;/code>把上面正则表达式的的3个 &lt;code>group&lt;/code> 分别赋值给 &lt;code>host, pw1, pw2&lt;/code>三个变量。 丢弃了&lt;code>result&lt;/code> 和 &lt;code>match&lt;/code> 两个变量。&lt;/li>
+&lt;/ol></description></item><item><title>socat工具</title><link>https://tab.wutuofu.com/posts/socat-usage/</link><pubDate>Tue, 14 Apr 2020 09:50:07 +0800</pubDate><guid>https://tab.wutuofu.com/posts/socat-usage/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/socat-usage/socat.jpeg" alt="Featured image of post socat工具" />&lt;p>众所周知kubenetest的端口转发功能&lt;a class="link" href="https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/#forward-a-local-port-to-a-port-on-the-pod" target="_blank" rel="noopener"
 >kubectl port-forward&lt;/a>非常实用，可以提高开发人员的debug效率。&lt;/p>
 &lt;p>其实&lt;code>kubectl port-forward&lt;/code>的底层脏活累活都是&lt;code>socat&lt;/code>命令在做，&lt;code>kubectl&lt;/code>只能算是一个代理商。&lt;/p>
 &lt;h2 id="socat">socat&lt;/h2>
