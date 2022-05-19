@@ -1,4 +1,68 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>鬼画桃符</title><link>https://tab.wutuofu.com/</link><description>Recent content on 鬼画桃符</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 11 May 2022 14:19:55 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>mysql空磁盘挂卷问题</title><link>https://tab.wutuofu.com/posts/lost-found/</link><pubDate>Wed, 11 May 2022 14:19:55 +0800</pubDate><guid>https://tab.wutuofu.com/posts/lost-found/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/lost-found/lostfoundmysql.png" alt="Featured image of post mysql空磁盘挂卷问题" />&lt;p>今天在tke上部署mysql pod，以为很简单。结果发现pod一直crash，查看日志发现是挂卷的问题：
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>鬼画桃符</title><link>https://tab.wutuofu.com/</link><description>Recent content on 鬼画桃符</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 19 May 2022 09:30:03 +0800</lastBuildDate><atom:link href="https://tab.wutuofu.com/index.xml" rel="self" type="application/rss+xml"/><item><title>It's ALWAYS DNS!</title><link>https://tab.wutuofu.com/posts/always-dns/</link><pubDate>Thu, 19 May 2022 09:30:03 +0800</pubDate><guid>https://tab.wutuofu.com/posts/always-dns/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/always-dns/dns.jpeg" alt="Featured image of post It's ALWAYS DNS!" />&lt;p>今天前端遇到一个问题，前端部署的[反向代理]](/posts/nginx-proxy/)到后端的&lt;code>upstream&lt;/code>一直pending。&lt;/p>
+&lt;h2 id="timeout">timeout？&lt;/h2>
+&lt;p>以为是后端服务压力大，来不及响应，所以更新upstream配置，加上timeout。 立竿见影，没问题了。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-nginx" data-lang="nginx">&lt;span class="line">&lt;span class="cl">&lt;span class="k">location&lt;/span> &lt;span class="s">/api/&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kn">proxy_set_header&lt;/span> &lt;span class="s">Host&lt;/span> &lt;span class="nv">$http_host&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kn">proxy_set_header&lt;/span> &lt;span class="s">X-Real-IP&lt;/span> &lt;span class="nv">$remote_addr&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kn">proxy_set_header&lt;/span> &lt;span class="s">X-Forwarded-For&lt;/span> &lt;span class="nv">$proxy_add_x_forwarded_for&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kn">proxy_set_header&lt;/span> &lt;span class="s">Upgrade&lt;/span> &lt;span class="nv">$http_upgrade&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kn">proxy_set_header&lt;/span> &lt;span class="s">Connection&lt;/span> &lt;span class="s">&amp;#39;upgrade&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kn">rewrite&lt;/span> &lt;span class="s">^/api/(.*)&lt;/span>$ &lt;span class="s">/&lt;/span>&lt;span class="nv">$1&lt;/span> &lt;span class="s">break&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kn">proxy_pass&lt;/span> &lt;span class="s">http://api_server/&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kn">proxy_connect_timeout&lt;/span> &lt;span class="s">5s&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kn">proxy_send_timeout&lt;/span> &lt;span class="s">10s&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kn">proxy_read_timeout&lt;/span> &lt;span class="s">10s&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>一段时间后，后端又接受不到前端请求了，nginx一直报错&lt;code>499&lt;/code>。&lt;/p>
+&lt;h2 id="dns-">DNS !&lt;/h2>
+&lt;p>调查了一段时间后发现根本问题是nginx的&lt;code>dns cache&lt;/code>机制的问题。&lt;/p>
+&lt;p>原来后端每次更新&lt;code>k8s&lt;/code>后端deployment的时候，也会重建&lt;code>service&lt;/code>从而导致 service的 IP发生了变化。&lt;/p>
+&lt;p>和后端沟通修改了后端更新流水线脚本，不再重建service 后，问题解决 :)&lt;/p>
+&lt;p>&lt;figure
+class="gallery-image"
+style="
+flex-grow: 137;
+flex-basis: 330px"
+>
+&lt;a href="https://tab.wutuofu.com/posts/always-dns/dns.webp" data-size="4406x3200">
+&lt;img src="https://tab.wutuofu.com/posts/always-dns/dns.webp"
+width="4406"
+height="3200"
+srcset="https://tab.wutuofu.com/posts/always-dns/dns_hu484ea9858f2c4354449d14ee2aa974c7_105224_480x0_resize_q75_h2_box_2.webp 480w, https://tab.wutuofu.com/posts/always-dns/dns_hu484ea9858f2c4354449d14ee2aa974c7_105224_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="check dns">
+&lt;/a>
+&lt;figcaption>check dns&lt;/figcaption>
+&lt;/figure>&lt;/p>
+&lt;h2 id="dubug">dubug&lt;/h2>
+&lt;h3 id="force-resolve-bad-performance">force resolve (bad performance)&lt;/h3>
+&lt;p>&lt;a class="link" href="https://serverfault.com/questions/240476/how-to-force-nginx-to-resolve-dns-of-a-dynamic-hostname-everytime-when-doing-p" target="_blank" rel="noopener"
+>force nginx to resolve DNS (of a dynamic hostname) everytime when doing proxy_pass?&lt;/a>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-nginx" data-lang="nginx">&lt;span class="line">&lt;span class="cl">&lt;span class="k">server&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">#...
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="kn">resolver&lt;/span> &lt;span class="mi">127&lt;/span>&lt;span class="s">.0.0.1&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kn">set&lt;/span> &lt;span class="nv">$backend&lt;/span> &lt;span class="s">&amp;#34;http://dynamic.example.com:80&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kn">proxy_pass&lt;/span> &lt;span class="nv">$backend&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">#...
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="use-enviroment-not-working">use enviroment (not working)&lt;/h3>
+&lt;p>&lt;a class="link" href="https://github.com/docker-library/docs/tree/master/nginx#using-environment-variables-in-nginx-configuration-new-in-119" target="_blank" rel="noopener"
+>/etc/nginx/templates/*.template&lt;/a>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span class="line">&lt;span class="cl">&lt;span class="c"># build stage&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">FROM&lt;/span>&lt;span class="s"> node:lts-alpine as build-front&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">ARG&lt;/span> front&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">WORKDIR&lt;/span>&lt;span class="s"> /app&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">COPY&lt;/span> package*.json ./&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">RUN&lt;/span> npm config &lt;span class="nb">set&lt;/span> registry https://mirrors.my-dear-company.com/npm-ok/&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">RUN&lt;/span> npm install&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">COPY&lt;/span> . ./&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">RUN&lt;/span> npm run build&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">FROM&lt;/span>&lt;span class="s"> nginx:stable&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">COPY&lt;/span> nginx.template.conf /etc/nginx/templates/api.conf.template&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">COPY&lt;/span> --from&lt;span class="o">=&lt;/span>build-front /app/build /usr/share/nginx/html&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">EXPOSE&lt;/span>&lt;span class="s"> 80&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>mysql空磁盘挂卷问题</title><link>https://tab.wutuofu.com/posts/lost-found/</link><pubDate>Wed, 11 May 2022 14:19:55 +0800</pubDate><guid>https://tab.wutuofu.com/posts/lost-found/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/lost-found/lostfoundmysql.png" alt="Featured image of post mysql空磁盘挂卷问题" />&lt;p>今天在tke上部署mysql pod，以为很简单。结果发现pod一直crash，查看日志发现是挂卷的问题：
 &lt;code>[ERROR] --initialize specified but the data directory has files in it. Aborting.&lt;/code>&lt;/p>
 &lt;p>解决办法很简单，给mysql加上启动参数&lt;code>--ignore-db-dir=lost+found&lt;/code>即可。&lt;/p>
 &lt;p>&lt;a class="link" href="https://stackoverflow.com/a/66297627" target="_blank" rel="noopener"
