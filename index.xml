@@ -1226,7 +1226,11 @@ alt="macos osascript notification">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">子模组 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>（https://github.com/datewu/hugo-theme-stack.git）未对路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span> 注册
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">子模组 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>（https://github.com/datewu/hugo-theme-stack.git）已对路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span> 注册
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">子模组路径 &lt;span class="s1">&amp;#39;themes/stack&amp;#39;&lt;/span>：检出 &lt;span class="s1">&amp;#39;aeb077874a7de9ce71304c990ad5cfdc72664f38&amp;#39;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>React 17.0.2</title><link>https://tab.wutuofu.com/posts/react-17.0.2/</link><pubDate>Mon, 29 Mar 2021 17:02:01 +0800</pubDate><guid>https://tab.wutuofu.com/posts/react-17.0.2/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/react-17.0.2/react-17.jpeg" alt="Featured image of post React 17.0.2" />&lt;p>今天看到react 17.0.2 发布一个礼拜了(快有1年没大的更新了），想升级试一试，在项目下执行 &lt;code>npm update&lt;/code>指令，结果报错如下：&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>自研</title><link>https://tab.wutuofu.com/posts/zi-yan/</link><pubDate>Wed, 31 Mar 2021 17:24:52 +0800</pubDate><guid>https://tab.wutuofu.com/posts/zi-yan/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/zi-yan/open-source.png" alt="Featured image of post 自研" />&lt;p>同事问我，把企业的&lt;code>harbor&lt;/code>镜像仓库服务暴露到公网之后，有人暴力登陆怎么办？&lt;/p>
+&lt;p>harbor默认是没有captcha的，google了很久也没看到。&lt;/p>
+&lt;p>咋办呢？&lt;/p>
+&lt;p>所以还是自研的产品好哦，随随便便就可以加个手机验证码。&lt;/p>
+&lt;p>ps：今天是在招商金科的最后一天了。&lt;/p></description></item><item><title>React 17.0.2</title><link>https://tab.wutuofu.com/posts/react-17.0.2/</link><pubDate>Mon, 29 Mar 2021 17:02:01 +0800</pubDate><guid>https://tab.wutuofu.com/posts/react-17.0.2/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/react-17.0.2/react-17.jpeg" alt="Featured image of post React 17.0.2" />&lt;p>今天看到react 17.0.2 发布一个礼拜了(快有1年没大的更新了），想升级试一试，在项目下执行 &lt;code>npm update&lt;/code>指令，结果报错如下：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">✗ npm update
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">npm ERR! code ERESOLVE
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">npm ERR! ERESOLVE unable to resolve dependency tree
@@ -1430,7 +1434,7 @@ alt="macos osascript notification">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;babel-plugin-prismjs&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s2">&amp;#34;^2.0.1&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>顺丰包裹</title><link>https://tab.wutuofu.com/posts/sf-sz/</link><pubDate>Sat, 20 Mar 2021 17:11:26 +0800</pubDate><guid>https://tab.wutuofu.com/posts/sf-sz/</guid><description>&lt;img src="https://tab.wutuofu.com/changeme.jpeg" alt="Featured image of post 顺丰包裹" />&lt;p>快从深圳回老家了，东西丢的差不多了，剩下的东西直接顺丰寄回家。&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>顺丰包裹</title><link>https://tab.wutuofu.com/posts/sf-sz/</link><pubDate>Sat, 20 Mar 2021 17:11:26 +0800</pubDate><guid>https://tab.wutuofu.com/posts/sf-sz/</guid><description>&lt;img src="https://tab.wutuofu.com/posts/sf-sz/sf.jpeg" alt="Featured image of post 顺丰包裹" />&lt;p>快从深圳回老家了，东西丢的差不多了，剩下的东西直接顺丰寄回家。&lt;/p>
 &lt;p>一共寄了3次顺丰包裹。&lt;/p>
 &lt;p>前两次的那个工作人员，6块钱一个纸箱，而且按照体积算。&lt;/p>
 &lt;p>第一次算了69kg：4个包裹，288+21元，&lt;/p>
