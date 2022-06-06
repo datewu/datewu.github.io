@@ -25,6 +25,13 @@ syntax on
 filetype plugin indent on
 set number
 ``` 
+### paste
+复制粘贴：
+[disable auto indent](https://stackoverflow.com/questions/2514445/turning-off-auto-indent-when-pasting-text-into-vim)
+```vimrc
+set paste
+```
+>  Notice the “– INSERT (paste) –” at the bottom of the Vim window.
 ### fold
 代码折叠：
 [Folding wiki](http://vim.wikia.com/wiki/Folding)
