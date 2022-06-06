@@ -4235,7 +4235,15 @@ To enable use of the -n argument, use the $(MAKE) variable.&lt;/p>
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="nx">syntax&lt;/span> &lt;span class="nx">on&lt;/span>&lt;span class="err">
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="nx">filetype&lt;/span> &lt;span class="nx">plugin&lt;/span> &lt;span class="nx">indent&lt;/span> &lt;span class="nx">on&lt;/span>&lt;span class="err">
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="nx">set&lt;/span> &lt;span class="nx">number&lt;/span>&lt;span class="err">
-&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="fold">fold&lt;/h3>
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="paste">paste&lt;/h3>
+&lt;p>复制粘贴：
+&lt;a class="link" href="https://stackoverflow.com/questions/2514445/turning-off-auto-indent-when-pasting-text-into-vim" target="_blank" rel="noopener"
+>disable auto indent&lt;/a>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-vimrc" data-lang="vimrc">&lt;span class="line">&lt;span class="cl">&lt;span class="nx">set&lt;/span> &lt;span class="nx">paste&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>Notice the “– INSERT (paste) –” at the bottom of the Vim window.&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="fold">fold&lt;/h3>
 &lt;p>代码折叠：
 &lt;a class="link" href="http://vim.wikia.com/wiki/Folding" target="_blank" rel="noopener"
 >Folding wiki&lt;/a>&lt;/p>
