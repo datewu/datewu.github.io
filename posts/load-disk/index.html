@@ -1,0 +1,164 @@
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Linux挂盘，扩容等磁盘操作"><title>挂载硬盘</title><link rel=canonical href=https://tab.deoops.com/posts/load-disk/><link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="挂载硬盘"><meta property="og:description" content="Linux挂盘，扩容等磁盘操作"><meta property="og:url" content="https://tab.deoops.com/posts/load-disk/"><meta property="og:site_name" content="鬼画桃符"><meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="disk"><meta property="article:tag" content="linux"><meta property="article:tag" content="pv"><meta property="article:tag" content="vg"><meta property="article:published_time" content="2019-10-18T10:03:07+08:00"><meta property="article:modified_time" content="2023-05-25T10:03:07+08:00"><meta property="og:image" content="https://tab.deoops.com/posts/load-disk/disk.jpeg"><meta name=twitter:title content="挂载硬盘"><meta name=twitter:description content="Linux挂盘，扩容等磁盘操作"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://tab.deoops.com/posts/load-disk/disk.jpeg"></head><body class="article-page has-toc"><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex
+extended"><div id=article-toolbar><a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg><span>返回</span></a></div><main class="main full-width"><article class="has-image main-article"><header class=article-header><div class=article-image><a href=/posts/load-disk/><img src=/posts/load-disk/disk_huc96de7ee3c2e159b1393298e71eecb80_142875_800x0_resize_q75_box.jpeg srcset="/posts/load-disk/disk_huc96de7ee3c2e159b1393298e71eecb80_142875_800x0_resize_q75_box.jpeg 800w, /posts/load-disk/disk_huc96de7ee3c2e159b1393298e71eecb80_142875_1600x0_resize_q75_box.jpeg 1600w" width=800 height=800 loading=lazy alt="Featured image of post 挂载硬盘"></a></div><div class=article-details><header class=article-category><a href=/categories/%E8%BF%90%E7%BB%B4/ style=background-color:#2a9d8f;color:#fff>运维</a></header><h2 class=article-title><a href=/posts/load-disk/>挂载硬盘</a></h2><h3 class=article-subtitle>Linux挂盘，扩容等磁盘操作</h3><footer class=article-time><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg><time class=article-time--published>Oct 18, 2019</time></div><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg><time class=article-time--reading>阅读时长: 3 分钟</time></div><div><time class=article-lastmod>最后更新于 May 25, 2023 10:03 +0800</time></div></footer></div></header><section class=article-content><h2 id=update-more-user-friendly>update: more user friendly</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1>#bin/bash</span>
+</span></span><span class=line><span class=cl>mustBeRoot<span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=o>[</span> <span class=s2>&#34;</span><span class=k>$(</span>id -u<span class=k>)</span><span class=s2>&#34;</span> !<span class=o>=</span> <span class=s2>&#34;0&#34;</span> <span class=o>]</span><span class=p>;</span> <span class=k>then</span>
+</span></span><span class=line><span class=cl>        <span class=nb>echo</span> <span class=s2>&#34;只有root用户才能运行&#34;</span> 1&gt;<span class=p>&amp;</span><span class=m>2</span>
+</span></span><span class=line><span class=cl>        <span class=nb>echo</span> <span class=s2>&#34;当前登录用户`whoami`&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=nb>exit</span> <span class=m>1</span>
+</span></span><span class=line><span class=cl>    <span class=k>fi</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 数据盘挂载</span>
+</span></span><span class=line><span class=cl>checkAndMountDataDisk<span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=nb>echo</span> <span class=s2>&#34;选择数据盘/分区 ：&#34;</span>
+</span></span><span class=line><span class=cl>    fdisk -l <span class=p>|</span> grep /dev <span class=p>|</span> grep G <span class=p>|</span> cut  -f <span class=m>1</span> -d ,
+</span></span><span class=line><span class=cl>    <span class=nb>echo</span> <span class=s2>&#34; &#34;</span>
+</span></span><span class=line><span class=cl>    <span class=nb>read</span> -p <span class=s2>&#34;请输入硬盘/分区 名：/dev/&#34;</span> -r disk_name
+</span></span><span class=line><span class=cl>    <span class=nv>disk_id</span><span class=o>=</span><span class=sb>`</span>blkid <span class=p>|</span> grep <span class=nv>$disk_name</span><span class=sb>`</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=o>[</span> <span class=nv>$?</span> -ne <span class=m>0</span> <span class=o>]</span><span class=p>;</span><span class=k>then</span>
+</span></span><span class=line><span class=cl>        <span class=nb>echo</span> <span class=s2>&#34;获取硬盘/分区 </span><span class=nv>$disk_name</span><span class=s2> uuid失败，请检查名称是否准确&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=nb>exit</span> <span class=m>1</span>
+</span></span><span class=line><span class=cl>    <span class=k>fi</span>
+</span></span><span class=line><span class=cl>    <span class=nv>disk_path</span><span class=o>=</span><span class=sb>`</span><span class=nb>echo</span> <span class=nv>$disk_id</span> <span class=p>|</span> cut -f <span class=m>1</span> -d <span class=s1>&#39;:&#39;</span> <span class=sb>`</span>
+</span></span><span class=line><span class=cl>    <span class=nb>echo</span> <span class=s2>&#34;已选择 </span><span class=nv>$disk_path</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=nv>disk_uuid</span><span class=o>=</span><span class=sb>`</span>blkid <span class=nv>$disk_path</span> <span class=p>|</span> cut -f <span class=m>2</span> -d <span class=s1>&#39;&#34;&#39;</span> <span class=sb>`</span>
+</span></span><span class=line><span class=cl>    <span class=nv>disk_info</span><span class=o>=</span><span class=sb>`</span>lsblk -f <span class=nv>$disk_path</span> <span class=p>|</span> grep <span class=nv>$disk_uuid</span> <span class=sb>`</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=o>[</span> <span class=nv>$?</span> -ne <span class=m>0</span> <span class=o>]</span><span class=p>;</span><span class=k>then</span>
+</span></span><span class=line><span class=cl>        <span class=nb>echo</span> <span class=s2>&#34;获取硬盘/分区 </span><span class=nv>$disk_path</span><span class=s2> 详细信息失败，请检查名称是否正确&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=nb>exit</span> <span class=m>1</span>
+</span></span><span class=line><span class=cl>    <span class=k>fi</span>
+</span></span><span class=line><span class=cl>    <span class=nv>fs_type</span><span class=o>=</span><span class=sb>`</span><span class=nb>echo</span> <span class=nv>$disk_info</span> <span class=p>|</span> cut -f <span class=m>2</span> -d <span class=s1>&#39; &#39;</span><span class=sb>`</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=o>[</span> <span class=nv>$fs_type</span> !<span class=o>=</span> <span class=s1>&#39;ext4&#39;</span> <span class=o>]</span><span class=p>;</span><span class=k>then</span>
+</span></span><span class=line><span class=cl>        <span class=nb>echo</span> <span class=s2>&#34;硬盘文件系统格式不是ext4。&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=nb>read</span> -p <span class=s2>&#34;是否格式化为 ext4？ 输入 y 同意格式化&#34;</span> -r format_ext4
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>[</span> <span class=nv>$format_ext4</span> !<span class=o>=</span> <span class=s1>&#39;y&#39;</span> <span class=o>]</span><span class=p>;</span><span class=k>then</span>
+</span></span><span class=line><span class=cl>            <span class=nb>echo</span> <span class=s2>&#34;未格式化 </span><span class=nv>$disk_path</span><span class=s2> 文件系统格式，退出安装脚本。&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=nb>exit</span> <span class=m>1</span>
+</span></span><span class=line><span class=cl>        <span class=k>fi</span>
+</span></span><span class=line><span class=cl>        <span class=nb>echo</span> <span class=s2>&#34;即将格式化 </span><span class=nv>$disk_path</span><span class=s2> 文件系统格式....&#34;</span>
+</span></span><span class=line><span class=cl>	      mkfs.ext4 <span class=nv>$disk_path</span>
+</span></span><span class=line><span class=cl>    <span class=k>fi</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=o>[</span> -d <span class=s2>&#34;</span><span class=nv>$1</span><span class=s2>&#34;</span> <span class=o>]</span><span class=p>;</span><span class=k>then</span>
+</span></span><span class=line><span class=cl>        <span class=nb>echo</span> <span class=s2>&#34;数据盘挂载点/data目录已存在&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=k>else</span>
+</span></span><span class=line><span class=cl>        <span class=nb>echo</span> <span class=s2>&#34;创建数据盘挂载点/data目录&#34;</span>
+</span></span><span class=line><span class=cl>        mkdir <span class=nv>$1</span>
+</span></span><span class=line><span class=cl>    <span class=k>fi</span>
+</span></span><span class=line><span class=cl>    mount <span class=nv>UUID</span><span class=o>=</span><span class=nv>$disk_uuid</span> <span class=nv>$1</span>
+</span></span><span class=line><span class=cl>    <span class=nb>echo</span> <span class=s2>&#34;UUID=</span><span class=nv>$disk_uuid</span><span class=s2>       </span><span class=nv>$1</span><span class=s2>   ext4    defaults          0    0&#34;</span> &gt;&gt; /etc/fstab
+</span></span><span class=line><span class=cl>    <span class=nb>echo</span> <span class=s2>&#34;硬盘挂载成功&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>checkDataMountpoint<span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>   <span class=nb>echo</span> <span class=s1>&#39;挂载数据盘&#39;</span>
+</span></span><span class=line><span class=cl>   grep <span class=s2>&#34;</span><span class=nv>$1</span><span class=s2>&#34;</span> /etc/fstab <span class=p>|</span> grep ext4
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=o>[</span> <span class=nv>$?</span> -ne <span class=m>0</span> <span class=o>]</span><span class=p>;</span><span class=k>then</span>
+</span></span><span class=line><span class=cl>        checkAndMountDataDisk
+</span></span><span class=line><span class=cl>    <span class=k>else</span>
+</span></span><span class=line><span class=cl>        <span class=nb>echo</span> <span class=s1>&#39;数据盘已挂载&#39;</span>
+</span></span><span class=line><span class=cl>        mount -a
+</span></span><span class=line><span class=cl>    <span class=k>fi</span>
+</span></span><span class=line><span class=cl>    cpAndUntar
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>mustBeRoot
+</span></span><span class=line><span class=cl>checkDataMountpoint <span class=si>${</span><span class=nv>1</span><span class=p>-/data</span><span class=si>}</span>
+</span></span></code></pre></div><h2 id=lsblk>lsblk</h2><p>首先使用<code>lsblk</code>查看当前系统硬盘挂载的情况</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=o>[</span>root@dev-7 ~<span class=o>]</span><span class=c1># lsblk</span>
+</span></span><span class=line><span class=cl>NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+</span></span><span class=line><span class=cl>sr0     11:0    <span class=m>1</span> 1024M  <span class=m>0</span> rom
+</span></span><span class=line><span class=cl>vda    253:0    <span class=m>0</span>   40G  <span class=m>0</span> disk
+</span></span><span class=line><span class=cl>└─vda1 253:1    <span class=m>0</span>   40G  <span class=m>0</span> part /
+</span></span><span class=line><span class=cl>vdb    253:16   <span class=m>0</span>  200G  <span class=m>0</span> disk
+</span></span><span class=line><span class=cl>└─vdb1 253:17   <span class=m>0</span>  200G  <span class=m>0</span> part
+</span></span></code></pre></div><h2 id=format-and-mount>format and mount</h2><p>格式化硬盘然后挂载到<code> /media/newdrive</code> 目录</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1>### disk_add_new.sh</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>function</span> set_vars<span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=nv>fs_ty</span><span class=o>=</span>ext4
+</span></span><span class=line><span class=cl>  <span class=nv>mount_point</span><span class=o>=</span>/media/newdrive
+</span></span><span class=line><span class=cl>  <span class=c1>#check=`fdisk -l | grep GB | cut -d &#39;:&#39; -f1 | cut -c 6-`</span>
+</span></span><span class=line><span class=cl>  <span class=c1>#new_disk=`echo $check | cut -d &#39; &#39; -f 2`</span>
+</span></span><span class=line><span class=cl>  <span class=nv>new_disk</span><span class=o>=</span><span class=nv>$1</span>
+</span></span><span class=line><span class=cl><span class=c1># new_disk=${check##*\ }</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>function</span> make_file_system<span class=o>(){</span>
+</span></span><span class=line><span class=cl>  mkfs -t <span class=nv>$fs_ty</span> <span class=nv>$new_disk</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>function</span> get_uuid<span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=nv>uuid_info</span><span class=o>=</span><span class=sb>`</span>blkid <span class=nv>$new_disk</span><span class=sb>`</span>
+</span></span><span class=line><span class=cl>  <span class=nv>uuid</span><span class=o>=</span><span class=si>${</span><span class=nv>uuid_info</span><span class=p>#*UUID</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>  <span class=nv>id</span><span class=o>=</span><span class=sb>`</span><span class=nb>echo</span> <span class=nv>$uuid</span> <span class=p>|</span> cut -d <span class=s1>&#39;&#34;&#39;</span> -f 2<span class=sb>`</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>function</span> mount_and_auto_mount<span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>  mkdir -p <span class=nv>$mount_point</span>
+</span></span><span class=line><span class=cl>  mount -t <span class=nv>$fs_ty</span> <span class=nv>$new_disk</span> <span class=nv>$mount_point</span>
+</span></span><span class=line><span class=cl>  grep <span class=nv>$id</span> /etc/fstab <span class=o>||</span> <span class=nb>echo</span> <span class=nv>UUID</span><span class=o>=</span><span class=nv>$id</span> <span class=nv>$mount_point</span> <span class=nv>$fs_ty</span> defaults <span class=m>0</span> <span class=m>0</span> &gt;&gt; /etc/fstab
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>function</span> run<span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>  set_vars <span class=nv>$1</span>
+</span></span><span class=line><span class=cl>  make_file_system
+</span></span><span class=line><span class=cl>  get_uuid
+</span></span><span class=line><span class=cl>  <span class=o>[</span> <span class=si>${#</span><span class=nv>id</span><span class=si>}</span> -gt <span class=m>30</span> <span class=o>]</span> <span class=o>||</span> <span class=nb>exit</span> <span class=m>1</span>
+</span></span><span class=line><span class=cl>  mount_and_auto_mount
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>run <span class=nv>$1</span>
+</span></span></code></pre></div><h3 id=扩容>扩容</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=nv>mount_point</span><span class=o>=</span>/media/newdrive
+</span></span><span class=line><span class=cl><span class=c1># check=`fdisk -l | grep GB | cut -d &#39;:&#39; -f1 | cut -c 6-`</span>
+</span></span><span class=line><span class=cl><span class=c1># disk=`echo $check | cut -d &#39; &#39; -f 2`</span>
+</span></span><span class=line><span class=cl><span class=nv>disk</span><span class=o>=</span><span class=nv>$1</span>  <span class=c1># /dev/sdb   sdc</span>
+</span></span><span class=line><span class=cl><span class=nv>fs_ty</span><span class=o>=</span>ext4
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>e2fsck -f <span class=nv>$disk</span>
+</span></span><span class=line><span class=cl>resize2fs <span class=nv>$disk</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>mount -t <span class=nv>$fs_ty</span> <span class=nv>$disk</span> <span class=nv>$mount_point</span>
+</span></span></code></pre></div><h2 id=逻辑卷>逻辑卷</h2><h3 id=创建逻辑卷>创建逻辑卷</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>pvcreate /dev/vdb
+</span></span><span class=line><span class=cl>vgcreate vg02 /dev/vdb
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>lvcreate -l 90%free -n kubelet vg02
+</span></span><span class=line><span class=cl>mkfs.xfs -n <span class=nv>ftype</span><span class=o>=</span><span class=m>1</span> /dev/vg02/kubelet
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>mount /dev/vg02/kubelet /var/lib/kubelet
+</span></span><span class=line><span class=cl><span class=nb>echo</span> <span class=s2>&#34;/dev/mapper/vg02-kubelet /var/lib/kubelet xfs defaults 0 0 &#34;</span> &gt;&gt; /etc/fstab 
+</span></span></code></pre></div><h3 id=扩容逻辑卷>扩容逻辑卷</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># 1. 删除未挂载的逻辑卷</span>
+</span></span><span class=line><span class=cl> lvremove vg02/kubelet <span class=c1># lvremove vg02</span>
+</span></span><span class=line><span class=cl><span class=c1># 2. 删除kubelet的磁盘</span>
+</span></span><span class=line><span class=cl>  vgreduce vg02 /dev/vdb <span class=c1># vgremove vg02</span>
+</span></span><span class=line><span class=cl><span class=c1># 3. 将原来的磁盘加到别的vg</span>
+</span></span><span class=line><span class=cl>  vgextend vg01 /dev/vdb
+</span></span><span class=line><span class=cl><span class=c1># 4. 扩容逻辑卷</span>
+</span></span><span class=line><span class=cl>  lvextend -L +200G /dev/vg01/var
+</span></span><span class=line><span class=cl><span class=c1># 5. 生效</span>
+</span></span><span class=line><span class=cl>  xfs_groups /dev/vg01/var
+</span></span><span class=line><span class=cl><span class=c1># 6. 删除/etc/fstab 中kubelet的挂载点</span>
+</span></span><span class=line><span class=cl><span class=c1>## vim /etc/fstab +5dd</span>
+</span></span></code></pre></div><h3 id=troubleshoot>troubleshoot</h3><p>有时候删除逻辑卷会遇到报错<code>Logical volume vg01/LVgdb contains a filesystem in use</code></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=o>[</span>root@cnsz92vl14311 ~<span class=o>]</span><span class=c1># umount /dev/vg01/LVgdb </span>
+</span></span><span class=line><span class=cl><span class=o>[</span>root@cnsz92vl14311 ~<span class=o>]</span><span class=c1># lvremove /dev/vg01</span>
+</span></span><span class=line><span class=cl>Do you really want to remove active logical volume LVgdb? <span class=o>[</span>y/n<span class=o>]</span>: y
+</span></span><span class=line><span class=cl>  Logical volume <span class=s2>&#34;LVgdb&#34;</span> successfully removed
+</span></span><span class=line><span class=cl><span class=o>[</span>root@cnsz92vl14311 ~<span class=o>]</span><span class=c1># lsblk</span>
+</span></span><span class=line><span class=cl>NAME          MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+</span></span><span class=line><span class=cl>vda           252:0    <span class=m>0</span>   60G  <span class=m>0</span> disk 
+</span></span><span class=line><span class=cl>├─vda1        252:1    <span class=m>0</span>  476M  <span class=m>0</span> part /boot
+</span></span><span class=line><span class=cl>└─vda2        252:2    <span class=m>0</span> 59.5G  <span class=m>0</span> part 
+</span></span><span class=line><span class=cl>  ├─vg00-root 253:0    <span class=m>0</span>   10G  <span class=m>0</span> lvm  /
+</span></span><span class=line><span class=cl>  ├─vg00-home 253:1    <span class=m>0</span>  500M  <span class=m>0</span> lvm  /home
+</span></span><span class=line><span class=cl>  ├─vg00-var  253:2    <span class=m>0</span>   10G  <span class=m>0</span> lvm  /var
+</span></span><span class=line><span class=cl>  ├─vg00-tmp  253:3    <span class=m>0</span>   10G  <span class=m>0</span> lvm  /tmp
+</span></span><span class=line><span class=cl>  └─vg00-app  253:4    <span class=m>0</span>   29G  <span class=m>0</span> lvm  /app
+</span></span><span class=line><span class=cl>vdb           252:16   <span class=m>0</span>  300G  <span class=m>0</span> disk 
+</span></span><span class=line><span class=cl><span class=o>[</span>root@cnsz92vl14311 ~<span class=o>]</span><span class=c1># </span>
+</span></span></code></pre></div></section><footer class=article-footer><section class=article-tags><a href=/tags/disk/>disk</a>
+<a href=/tags/linux/>linux</a>
+<a href=/tags/pv/>pv</a>
+<a href=/tags/vg/>vg</a></section><section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg><span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><aside class=related-contents--wrapper><h2 class=section-title>相关文章</h2><div class=related-contents><div class="flex article-list--tile"><article class=has-image><a href=/posts/socat-usage/><div class=article-image><img src=/posts/socat-usage/socat.b7710d19548d0dfc292db2cfd5b841b6_hu03f89a710279d4dc3ef9b7f10baa691c_127416_250x150_fill_q75_box_smart1.jpeg width=250 height=150 loading=lazy data-key data-hash="md5-t3ENGVSNDfwpLbLP1bhBtg=="></div><div class=article-details><h2 class=article-title>socat工具</h2></div></a></article><article class=has-image><a href=/posts/container-pid/><div class=article-image><img src=/posts/container-pid/the-matrix.7648da305198231fe1910097bf34ba73_huca438541ad881ab92ee8c66601a20268_121541_250x150_fill_q75_box_smart1.jpeg width=250 height=150 loading=lazy data-key data-hash="md5-dkjaMFGYIx/hkQCXvzS6cw=="></div><div class=article-details><h2 class=article-title>容器PID</h2></div></a></article><article class=has-image><a href=/posts/systemd-conf/><div class=article-image><img src=/posts/systemd-conf/Systemd_components.svg loading=lazy data-key data-hash=/posts/systemd-conf/Systemd_components.svg></div><div class=article-details><h2 class=article-title>Systemd配置问题</h2></div></a></article><article class=has-image><a href=/posts/macvlan-busy/><div class=article-image><img src=/posts/macvlan-busy/maxresdefault.950f254caf2f9e23db9a50f2c7f00747_hu0c8b163f503b127644f51a05a3769b8d_73452_250x150_fill_q75_box_smart1.jpeg width=250 height=150 loading=lazy data-key data-hash="md5-lQ8lTK8vniPbmlDyx/AHRw=="></div><div class=article-details><h2 class=article-title>无法创建macvlan设备</h2></div></a></article><article class=has-image><a href=/posts/tcp-tune/><div class=article-image><img src=/posts/tcp-tune/sysctl.0086a186d14416c738a025951ff2aa1a_hue759758d58191cbb59e001a219022668_168191_250x150_fill_q75_box_smart1.jpeg width=250 height=150 loading=lazy data-key data-hash="md5-AIahhtFEFsc4oCWVH/KqGg=="></div><div class=article-details><h2 class=article-title>tcp性能调优</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2006 -
+2023 鬼画桃符</section><section class=powerby>豆腐炒糖</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous></main><aside class="sidebar right-sidebar sticky"><section class="widget archives"><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#update-more-user-friendly>update: more user friendly</a></li><li><a href=#lsblk>lsblk</a></li><li><a href=#format-and-mount>format and mount</a><ol><li><a href=#扩容>扩容</a></li></ol></li><li><a href=#逻辑卷>逻辑卷</a><ol><li><a href=#创建逻辑卷>创建逻辑卷</a></li><li><a href=#扩容逻辑卷>扩容逻辑卷</a></li><li><a href=#troubleshoot>troubleshoot</a></li></ol></li></ol></nav></div></section></aside></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

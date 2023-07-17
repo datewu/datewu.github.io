@@ -1,0 +1,147 @@
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="更换麻烦所以自签100年"><title>替换k8s所有证书</title><link rel=canonical href=https://tab.deoops.com/posts/k8s-certs/><link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="替换k8s所有证书"><meta property="og:description" content="更换麻烦所以自签100年"><meta property="og:url" content="https://tab.deoops.com/posts/k8s-certs/"><meta property="og:site_name" content="鬼画桃符"><meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="k8s"><meta property="article:tag" content="kubeadm"><meta property="article:tag" content="openssl"><meta property="article:tag" content="makefile"><meta property="article:published_time" content="2018-08-10T20:27:10+08:00"><meta property="article:modified_time" content="2018-08-10T20:27:10+08:00"><meta property="og:image" content="https://tab.deoops.com/posts/k8s-certs/k8s.webp"><meta name=twitter:title content="替换k8s所有证书"><meta name=twitter:description content="更换麻烦所以自签100年"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://tab.deoops.com/posts/k8s-certs/k8s.webp"></head><body class="article-page has-toc"><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex
+extended"><div id=article-toolbar><a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg><span>返回</span></a></div><main class="main full-width"><article class="has-image main-article"><header class=article-header><div class=article-image><a href=/posts/k8s-certs/><img src=/posts/k8s-certs/k8s_hucdb5e2014b72ce09271c5c17f97648be_22078_800x0_resize_q75_h2_box_2.webp srcset="/posts/k8s-certs/k8s_hucdb5e2014b72ce09271c5c17f97648be_22078_800x0_resize_q75_h2_box_2.webp 800w, /posts/k8s-certs/k8s_hucdb5e2014b72ce09271c5c17f97648be_22078_1600x0_resize_q75_h2_box_2.webp 1600w" width=800 height=453 loading=lazy alt="Featured image of post 替换k8s所有证书"></a></div><div class=article-details><header class=article-category><a href=/categories/%E5%BC%80%E5%8F%91/ style=background-color:#2a9d8f;color:#fff>开发</a>
+<a href=/categories/%E8%BF%90%E7%BB%B4/ style=background-color:#2a9d8f;color:#fff>运维</a></header><h2 class=article-title><a href=/posts/k8s-certs/>替换k8s所有证书</a></h2><h3 class=article-subtitle>更换麻烦所以自签100年</h3><footer class=article-time><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg><time class=article-time--published>Aug 10, 2018</time></div><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg><time class=article-time--reading>阅读时长: 2 分钟</time></div></footer></div></header><section class=article-content><p>客户需要把kubernetes <code>apiserver/etcd/kubelet/kubectl</code> 等所有的证书有效期修改为100年。</p><p>很明显这是一个不合理的需求，不过客户说什么就是什么。</p><p>于是经几天的调试有了下面的这个 <code>Makefile</code>批量生成所有(<code>FILES</code>变量)的证书。</p><p>如果对makefile的语法不熟悉，可以看看<a class=link href=/posts/makefile-tutorial/>Makefile简介</a></p><h2 id=makefile>makefile</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=line><span class=cl><span class=nv>FILES</span> <span class=o>=</span> ca.crt ca.key sa.key sa.pub front-proxy-ca.crt front-proxy-ca.key etcd_ca.crt etcd_ca.key 
+</span></span><span class=line><span class=cl><span class=nv>CONFS</span> <span class=o>=</span> admin.conf controller-manager.conf kubelet.conf scheduler.conf
+</span></span><span class=line><span class=cl><span class=nv>SELFS</span> <span class=o>=</span> kubelet.crt.self kubelet.crt.key
+</span></span><span class=line><span class=cl><span class=c>#KEYs = ca.key front-proxy-ca.key etcd_ca.key sa.key
+</span></span></span><span class=line><span class=cl><span class=c>#CAs = ca.crt front-proxy-ca.crt etcd_ca.crt
+</span></span></span><span class=line><span class=cl><span class=c>#PUBs = sa.pub
+</span></span></span><span class=line><span class=cl><span class=c></span>
+</span></span><span class=line><span class=cl><span class=c>## kubernetes will sign certificate 
+</span></span></span><span class=line><span class=cl><span class=c>## automatically, so below
+</span></span></span><span class=line><span class=cl><span class=c>## csr/cert is for test purpose
+</span></span></span><span class=line><span class=cl><span class=c>#CSR = apiserver.csr apiserver-kubelet-client.csr 
+</span></span></span><span class=line><span class=cl><span class=c></span><span class=nv>CERT_KEYS</span> <span class=o>=</span> apiserver.key apiserver-kubelet-client.key front-proxy-client.key
+</span></span><span class=line><span class=cl><span class=nv>CERTS</span> <span class=o>=</span> apiserver.cert apiserver-kubelet-client.cert front-proxy-client.cert
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c># openssl genrsa -des3 -out rootCA.key 4096
+</span></span></span><span class=line><span class=cl><span class=c></span><span class=nv>CMD_CREATE_PRIVATE_KEY</span> <span class=o>=</span> openssl genrsa -out <span class=nv>$@</span> <span class=m>2048</span>
+</span></span><span class=line><span class=cl><span class=nv>CMD_CREATE_PUBLIC_KEY</span> <span class=o>=</span> openssl rsa -in $&lt; -pubout -out <span class=nv>$@</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c># openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 1024 -out rootCA.crt
+</span></span></span><span class=line><span class=cl><span class=c></span><span class=nv>CMD_CREATE_CA</span> <span class=o>=</span> openssl req -x509 -new -nodes -key $&lt; -sha256 -days <span class=m>36500</span> -out <span class=nv>$@</span> -subj <span class=s1>&#39;/CN=kubernetes&#39;</span>
+</span></span><span class=line><span class=cl><span class=c># openssl req -new -key mydomain.com.key -out mydomain.com.csr
+</span></span></span><span class=line><span class=cl><span class=c></span><span class=nv>CMD_CREATE_CSR</span> <span class=o>=</span> openssl req -new -key $&lt; -out <span class=nv>$@</span> -config <span class=k>$(</span>word 2,$^<span class=k>)</span>
+</span></span><span class=line><span class=cl><span class=c># openssl x509 -req -in mydomain.com.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out mydomain.com.crt -days 500 -sha256
+</span></span></span><span class=line><span class=cl><span class=c></span><span class=nv>CMD_SIGN_CERT</span> <span class=o>=</span> openssl x509 -req -in $&lt; -CA <span class=k>$(</span>word 2,$^<span class=k>)</span> -CAkey <span class=k>$(</span>word 3,$^<span class=k>)</span> -CAcreateserial -out <span class=nv>$@</span> -days <span class=m>36500</span> -sha256 -extfile <span class=k>$(</span>word 4,$^<span class=k>)</span> -extensions my_extensions
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c># generata self sign certificate
+</span></span></span><span class=line><span class=cl><span class=c></span><span class=nv>CMD_CREATE_CERT</span> <span class=o>=</span> openssl req -x509 -new -nodes -key $&lt; -sha256 -days <span class=m>36500</span> -out <span class=nv>$@</span> -subj <span class=s1>&#39;/CN=nodeXXX@timestamp1531732165&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>CMD_MSG</span> <span class=o>=</span> @echo generating <span class=nv>$@</span> ...
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>MASTER_IP</span> <span class=o>:=</span> 192.168.1.200 <span class=c1>## REMEMBER CHANGE ME</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>.PHONY</span><span class=o>:</span> <span class=n>all</span> <span class=n>clean</span> <span class=n>check</span> <span class=n>self_sign</span> <span class=n>rename</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>all</span><span class=o>:</span> ${<span class=n>FILES</span>} ${<span class=n>CONFS</span>} ${<span class=n>CERT_KEYS</span>} ${<span class=n>CERTS</span>}
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>clean</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>    -rm <span class=si>${</span><span class=nv>FILES</span><span class=si>}</span> <span class=si>${</span><span class=nv>CONFS</span><span class=si>}</span> <span class=si>${</span><span class=nv>CERT_KEYS</span><span class=si>}</span> <span class=si>${</span><span class=nv>CERTS</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>self_sign</span><span class=o>:</span> ${<span class=n>SELFS</span>}
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>check</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> f in *.cert *.crt<span class=p>;</span> <span class=k>do</span> <span class=nb>echo</span> <span class=nv>$$</span>f<span class=p>;</span> openssl x509 -noout -dates -in <span class=nv>$$</span>f<span class=p>;</span> <span class=nb>echo</span> <span class=s1>&#39;===&#39;</span><span class=p>;</span> <span class=k>done</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>rename</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> f in *.cert<span class=p>;</span> <span class=k>do</span> <span class=nb>echo</span> <span class=nv>$$</span>f<span class=p>;</span> mv <span class=nv>$$</span>f <span class=nv>$$</span><span class=o>{</span>f%.*<span class=o>}</span>.crt<span class=p>;</span> <span class=nb>echo</span> <span class=s1>&#39;=====&#39;</span><span class=p>;</span> <span class=k>done</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>%.key</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>    <span class=si>${</span><span class=nv>CMD_MSG</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>    <span class=si>${</span><span class=nv>CMD_CREATE_PRIVATE_KEY</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>%.pub</span><span class=o>:</span> %.<span class=n>key</span>
+</span></span><span class=line><span class=cl>    <span class=si>${</span><span class=nv>CMD_MSG</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>    <span class=si>${</span><span class=nv>CMD_CREATE_PUBLIC_KEY</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>%.self</span><span class=o>:</span> %.<span class=n>key</span>
+</span></span><span class=line><span class=cl>    <span class=si>${</span><span class=nv>CMD_MSG</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>    <span class=si>${</span><span class=nv>CMD_CREATE_CERT</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>%.crt</span><span class=o>:</span> %.<span class=n>key</span>
+</span></span><span class=line><span class=cl>    <span class=si>${</span><span class=nv>CMD_MSG</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>    <span class=si>${</span><span class=nv>CMD_CREATE_CA</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>%.csr</span><span class=o>:</span> %.<span class=n>key</span> %.<span class=n>csr</span>.<span class=n>cnf</span>
+</span></span><span class=line><span class=cl>    <span class=si>${</span><span class=nv>CMD_MSG</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>    <span class=si>${</span><span class=nv>CMD_CREATE_CSR</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>%.cert</span><span class=o>:</span> %.<span class=n>csr</span> <span class=n>ca</span>.<span class=n>crt</span> <span class=n>ca</span>.<span class=n>key</span> %.<span class=n>csr</span>.<span class=n>cnf</span>
+</span></span><span class=line><span class=cl><span class=c>#%.cert: %.csr front-proxy-ca.crt front-proxy-ca.key %.csr.cnf
+</span></span></span><span class=line><span class=cl><span class=c></span>    <span class=si>${</span><span class=nv>CMD_MSG</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>    <span class=si>${</span><span class=nv>CMD_SIGN_CERT</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>%.conf</span><span class=o>:</span> %.<span class=n>cert</span> %-<span class=n>conf</span>.<span class=n>sh</span>
+</span></span><span class=line><span class=cl>    sh <span class=k>$(</span>word 2,$^<span class=k>)</span> <span class=si>${</span><span class=nv>MASTER_IP</span><span class=si>}</span>
+</span></span></code></pre></div><p>上面的<code>Makefile</code>还需要对应的<code>csr</code>和 <code>conffiles</code>。</p><h3 id=admincsrcnf>admin.csr.cnf</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF &gt; admin.conf
+</span></span></span><span class=line><span class=cl><span class=s>apiVersion: v1
+</span></span></span><span class=line><span class=cl><span class=s>clusters:
+</span></span></span><span class=line><span class=cl><span class=s>- cluster:
+</span></span></span><span class=line><span class=cl><span class=s>    certificate-authority-data: $(cat ca.crt | base64 | tr -d &#39;\n&#39;)
+</span></span></span><span class=line><span class=cl><span class=s>    server: https://$1:6443
+</span></span></span><span class=line><span class=cl><span class=s>  name: kubernetes
+</span></span></span><span class=line><span class=cl><span class=s>contexts:
+</span></span></span><span class=line><span class=cl><span class=s>- context:
+</span></span></span><span class=line><span class=cl><span class=s>    cluster: kubernetes
+</span></span></span><span class=line><span class=cl><span class=s>    user: kubernetes-admin
+</span></span></span><span class=line><span class=cl><span class=s>  name: kubernetes-admin@kubernetes
+</span></span></span><span class=line><span class=cl><span class=s>current-context: kubernetes-admin@kubernetes
+</span></span></span><span class=line><span class=cl><span class=s>kind: Config
+</span></span></span><span class=line><span class=cl><span class=s>preferences: {}
+</span></span></span><span class=line><span class=cl><span class=s>users:
+</span></span></span><span class=line><span class=cl><span class=s>- name: kubernetes-admin
+</span></span></span><span class=line><span class=cl><span class=s>  user:
+</span></span></span><span class=line><span class=cl><span class=s>    client-certificate-data: $(cat admin.cert | base64 | tr -d &#39;\n&#39;)
+</span></span></span><span class=line><span class=cl><span class=s>    client-key-data: $(cat admin.key | base64 | tr -d &#39;\n&#39;)
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></div><h3 id=admin-confsh>admin-conf.sh</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-ini data-lang=ini><span class=line><span class=cl><span class=k>[ req ]</span>
+</span></span><span class=line><span class=cl><span class=na>prompt</span> <span class=o>=</span> <span class=s>no</span>
+</span></span><span class=line><span class=cl><span class=na>utf8</span> <span class=o>=</span> <span class=s>yes</span>
+</span></span><span class=line><span class=cl><span class=na>distinguished_name</span> <span class=o>=</span> <span class=s>my_req_distinguished_name</span>
+</span></span><span class=line><span class=cl><span class=na>req_extensions</span> <span class=o>=</span> <span class=s>my_extensions</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>[ my_req_distinguished_name ]</span>
+</span></span><span class=line><span class=cl><span class=na>C</span> <span class=o>=</span> <span class=s>dn</span>
+</span></span><span class=line><span class=cl><span class=na>ST</span> <span class=o>=</span> <span class=s>lol</span>
+</span></span><span class=line><span class=cl><span class=na>L</span> <span class=o>=</span> <span class=s>dota</span>
+</span></span><span class=line><span class=cl><span class=na>O</span>  <span class=o>=</span> <span class=s>system:masters # change this</span>
+</span></span><span class=line><span class=cl><span class=na>CN</span> <span class=o>=</span> <span class=s>kubernetes-admin # change this</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>[ my_extensions ]</span>
+</span></span><span class=line><span class=cl><span class=na>basicConstraints</span><span class=o>=</span><span class=s>CA:FALSE</span>
+</span></span><span class=line><span class=cl><span class=na>subjectKeyIdentifier</span> <span class=o>=</span> <span class=s>hash</span>
+</span></span><span class=line><span class=cl><span class=c1>#  subjectAltName=@my_subject_alt_names</span>
+</span></span><span class=line><span class=cl><span class=c1>#  </span>
+</span></span><span class=line><span class=cl><span class=c1>#  [ my_subject_alt_names ]</span>
+</span></span><span class=line><span class=cl><span class=c1>#  DNS.1 = *.oats.org</span>
+</span></span><span class=line><span class=cl><span class=c1>#  DNS.2 = *.oats.net</span>
+</span></span><span class=line><span class=cl><span class=c1>#  DNS.3 = *.oats.in</span>
+</span></span><span class=line><span class=cl><span class=c1>#  DNS.4 = oats.org</span>
+</span></span><span class=line><span class=cl><span class=c1>#  DNS.5 = oats.net</span>
+</span></span><span class=line><span class=cl><span class=c1>#  DNS.6 = oats.in</span>
+</span></span></code></pre></div><h2 id=kubeadm>kubeadm</h2><p>安装k8s集群的时候，使用<code>kubeadm phase certs</code>命令更新证书即可：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>kubeadm alpha phase certs all --config kubeadm-config.yaml
+</span></span><span class=line><span class=cl>kubeadm alpha phase kubelet config write-to-disk --config kubeadm-config.yaml
+</span></span><span class=line><span class=cl>kubeadm alpha phase kubelet write-env-file --config kubeadm-config.yaml
+</span></span><span class=line><span class=cl>kubeadm alpha phase kubeconfig kubelet --config kubeadm-config.yaml
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>kubeadm alpha phase kubeconfig all --config kubeadm-config.yaml
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>## --experimental-cluster-signing-duration=187600h0m0s</span>
+</span></span><span class=line><span class=cl>kubeadm alpha phase controlplane all --config kubeadm-config.yaml
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>systemctl start kubelet
+</span></span><span class=line><span class=cl>kubeadm alpha phase mark-master --config kubeadm-config.yaml
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>## kubeadm join 172.16.0.5:6443 --token xvrmo8.lk0ec7ifzn8mdflu2  --discovery-token-unsafe-skip-ca-verification</span>
+</span></span></code></pre></div></section><footer class=article-footer><section class=article-tags><a href=/tags/k8s/>k8s</a>
+<a href=/tags/kubeadm/>kubeadm</a>
+<a href=/tags/openssl/>openssl</a>
+<a href=/tags/makefile/>makefile</a></section><section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg><span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><aside class=related-contents--wrapper><h2 class=section-title>相关文章</h2><div class=related-contents><div class="flex article-list--tile"><article class=has-image><a href=/posts/explain-kubeconfig/><div class=article-image><img src=/posts/explain-kubeconfig/kubeconfig.8de483e194e9d703d6ade3fd9d8b3598_hu6b4ad2ec2bfdd2b8d356f680088de3f4_179870_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy data-key data-hash="md5-jeSD4ZTp1wPWreP9nYs1mA=="></div><div class=article-details><h2 class=article-title>细说kubeconfig</h2></div></a></article><article class=has-image><a href=/posts/bash-command/><div class=article-image><img src=/posts/bash-command/terminal.3d5715ab4fac1a152ddddcbd623152a8_hue2114e7452ea31417cca47ffc195f951_34424_250x150_fill_q75_box_smart1.jpeg width=250 height=150 loading=lazy data-key data-hash="md5-PVcVq0+sGhUt3dy9YjFSqA=="></div><div class=article-details><h2 class=article-title>bash简介</h2></div></a></article><article class=has-image><a href=/posts/expect-interactive/><div class=article-image><img src=/posts/expect-interactive/automate.4b57b78b628844f5439a384d066e9cb8_hu0267170b9c80213022522221d5593617_95938_250x150_fill_q75_box_smart1.jpeg width=250 height=150 loading=lazy data-key data-hash="md5-S1e3i2KIRPVDmjhNBm6cuA=="></div><div class=article-details><h2 class=article-title>Expect自动化工具简介</h2></div></a></article><article class=has-image><a href=/posts/neutron-port/><div class=article-image><img src=/posts/neutron-port/_huba0c25ee44e1cb025e6838f746b91615_235376_0f8519d2522d80b6fc5afae2a6d5e9f8.png width=250 height=150 loading=lazy data-key data-hash="md5-MkCaJenF4NruQ1BFKjxBGA=="></div><div class=article-details><h2 class=article-title>Neutron小记</h2></div></a></article><article class=has-image><a href=/posts/vscode-eslint/><div class=article-image><img src=/posts/vscode-eslint/eslint-airbnb.2f6cfa69959d62c46e4a9dc5039f8e50_hue35271ac4524df007877384f8b1c06a2_74499_250x150_fill_q75_box_smart1.jpeg width=250 height=150 loading=lazy data-key data-hash="md5-L2z6aZWdYsRuSp3FA5+OUA=="></div><div class=article-details><h2 class=article-title>配置vscode eslint</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2006 -
+2023 鬼画桃符</section><section class=powerby>豆腐炒糖</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous></main><aside class="sidebar right-sidebar sticky"><section class="widget archives"><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#makefile>makefile</a><ol><li><a href=#admincsrcnf>admin.csr.cnf</a></li><li><a href=#admin-confsh>admin-conf.sh</a></li></ol></li><li><a href=#kubeadm>kubeadm</a></li></ol></nav></div></section></aside></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

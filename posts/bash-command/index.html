@@ -1,0 +1,163 @@
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="整理shell脚本中常用命令和函数方法"><title>bash简介</title><link rel=canonical href=https://tab.deoops.com/posts/bash-command/><link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="bash简介"><meta property="og:description" content="整理shell脚本中常用命令和函数方法"><meta property="og:url" content="https://tab.deoops.com/posts/bash-command/"><meta property="og:site_name" content="鬼画桃符"><meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="shell"><meta property="article:tag" content="bash"><meta property="article:tag" content="command"><meta property="article:published_time" content="2021-11-17T10:06:54+08:00"><meta property="article:modified_time" content="2021-11-17T10:06:54+08:00"><meta property="og:image" content="https://tab.deoops.com/posts/bash-command/terminal.jpeg"><meta name=twitter:title content="bash简介"><meta name=twitter:description content="整理shell脚本中常用命令和函数方法"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://tab.deoops.com/posts/bash-command/terminal.jpeg"></head><body class="article-page has-toc"><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex
+extended"><div id=article-toolbar><a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg><span>返回</span></a></div><main class="main full-width"><article class="has-image main-article"><header class=article-header><div class=article-image><a href=/posts/bash-command/><img src=/posts/bash-command/terminal_hue2114e7452ea31417cca47ffc195f951_34424_800x0_resize_q75_box.jpeg srcset="/posts/bash-command/terminal_hue2114e7452ea31417cca47ffc195f951_34424_800x0_resize_q75_box.jpeg 800w, /posts/bash-command/terminal_hue2114e7452ea31417cca47ffc195f951_34424_1600x0_resize_q75_box.jpeg 1600w" width=800 height=447 loading=lazy alt="Featured image of post bash简介"></a></div><div class=article-details><header class=article-category><a href=/categories/%E5%BC%80%E5%8F%91/ style=background-color:#2a9d8f;color:#fff>开发</a>
+<a href=/categories/%E8%BF%90%E7%BB%B4/ style=background-color:#2a9d8f;color:#fff>运维</a></header><h2 class=article-title><a href=/posts/bash-command/>bash简介</a></h2><h3 class=article-subtitle>整理shell脚本中常用命令和函数方法</h3><footer class=article-time><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg><time class=article-time--published>Nov 17, 2021</time></div><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg><time class=article-time--reading>阅读时长: 4 分钟</time></div></footer></div></header><section class=article-content><p>本文会不定期更新 :)</p><h2 id=set>set</h2><p>可以使用set命令改变shell脚本默认的执行流程。
+比如 <code>set -e</code> 可以使得shell脚本遇到某一条命令出错（ <code>echo $?</code> 不为0）时立即退出执行。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1>#/bin/bash</span>
+</span></span><span class=line><span class=cl><span class=nb>set</span> -e
+</span></span><span class=line><span class=cl><span class=nb>false</span>
+</span></span><span class=line><span class=cl><span class=nb>echo</span> you cannot see me, unless you comment out the <span class=s1>&#39;set -e&#39;</span> flag, haha
+</span></span></code></pre></div><p><a class=link href=https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html target=_blank rel=noopener>set详细文档</a></p><h2 id=du>du</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>❯ du -sh Downloads 
+</span></span><span class=line><span class=cl>4.1G    Downloads
+</span></span></code></pre></div><p><a class=link href=http://zh.wikipedia.org/wiki/Du_%28Unix%29 target=_blank rel=noopener>wiki</a></p><h2 id=rm>rm</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>rm <span class=nv>$0</span>  <span class=c1># 删除当前文件 for cleanup</span>
+</span></span></code></pre></div><h2 id=job>job</h2><h3 id=nohup>nohup</h3><p>在后台执行当前命令：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>nohup /usr/sbin/script.sh  <span class=p>&amp;</span>
+</span></span></code></pre></div><p>默认情况下，进程是前台进程，这时就把Shell给占据了，我们无法进行其他操作，对于那些没有交互的进程，
+我们希望将其在后台启动，可以在启动参数的时候加一个&rsquo;&&lsquo;实现这个目的。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>❯ sleep <span class=m>5</span> <span class=p>&amp;</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>1<span class=o>]</span> <span class=m>34769</span>
+</span></span><span class=line><span class=cl>✦ ❯ 
+</span></span><span class=line><span class=cl><span class=o>[</span>1<span class=o>]</span>  + <span class=m>34769</span> <span class=k>done</span>       sleep <span class=m>5</span>
+</span></span><span class=line><span class=cl>✦ ❯ 
+</span></span></code></pre></div><p>进程切换到后台的时候，我们把它称为job。切换到后台时会输出相关job信息，上面&的输出 [1] 34769 ：
+[1]表示job ID 是1,11319表示进程ID是34769。切换到后台的进程，仍然可以用ps命令查看。</p><h3 id=fgbg-suspended>fg/bg suspended</h3><p>可以通过bg （background）和fg（foreground）命令将其在前后台间状态切换。
+可以使用+z 组合键把当前fg的进程挂起:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>Source changed <span class=s2>&#34;/Users/r/datewu.github.io/content/posts/bash-command/index.md&#34;</span>: WRITE
+</span></span><span class=line><span class=cl>Total in <span class=m>15</span> ms
+</span></span><span class=line><span class=cl>^Z
+</span></span><span class=line><span class=cl><span class=o>[</span>1<span class=o>]</span>  + <span class=m>3595</span> suspended  hugo server
+</span></span></code></pre></div><p>注意，挂起的进程会暂停运行。需要再执行bg/fg命令才能继续运行：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>datewu.github.io on  main <span class=o>[</span>!?<span class=o>]</span> took 7m41s 
+</span></span><span class=line><span class=cl>✦ ❯ <span class=nb>bg</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>1<span class=o>]</span>  + <span class=m>3595</span> continued  hugo server
+</span></span></code></pre></div><p>同样的，bg之后执行fg命令就可以把job重新分配到当前的shell了。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>datewu.github.io on  main <span class=o>[</span>!?<span class=o>]</span> 
+</span></span><span class=line><span class=cl>✦ ❯ ls
+</span></span><span class=line><span class=cl>Makefile    Readme.md   archetypes  config.yaml content     data        layouts     resources   static      themes
+</span></span><span class=line><span class=cl>datewu.github.io on  main <span class=o>[</span>!?<span class=o>]</span> 
+</span></span><span class=line><span class=cl>✦ ❯ <span class=nb>fg</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>1<span class=o>]</span>  + <span class=m>3595</span> running    hugo server
+</span></span></code></pre></div><h2 id=守护进程>守护进程</h2><p>如果一个进程永远都是以后台方式启动，并且不能受到Shell退出影响而退出，一个正统的做法是将其创建为守护进程。
+守护进程值得是系统长期运行的后台进程，类似Windows服务。守护进程信息通过ps –a无法查看到，需要用到–x参数。
+当查看守护进程时，往往还附上-j参数以查看作业控制信息，其中TPGID一栏为-1就是守护进程。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>root ~ ps xj
+</span></span><span class=line><span class=cl>PPID PID PGID SID TTY TPGID STAT UID TIME COMMAND
+</span></span><span class=line><span class=cl><span class=m>953</span> <span class=m>1190</span> <span class=m>1190</span> <span class=m>1190</span> ? -1 Ss <span class=m>1000</span> 0:00 /bin/sh /usr/bin/startkde
+</span></span><span class=line><span class=cl><span class=m>1</span> <span class=m>1490</span> <span class=m>1482</span> <span class=m>1482</span> ? -1 Sl <span class=m>1000</span> 0:00 /usr/bin/VBoxClient –seamless
+</span></span><span class=line><span class=cl><span class=m>1</span> <span class=m>1491</span> <span class=m>1477</span> <span class=m>1477</span> ? -1 Sl <span class=m>1000</span> 0:00 /usr/bin/VBoxClient –display
+</span></span></code></pre></div><p>创建守护进程最关键的一步是调用setsid函数创建一个新的Session，并成为Session Leader。
+成功创建守护进程的流程为：</p><ol><li>创建一个新的Session，当前进程成为Seesion Leader， 当前进程的id就是Session id；</li><li>创建一个新的进程组，当前进程成为进程组的Leader， 当前进程的id就是进程组的id；</li><li>如果当前进程原本有一个控制终端，则它会失去这个shell，成为一个没有shell的进程（即守护进程）。</li></ol><p>可以使用的命令有 <code>disown setsid nohup</code></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>❯ tldr <span class=nb>disown</span>
+</span></span><span class=line><span class=cl>Command <span class=nb>disown</span> does not exist <span class=k>for</span> the host platform. Displaying the page from linux platform
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=nb>disown</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  Allow sub-processes to live beyond the shell that they are attached to.
+</span></span><span class=line><span class=cl>  See also the <span class=nb>jobs</span> command.
+</span></span><span class=line><span class=cl>  More information: https://www.gnu.org/software/bash/manual/bash.html#index-disown.
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  - Disown the current job:
+</span></span><span class=line><span class=cl>    <span class=nb>disown</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  - Disown a specific job:
+</span></span><span class=line><span class=cl>    <span class=nb>disown</span> %job_number
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  - Disown all jobs:
+</span></span><span class=line><span class=cl>    <span class=nb>disown</span> -a
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  - Keep job <span class=o>(</span><span class=k>do</span> not <span class=nb>disown</span> it<span class=o>)</span>, but mark it so that no future SIGHUP is received on shell exit:
+</span></span><span class=line><span class=cl>    <span class=nb>disown</span> -h %job_number
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>See also: <span class=nb>jobs</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>~ 
+</span></span><span class=line><span class=cl>❯ man setsid <span class=p>|</span> head
+</span></span><span class=line><span class=cl>SETSID<span class=o>(</span>2<span class=o>)</span>                      System Calls Manual                     SETSID<span class=o>(</span>2<span class=o>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>NAME
+</span></span><span class=line><span class=cl>     setsid – create session and <span class=nb>set</span> process group ID
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>SYNOPSIS
+</span></span><span class=line><span class=cl>     <span class=c1>#include &lt;unistd.h&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>     pid_t
+</span></span><span class=line><span class=cl>     setsid<span class=o>(</span>void<span class=o>)</span><span class=p>;</span>
+</span></span></code></pre></div><h2 id=exit>exit</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1>#/bin/bash</span>
+</span></span><span class=line><span class=cl>exit<span class=o>(</span>0<span class=o>)</span> <span class=c1>#脚本/命令正常退出</span>
+</span></span><span class=line><span class=cl>exit<span class=o>(</span>1<span class=o>)</span> <span class=c1># 脚本/命令异常退出</span>
+</span></span></code></pre></div><h2 id=-->$? && ||</h2><p>shell 在执行某个命令的时候，会返回一个返回值，该返回值保存在 shell 变量 $? 中。
+当 $? == 0 时，表示执行成功；当 $? == 1 时（非0返回值，一般在0-255间），表示执行失败。
+shell 提供了 && 和 || 来实现命令执行flow控制的功能，shell 将根据 && 或 || 前面命令的返回值来选择执行后续命令。</p><h3 id=heading>&&</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>command1 <span class=o>&amp;&amp;</span> command2 <span class=o>[&amp;&amp;</span> command3 ...<span class=o>]</span> 
+</span></span></code></pre></div><ol><li>命令之间使用<code>&&</code>连接，实现逻辑与的功能；</li><li>只有在 <code>&&</code> 左边的命令返回真（命令返回值 <code>$? == 0</code>），&& 右边的命令才会被执行；</li><li>只要有一个命令返回假（命令返回值 <code>$? == 1</code>），后面的命令就不会被执行。 即是短路的功能。</li></ol><h3 id=heading-1>||</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>command1 <span class=o>||</span> command2 <span class=o>[||</span> command3 ...<span class=o>]</span> 
+</span></span></code></pre></div><ol><li>命令之间使用 <code>||</code> 连接，实现 逻辑或的功能；</li><li>只有在<code>||</code>左边的命令返回假（命令返回值 <code>$? == 1</code>），<code>||</code> 右边的命令才会被执行。这和 c 语言中的逻辑或语法功能相同，即实现defult赋值操作；</li><li>只要有一个命令返回真（命令返回值 <code>$? == 0</code>），后面的命令就不会被执行。</li></ol><h2 id=heading-2>$</h2><p>shell语句变量无需声明，需要引用变量指时， 在变量名前添加$符号即可（有时需要配合括号消除歧义）:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=nv>var</span><span class=o>=</span>hellhttp://sdf.com?uid<span class=o>=</span>233<span class=p>&amp;</span><span class=nv>pwd</span><span class=o>=</span>ls
+</span></span><span class=line><span class=cl><span class=nb>echo</span> var  <span class=c1># var</span>
+</span></span><span class=line><span class=cl><span class=nb>echo</span> <span class=nv>$var</span>  <span class=c1># hellhttp://sdf.com?uid=233&amp;pwd=ls</span>
+</span></span><span class=line><span class=cl><span class=nv>va</span><span class=o>=</span>he
+</span></span><span class=line><span class=cl><span class=nb>echo</span> <span class=nv>$valloworld</span>  <span class=c1># 无输出，因为没有valloworld变量</span>
+</span></span><span class=line><span class=cl><span class=nb>echo</span> <span class=si>${</span><span class=nv>va</span><span class=si>}</span>lloworld  <span class=c1># hellworld</span>
+</span></span></code></pre></div><h3 id=heading-3>$()</h3><p>先执行括号里面的shell命令，然后把括号里面shell命令的输出做为新的命令去执行。
+也可以使用泛引号``。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>❯ <span class=nb>echo</span> ls &gt; abc
+</span></span><span class=line><span class=cl>~/codebase 
+</span></span><span class=line><span class=cl>❯ <span class=k>$(</span>less abc<span class=k>)</span> <span class=c1># same as `less abc`</span>
+</span></span><span class=line><span class=cl>abc             gobookIread     jsbook          lol             playaround
+</span></span><span class=line><span class=cl>~/codebase 
+</span></span><span class=line><span class=cl>❯ <span class=k>$(</span>cat abc<span class=k>)</span> 
+</span></span><span class=line><span class=cl>abc             gobookIread     jsbook          lol             playaround
+</span></span><span class=line><span class=cl>~/codebase 
+</span></span><span class=line><span class=cl>❯ <span class=k>$(</span>ls<span class=k>)</span> <span class=c1># same as `ls`</span>
+</span></span><span class=line><span class=cl>zsh: <span class=nb>command</span> not found: abc
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>❯ <span class=nb>echo</span> <span class=sb>`</span>date<span class=sb>`</span>
+</span></span><span class=line><span class=cl>2021年11月17日 星期三 11时58分02秒 CST
+</span></span><span class=line><span class=cl>~ 
+</span></span><span class=line><span class=cl>❯ <span class=nb>echo</span> <span class=k>$(</span>date<span class=k>)</span>
+</span></span><span class=line><span class=cl>2021年11月17日 星期三 11时58分10秒 CST
+</span></span></code></pre></div><h2 id=wget>wget</h2><p>http basic auth</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>wget --no-check-certificate --user user --password pass https://server_address/
+</span></span></code></pre></div><h2 id=curl>curl</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>curl -I google.com
+</span></span><span class=line><span class=cl>curl -i google.com
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># Post json file</span>
+</span></span><span class=line><span class=cl>curl -vX POST http://localhost:9095/post -d @t.json -H <span class=s2>&#34;Content-Type: application/json&#34;</span> -H <span class=s1>&#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNTUxNDEyODY2LCJleHAiOjE1NTIwMTc2NjZ9.V6ZT8L_r_arIlxtRHul-FxKt4exErTkvNdYy7O_cR5A&#39;</span>
+</span></span></code></pre></div><h2 id=argument>argument</h2><h3 id=default-argument>default argument</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=cp>#!/usr/local/bin/bash
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=nb>echo</span> <span class=s1>&#39;begin&#39;</span>
+</span></span><span class=line><span class=cl>date
+</span></span><span class=line><span class=cl><span class=nv>duration</span><span class=o>=</span><span class=si>${</span><span class=nv>1</span><span class=p>-</span><span class=s2>&#34;3&#34;</span><span class=si>}</span> <span class=c1># default 3</span>
+</span></span><span class=line><span class=cl>sleep <span class=nv>$duration</span>
+</span></span><span class=line><span class=cl><span class=nb>echo</span> <span class=s1>&#39;finish&#39;</span>
+</span></span><span class=line><span class=cl>date
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#begin</span>
+</span></span><span class=line><span class=cl><span class=c1>#2021年11月17日 星期三 12时05分52秒 CST</span>
+</span></span><span class=line><span class=cl><span class=c1>#finish</span>
+</span></span><span class=line><span class=cl><span class=c1>#2021年11月17日 星期三 12时05分55秒 CST</span>
+</span></span><span class=line><span class=cl><span class=c1>#~ took 3s </span>
+</span></span></code></pre></div><h2 id=loop>loop</h2><p>bash 提供 for和while两种循环控制</p><h3 id=for>for</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># for in </span>
+</span></span><span class=line><span class=cl><span class=k>for</span> i in abc.s<span class=o>{</span>1..1000<span class=o>}</span><span class=p>;</span> <span class=k>do</span>
+</span></span><span class=line><span class=cl>    <span class=nb>echo</span> <span class=nv>$i</span>
+</span></span><span class=line><span class=cl><span class=k>done</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># for arguments</span>
+</span></span><span class=line><span class=cl>./for.sh x y z sdf<span class=o>{</span>1..4<span class=o>}</span> <span class=m>1</span> <span class=m>9</span>
+</span></span><span class=line><span class=cl><span class=c1>#for a; do</span>
+</span></span><span class=line><span class=cl><span class=c1>#	echo $a</span>
+</span></span><span class=line><span class=cl><span class=c1>#done</span>
+</span></span></code></pre></div><h3 id=while-read>while (read)</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=k>while</span> <span class=nb>read</span> -r h<span class=p>;</span> <span class=k>do</span>
+</span></span><span class=line><span class=cl> 	<span class=nb>echo</span> -n <span class=nv>$h</span>
+</span></span><span class=line><span class=cl><span class=k>done</span>
+</span></span><span class=line><span class=cl><span class=c1>#❯ bash read-pwds.sh </span>
+</span></span><span class=line><span class=cl><span class=c1>#abcde</span>
+</span></span><span class=line><span class=cl><span class=c1>#abcdexyz</span>
+</span></span><span class=line><span class=cl><span class=c1>#xyz% </span>
+</span></span></code></pre></div><h2 id=macos>macos</h2><h3 id=osascript>osascript</h3><p><figure class=gallery-image style=flex-grow:312;flex-basis:749px><a href=/posts/bash-command/mac.png data-size=868x278><img src=/posts/bash-command/mac.png width=868 height=278 srcset="/posts/bash-command/mac_hu5339105ebcd044e0ab56fca4fb90c867_103215_480x0_resize_box_3.png 480w, /posts/bash-command/mac_hu5339105ebcd044e0ab56fca4fb90c867_103215_1024x0_resize_box_3.png 1024w" loading=lazy alt="macos osascript notification"></a><figcaption>macos osascript notification</figcaption></figure></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=cp>#!/bin/sh
+</span></span></span><span class=line><span class=cl><span class=cp></span><span class=c1>#</span>
+</span></span><span class=line><span class=cl><span class=c1># must use sh for `at` command</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>#!/usr/bin/osascript</span>
+</span></span><span class=line><span class=cl><span class=c1>#display notification &#34;Lorem ipsum dolor sit amet&#34; with title &#34;Title&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># https://apple.stackexchange.com/questions/57412/how-can-i-trigger-a-notification-center-notification-from-an-applescript-or-shel/115373#115373</span>
+</span></span><span class=line><span class=cl>osascript -e <span class=s1>&#39;display notification &#34;吃武汉热干面啦&#34; with title &#34;米西米西&#34; &#39;</span>
+</span></span></code></pre></div></section><footer class=article-footer><section class=article-tags><a href=/tags/shell/>shell</a>
+<a href=/tags/bash/>bash</a>
+<a href=/tags/command/>command</a></section><section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg><span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><aside class=related-contents--wrapper><h2 class=section-title>相关文章</h2><div class=related-contents><div class="flex article-list--tile"><article class=has-image><a href=/posts/neutron-port/><div class=article-image><img src=/posts/neutron-port/_huba0c25ee44e1cb025e6838f746b91615_235376_0f8519d2522d80b6fc5afae2a6d5e9f8.png width=250 height=150 loading=lazy data-key data-hash="md5-MkCaJenF4NruQ1BFKjxBGA=="></div><div class=article-details><h2 class=article-title>Neutron小记</h2></div></a></article><article class=has-image><a href=/posts/expect-interactive/><div class=article-image><img src=/posts/expect-interactive/automate.4b57b78b628844f5439a384d066e9cb8_hu0267170b9c80213022522221d5593617_95938_250x150_fill_q75_box_smart1.jpeg width=250 height=150 loading=lazy data-key data-hash="md5-S1e3i2KIRPVDmjhNBm6cuA=="></div><div class=article-details><h2 class=article-title>Expect自动化工具简介</h2></div></a></article><article class=has-image><a href=/posts/explain-kubeconfig/><div class=article-image><img src=/posts/explain-kubeconfig/kubeconfig.8de483e194e9d703d6ade3fd9d8b3598_hu6b4ad2ec2bfdd2b8d356f680088de3f4_179870_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy data-key data-hash="md5-jeSD4ZTp1wPWreP9nYs1mA=="></div><div class=article-details><h2 class=article-title>细说kubeconfig</h2></div></a></article><article class=has-image><a href=/posts/k8s-certs/><div class=article-image><img src=/posts/k8s-certs/k8s.eecf4f46508db14e5515604412f82a89_hucdb5e2014b72ce09271c5c17f97648be_22078_250x150_fill_q75_h2_box_smart1_2.webp width=250 height=150 loading=lazy data-key data-hash="md5-7s9PRlCNsU5VFWBEEvgqiQ=="></div><div class=article-details><h2 class=article-title>替换k8s所有证书</h2></div></a></article><article class=has-image><a href=/posts/vscode-eslint/><div class=article-image><img src=/posts/vscode-eslint/eslint-airbnb.2f6cfa69959d62c46e4a9dc5039f8e50_hue35271ac4524df007877384f8b1c06a2_74499_250x150_fill_q75_box_smart1.jpeg width=250 height=150 loading=lazy data-key data-hash="md5-L2z6aZWdYsRuSp3FA5+OUA=="></div><div class=article-details><h2 class=article-title>配置vscode eslint</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2006 -
+2023 鬼画桃符</section><section class=powerby>豆腐炒糖</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous></main><aside class="sidebar right-sidebar sticky"><section class="widget archives"><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#set>set</a></li><li><a href=#du>du</a></li><li><a href=#rm>rm</a></li><li><a href=#job>job</a><ol><li><a href=#nohup>nohup</a></li><li><a href=#fgbg-suspended>fg/bg suspended</a></li></ol></li><li><a href=#守护进程>守护进程</a></li><li><a href=#exit>exit</a></li><li><a href=#-->$? && ||</a><ol><li><a href=#heading>&&</a></li><li><a href=#heading-1>||</a></li></ol></li><li><a href=#heading-2>$</a><ol><li><a href=#heading-3>$()</a></li></ol></li><li><a href=#wget>wget</a></li><li><a href=#curl>curl</a></li><li><a href=#argument>argument</a><ol><li><a href=#default-argument>default argument</a></li></ol></li><li><a href=#loop>loop</a><ol><li><a href=#for>for</a></li><li><a href=#while-read>while (read)</a></li></ol></li><li><a href=#macos>macos</a><ol><li><a href=#osascript>osascript</a></li></ol></li></ol></nav></div></section></aside></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>
