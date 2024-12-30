@@ -28,3 +28,8 @@ init:
 	-@git submodule update --init --recursive # needed when you reclone your repo (submodules may not get cloned automatically)
 
 
+.PHONY: reset-push
+reset-push:
+	-@git remote add origin git@github.com:datewu/datewu.github.io.git
+	-@git branch -M main
+	-@git push -u origin main # git push -fu origin main
